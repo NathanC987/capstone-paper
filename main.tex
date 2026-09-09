@@ -192,7 +192,7 @@ Grad-CAM shows where the model looks, not what changed in the data. To make the 
 where $n_{\mathrm{ref}}$ and $n_{\mathrm{prod}}$ are the reference and production sample sizes. A positive $\Delta_c$ means the production images lean more toward phrase $c$. The idea is related to concept activation testing \cite{kim2018tcav} but needs no gradients and no training. Section~\ref{sec:concept-results} checks the ranked phrases against dataset metadata.
 
 \subsection{Reliability layer (E)}
-Detection and cause analysis describe the population. This stage asks whether one particular prediction deserves trust. Each sampled prediction receives five scores in $[0,1]$. Confidence risk is one minus the top class probability. Out of distribution (OOD) risk comes from an Isolation Forest for tables \cite{liu2008isolation} and from a percentile scaled embedding distance for images \cite{hendrycks2017baseline}. Instability is the mean change in the output under small input perturbations. Calibration risk is the gap between the confidence and the label free accuracy estimate. Explanation inconsistency is the change in the SHAP attribution pattern. The risk engine combines them as a weighted sum,
+Detection and cause analysis describe the population. This stage asks whether one particular prediction deserves trust. Each sampled prediction receives five scores in $[0,1]$. Confidence risk is one minus the top class probability. Out of distribution (OOD) risk comes from an Isolation Forest for tables \cite{liu2008isolation} and a percentile scaled distance for images \cite{hendrycks2017baseline}, both calibrated against the reference so that ordinary inputs score near zero. Instability is the mean change in the output under small input perturbations. Calibration risk is the gap between the confidence and the label free accuracy estimate. Explanation inconsistency is the change in the SHAP attribution pattern. The risk engine combines them as a weighted sum,
 \begin{equation}
 r = w_c(1-c) + w_o\,o + w_s\,s + w_k\,k + w_e\,e,
 \label{eq:risk}
@@ -522,26 +522,26 @@ The reliability analysis asks whether a change in calibration across the populat
 \centering
 \renewcommand{\arraystretch}{1.2}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabular}{@{}lcccccc@{}}
 \toprule
-\textbf{Window} & \textbf{Confidence} & \textbf{OOD risk} & \textbf{Calibration risk} & \textbf{Fused risk} & \textbf{Suspicious} \\
+\textbf{Window} & \textbf{Confidence} & \textbf{OOD risk} & \textbf{Calibration risk} & \textbf{Fused risk} & \textbf{Suspicious} & \textbf{High risk} \\
 \midrule
-ACS 2015 & 0.793 & 0.00 & 0.231 & 0.089 & 5.5\% \\
-ACS 2016 & 0.794 & 0.00 & 0.238 & 0.090 & 3.0\% \\
-ACS 2017 & 0.797 & 0.00 & 0.239 & 0.090 & 9.5\% \\
-ACS 2018 & 0.804 & 0.00 & 0.256 & 0.092 & 8.0\% \\
-ACS geographic & 0.752 & 0.00 & 0.177 & 0.087 & 4.5\% \\
-CLEAR buckets 2--10 & 0.94--0.97 & 0.00 & 0.39\phantom{0} & 0.09--0.11 & 0\% \\
+ACS 2015 & 0.793 & 0.06 & 0.231 & 0.104 & 5.5\% & 3.0\% \\
+ACS 2016 & 0.794 & 0.05 & 0.238 & 0.101 & 3.0\% & 2.0\% \\
+ACS 2017 & 0.797 & 0.07 & 0.239 & 0.107 & 9.5\% & 3.5\% \\
+ACS 2018 & 0.804 & 0.09 & 0.256 & 0.114 & 8.0\% & 3.5\% \\
+ACS geographic & 0.752 & 0.06 & 0.177 & 0.101 & 4.5\% & 2.0\% \\
+CLEAR buckets 2--10 & 0.94--0.97 & 0.03--0.10 & 0.28--0.43 & 0.09--0.12 & 0\% & 1--5\% \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-Table~\ref{tab:reliability} averages over 200 predictions for each tabular window and 80 for each image bucket. Calibration risk is the label free overconfidence term from Equation~(\ref{eq:risk}). The last column gives the share of predictions marked suspicious. Every window ends up with a low fused risk label. On CLEAR-10 confidence is at least $0.95$ while accuracy sits near $0.85$, which gives a mean calibration risk of $0.39$. No image window crosses the suspicious threshold. Fused risk stays between $0.09$ and $0.11$.
+Table~\ref{tab:reliability} averages over 200 predictions for each tabular window and 80 for each image bucket. Calibration risk is the label free overconfidence term from Equation~(\ref{eq:risk}). The suspicious column is the share flagged by the calibration check. The high risk column is the share the override rules push into the top band. The mean fused risk stays in the low band in every window. Two to four percent of individual tabular predictions are still flagged high risk, almost all of them by the rule that fires on a confident prediction over an out of distribution input. On CLEAR-10 confidence sits near $0.96$ while accuracy is near $0.85$, which gives a mean calibration risk near $0.34$. No image window crosses the suspicious threshold. Fused risk stays between $0.09$ and $0.12$.
 
-The tabular rows show why the correction matters. Once the calibration check reads the per bin accuracy estimate instead of a test $p$ value, mean risk rises from $0.231$ in 2015 to $0.256$ in 2018, following the widening gap between confidence and accuracy. A growing minority of predictions crosses the suspicious threshold, reaching $8\%$ by 2018. The geographic run, where the estimate comes closest to the measured value, records the lowest calibration risk with the fewest flags. The signal moves along with the drift instead of saturating.
+The tabular rows show why the correction matters. Once the calibration check reads the per bin accuracy estimate instead of a test $p$ value, mean calibration risk rises from $0.231$ in 2015 to $0.256$ in 2018, following the widening gap between confidence and accuracy. A growing minority of predictions crosses the suspicious threshold, reaching $8\%$ by 2018. The geographic run, where the estimate comes closest to the measured value, records the lowest calibration risk and few flags. The signal moves along with the drift instead of saturating.
 
-The fused score hardly budges. The OOD term is near zero because a later census record still looks like an ordinary row on its own. Stability under perturbation is near zero because the output of a linear model changes smoothly when small noise is added. Equation~(\ref{eq:risk}) then averages a calibration term near $0.25$ against two terms near zero and a confidence term near $0.20$, which lands close to $0.09$ and sits well inside the low band. In every window the population signal is outvoted by the point level ones. Section~\ref{sec:benchmark-results} measures this weakness against a known ground truth.
+The mean fused score still hardly budges. The OOD term is small. A single later census record looks close to an ordinary row, so its out of distribution score sits between $0.05$ and $0.09$, though it does climb as the drift grows. Stability under perturbation stays near zero because the output of a linear model changes smoothly when small noise is added. Equation~(\ref{eq:risk}) then averages a calibration term near $0.25$ against small point level terms and a confidence term near $0.20$, which lands near $0.10$ and inside the low band. In every window the population signal is outvoted by the point level ones. Section~\ref{sec:benchmark-results} measures this weakness against a known ground truth.
 
 \subsection{Remediation triage}
 \label{sec:remediation-results}
@@ -676,7 +676,7 @@ Table~\ref{tab:comparative} mirrors the main aim of each study. Rabanser et al. 
 \section{Limitations}
 \label{sec:limits}
 
-The limitations mark where the reported evidence should not be stretched. The main one is in reliability fusion. A calibration signal measured over a population is averaged with point signals near zero, so it rarely lifts the final risk label. The benchmark puts a number on this. The reliability score separates errors only under covariate shift, with an AUROC of $0.56$. It drops below chance under concept drift.
+The limitations mark where the reported evidence should not be stretched. The main one is in reliability fusion. A calibration signal measured over a population is averaged with smaller point level signals, so it rarely lifts the mean risk label. The benchmark puts a number on this. The reliability score separates errors only under covariate shift, with an AUROC of $0.56$. It drops below chance under concept drift.
 
 Label free monitors cannot see concept drift or label noise when the inputs and the model outputs do not change. This is a property of the setting, not a bug. The delayed label audit needs a few hundred labels to resolve these cases.
 
