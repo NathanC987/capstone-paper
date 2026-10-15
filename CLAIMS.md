@@ -58,8 +58,8 @@ Repository paths are relative to the code repository root.
 
 | Claim | Keys | Source |
 |---|---|---|
-| Accuracy estimates are optimistic; on gas batch 8 CBPE estimates about 1 while mean confidence falls, because the low-confidence bins hold only 8 calibration rows (all correct; checked by refitting) | `gas-b8-acc`, `gas-b8-est`, `gas-b8-conf`, `gas-b8-sparse-share`, `gas-b8-sparse-cal-n` | gas output, CBPE metadata `reference_bin_counts` |
-| Fused reliability adds nothing beyond confidence on ACS and CLEAR-10; on gas it is unstable (fitted on 4 or 11 errors) | `rel-other-diff-*`, `rel-gas-diff-*`, `rel-gas-*-cal-errors`, `rel-bench-gain-*` | study outputs, benchmark summaries |
+| Accuracy estimates are optimistic; on gas batch 8 CBPE estimates 0.618 against a true 0.330, because drift breaks the confidence-to-accuracy relation (bins with fewer than 5 calibration rows keep the model's own confidence) | `gas-b8-acc`, `gas-b8-est`, `gas-b8-conf` | gas output; `estimation.BinnedAccuracyCalibration` |
+| Fused reliability adds nothing beyond confidence on ACS and CLEAR-10; on gas no fusion is learned (4 or 11 calibration errors, fewer than 10 per signal) | `rel-other-diff-*`, `rel-gas-*-cal-errors`, `rel-min-events`, `rel-bench-gain-*` | study outputs; `reliability.fusion.MIN_EVENTS_PER_SIGNAL` |
 | Triage is right where a labelled recent window exists, conservative without one (benchmark recall 6%) | `rem-recent-*`, `rem-norecent-*`, `b-inc-a-lr-triage-recall` | `outputs/remediation_results*.json`, benchmark |
 | Concept probe not validated by image tags | `concept-nbuckets-sig`, `concept-b10-rho` | `outputs/clip_concepts/concept_rca_results.json` |
 
