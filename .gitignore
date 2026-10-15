@@ -6,3 +6,7 @@
 *.bbl
 *.blg
 *.pdf
+!figures/gen_*.pdf
+
+# generated single-file submissions (examples/paper/build_artifacts.py --flatten)
+submission/

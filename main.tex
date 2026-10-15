@@ -1,702 +1,426 @@
-\documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+%&pdflatex
+% Drift Detection and Reliability Analysis for Deployed ML Models
+% AGH University "Computer Science" journal template (csagh.sty, cs-agh.bst).
+%
+% Every number in this paper is a generated result macro (res) defined in
+% generated/results.tex and every table is a generated/tab_*.tex file, both
+% written by examples/paper/build_artifacts.py from the study outputs. For
+% submission, `python examples/paper/build_artifacts.py --flatten` writes a
+% single self-contained file to submission/ (the journal accepts one .tex file).
+
+\documentclass[10pt]{article}
+
 \usepackage{graphicx}
-\usepackage{dblfloatfix}
-\usepackage{textcomp}
-\usepackage{xcolor}
+\graphicspath{{./figures/}}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
 
-\graphicspath{{./}{figures/}}
+\usepackage{csagh}
 
-% Float placement: loosen the defaults so figures settle near their
-% references instead of piling up at the end of the document.
-\renewcommand{\topfraction}{0.92}
-\renewcommand{\bottomfraction}{0.85}
-\renewcommand{\textfraction}{0.06}
-\renewcommand{\floatpagefraction}{0.75}
-\renewcommand{\dbltopfraction}{0.92}
-\renewcommand{\dblfloatpagefraction}{0.75}
-\setcounter{topnumber}{4}
-\setcounter{bottomnumber}{3}
-\setcounter{totalnumber}{6}
-\setcounter{dbltopnumber}{3}
+% Double-blind review: \anonymoustrue removes the names, affiliations,
+% acknowledgements and the repository address. Set \anonymousfalse for the
+% final version.
+\newif\ifanonymous
+\anonymoustrue
 
-% \linebreakand: an \and that also starts a new, centered row of author
-% blocks (useful when 5+ author blocks would otherwise leave a ragged last row).
-\makeatletter
-\newcommand{\linebreakand}{%
-  \end{@IEEEauthorhalign}
-  \hfill\mbox{}\par
-  \mbox{}\hfill\begin{@IEEEauthorhalign}
-}
-\makeatother
-
-\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
-    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\input{generated/results}
 
 \begin{document}
 
+\begin{opening}
+
 \title{Drift Detection and Reliability Analysis for Deployed ML Models}
 
-% Emails below are placeholders in the institutional format;
-% replace them with the real addresses before submission.
-\author{%
-\IEEEauthorblockN{Sanjay Mirchandani}
-\IEEEauthorblockA{\textit{Department of Computer Engineering}\\
-\textit{V.E.S. Institute of Technology}\\
-Mumbai, India\\
-sanjay.mirchandani@ves.ac.in}
-\and
-\IEEEauthorblockN{Nathan Cherian}
-\IEEEauthorblockA{\textit{Department of Computer Engineering}\\
-\textit{V.E.S. Institute of Technology}\\
-Mumbai, India\\
-2023.nathan.cherian@ves.ac.in}
-\and
-\IEEEauthorblockN{Rahul Guhagarkar}
-\IEEEauthorblockA{\textit{Department of Computer Engineering}\\
-\textit{V.E.S. Institute of Technology}\\
-Mumbai, India\\
-2023.rahul.guhagarkar@ves.ac.in}
-\linebreakand
-\IEEEauthorblockN{Alok Pal}
-\IEEEauthorblockA{\textit{Department of Computer Engineering}\\
-\textit{V.E.S. Institute of Technology}\\
-Mumbai, India\\
-2023.alok.pal@ves.ac.in}
-\and
-\IEEEauthorblockN{Akul Patre}
-\IEEEauthorblockA{\textit{Department of Computer Engineering}\\
-\textit{V.E.S. Institute of Technology}\\
-Mumbai, India\\
-2023.akul.patre@ves.ac.in}
-}
-
-\maketitle
+\ifanonymous
+\author[Affiliations withheld for double-blind review]{Anonymous authors}
+\else
+\author[Department of Computer Engineering, V.E.S. Institute of Technology, Mumbai, India,
+        e-mail: \URL{sanjay.mirchandani@ves.ac.in}]{Sanjay Mirchandani}
+\author[Department of Computer Engineering, V.E.S. Institute of Technology, Mumbai, India,
+        e-mail: \URL{2023.nathan.cherian@ves.ac.in}]{Nathan Cherian}
+\author[Department of Computer Engineering, V.E.S. Institute of Technology, Mumbai, India,
+        e-mail: \URL{2023.rahul.guhagarkar@ves.ac.in}]{Rahul Guhagarkar}
+\author[Department of Computer Engineering, V.E.S. Institute of Technology, Mumbai, India,
+        e-mail: \URL{2023.alok.pal@ves.ac.in}]{Alok Pal}
+\author[Department of Computer Engineering, V.E.S. Institute of Technology, Mumbai, India,
+        e-mail: \URL{2023.akul.patre@ves.ac.in}]{Akul Patre}
+\fi
 
 \begin{abstract}
-Machine learning models often lose accuracy after deployment. The data arriving in production drifts away from the training data. This usually happens before reliable labels are available. Existing monitoring tools signal that a distribution has changed. They say little about how much accuracy was lost, what caused it, which predictions to distrust or whether retraining will help. This paper presents a model agnostic monitoring pipeline that runs the full chain without production labels. It estimates performance, detects and locates drift, explains the likely cause, scores the reliability of each prediction and advises on remediation. Two parts are new. Image drift causes are reported as named visual concepts, for example a shift toward night photography. The ranking is checked against the image dataset's own tags. A remediation triage runs the two cheapest label free repairs as probes and predicts whether a full retrain will recover the loss. We evaluate on real drift and on injected drift. The real study uses the Folktables American Community Survey Income task and the Continual Learning on Real World Imagery benchmark. The injected study applies covariate, prior, concept and label noise shift with a known ground truth. The pipeline names the injected drift type in every tested window. The label free accuracy estimate is optimistic in every window. The model grows more confident as it grows less accurate. Per prediction reliability separates errors only under covariate shift. The concept level analysis agrees with the dataset tags at a rank correlation of $0.71$. The triage verdict matches whether any strategy recovers the loss across all tested settings.
+Drift alarms rarely name the type of drift, although the right response depends on it. In our pipeline every decision is a hypothesis test with family wise error control. Label free tests and black box shift estimation separate covariate from prior shift. A small audit of late labels separates concept drift from label noise. On injected drift in two census tasks and two model families it names the type in \res{bench-a-ours-min} to \res{bench-a-ours-max}\% of windows and beats rules from monitoring practice. A learned meta classifier wins on the mechanisms it was trained on but reaches only \res{bench-b-meta-min} to \res{bench-b-meta-max}\% on held out mechanisms, where the tests keep \res{bench-b-ours-min} to \res{bench-b-ours-max}\%. On census data from 2014 to 2023, an aging gas sensor array and an image stream, it reported no drift on any control window and traced documented events. Accuracy estimates, per prediction reliability and triage without labelled history remain weak.
 \end{abstract}
 
-\begin{IEEEkeywords}
-data drift, concept drift, model monitoring, root cause analysis, out of distribution detection, model calibration, remediation, drift injection benchmark
-\end{IEEEkeywords}
+\keywords{data drift, concept drift, label shift, model monitoring, hypothesis testing, drift diagnosis, performance estimation}
+
+\end{opening}
 
 \section{Introduction}
+\label{sec:intro}
 
-A model that runs in production can quietly lose accuracy as the incoming data moves away from the training distribution. The loss usually begins long before reliable labels are available \cite{sculley2015hidden,paleyes2022challenges,huyen2022designing,shankar2022operationalizing}. Monitoring therefore has to catch the change and judge its effect while no labels are in hand.
+A deployed model can lose accuracy as production data move away from the training data. The loss usually starts long before reliable labels arrive \cite{sculley2015hidden,paleyes2022challenges}. Monitoring must therefore detect the change and judge its effect while labels are missing.
 
-Tools that already exist are good at announcing that a distribution has changed. They say much less about how much accuracy was lost, what caused the loss, which individual predictions should not be trusted or whether an expensive fix such as retraining is worth running \cite{klaise2020monitoring,rabanser2019failing}. A drift alert on its own is not an accuracy drop. An accuracy drop on its own is not a plan.
+Monitoring tools report that a distribution changed. They say little about how much accuracy was lost, why it was lost or what to do next \cite{rabanser2019failing}. The answer to the last question depends on the type of drift. A covariate shift may be corrected by reweighting. A prior shift calls for recalibration to the new class balance. Concept drift needs fresh labels. Label noise points to the labelling process rather than the model. Naming the type is thus the step that turns an alarm into an action.
 
-The pipeline proposed here treats monitoring as one workflow. The user supplies only a model and two sets of data: a reference set that stands for training and a stream of production data. The pipeline then estimates performance, detects and locates drift, explains the likely cause, scores the trust due to each prediction and advises on what to do. The same workflow serves a tabular model and an image model. Nothing in it needs production labels.
+This paper studies how well the drift type can be named from label free tests and a small audit of late labels. Every decision in the pipeline is a hypothesis test at one significance level with family wise error control, so the false alarm rate is fixed in advance and no threshold is tuned on evaluation data. The pipeline also estimates accuracy, localizes and explains the shift, scores each prediction and advises on remediation.
 
-This paper makes four contributions.
+The contributions are as follows.
 \begin{enumerate}
-\item An integrated label free workflow that connects performance estimation, drift detection, feature and slice level localization, root cause analysis, per prediction reliability scoring and remediation advice. Most existing tools stop at one of these steps.
-\item Concept level visual root cause analysis. The pipeline turns drifted image embedding directions into ranked natural language concepts, for example a shift toward night photography. It checks the ranking against the image dataset's own tags.
-\item A remediation triage. It runs the two cheapest label free repairs as probes and predicts whether a full retrain will recover the accuracy loss, before any retrain is run.
-\item A controlled drift injection benchmark. It grades every stage of a label free monitor against a known ground truth, across covariate, prior, concept and label noise drift.
+\item A hierarchical test procedure that names the drift type. Without labels it separates covariate shift from prior shift by black box shift estimation and a label shift consistency test. With a few hundred late labels it separates concept drift from label noise by a test of how the pattern of errors changed.
+\item A benchmark with a known ground truth on two tabular tasks and two model families. It has two designs. Design A injects drift in ways that partly match the tests. Design B uses held out mechanisms that the tests were not built around, fixed before it was first run.
+\item A quantitative comparison with three rule based baselines from monitoring practice and the label shift literature, a learned meta classifier and ablations, with paired tests over replicates.
+\item An open end to end pipeline evaluated on three real drifts with known causes: nine years of census data, a gas sensor array that ages over three years and a temporal image stream.
 \end{enumerate}
+Section~\ref{sec:negative} reports the parts that did not work: accuracy estimation, per prediction reliability, triage without labelled history and a concept probe for images.
 
-The rest of the paper reviews related work, describes the architecture, gives the experimental setup for both the real and the injected studies, reports results and closes with a comparison, the limitations and future work.
+Sections~\ref{sec:sota} to \ref{sec:setup} review related work, describe the method and give the setup. Section~\ref{sec:results} reports the results and Sections~\ref{sec:negative} to \ref{sec:conclusion} discuss limits and conclude.
 
-\section{Related Work}
-\label{sec:related_work}
+\section{State of the art}
+\label{sec:sota}
 
-Research on deployed model monitoring spans drift detection, representation learning, label free performance estimation, uncertainty, explanation and adaptation. The pipeline in this paper draws these threads into one flow. This section reviews each thread and states how the present work relates to it.
+\paragraph{Drift detection.} Surveys of concept drift cover detection and adaptation in data streams \cite{gama2014survey}. Shift is usually split into covariate shift, prior shift and concept shift \cite{moreno2012unifying}. Detectors that track the error rate, such as DDM \cite{gama2004ddm} and adaptive windowing \cite{bifet2007learning}, need labels. Label free detectors compare inputs or model outputs. Rabanser et al. compare univariate tests, kernel tests, classifier two sample tests and black box shift detection on model outputs (BBSD) and find that BBSD works best overall \cite{rabanser2019failing,lopezpaz2017c2st,gretton2012kernel}. These methods say that a shift happened but not of which type.
 
-\subsection{Concept drift and dataset shift detection}
-Surveys of concept drift cover detection and adaptation in changing data streams \cite{gama2014survey,lu2019learning,webb2016characterizing}. Distribution shift is usually split into covariate shift, prior shift and concept shift \cite{moreno2012unifying,quionero2009dataset}. Label based detectors such as Adaptive Windowing need labels to work \cite{bifet2007learning}, so label free methods compare the inputs or their learned features instead. Rabanser et al. show that the effectiveness of a detector depends on the type and size of the shift, which argues for an ensemble \cite{rabanser2019failing}. This pipeline combines feature level Kolmogorov--Smirnov and Population Stability Index tests with a multivariate kernel test so the members cover each other's blind spots.
+\paragraph{Label shift and drift type.} Black box shift estimation (BBSE) recovers a new class prior from the confusion matrix of any classifier, assuming the inputs within each class do not change \cite{lipton2018bbse}. Liu et al. show that changes in $P(Y\mid X)$ dominate many real tabular shifts \cite{liu2023whyshift}. Kulinski and Inouye explain a shift by a transport map between distributions \cite{kulinski2023explaining}. Both analyses need labels or full access to both samples. To our knowledge no published method names all four types, covariate, prior, concept and label noise, from label free tests plus a small label audit, with a stated error rate.
 
-\subsection{Monitoring high dimensional data through representations}
-Representation learning maps raw inputs to compact features \cite{bengio2013representation}. Shift can then be tested in the learned space rather than in pixels \cite{rabanser2019failing}. This pipeline monitors 512 dimensional embeddings from a frozen ImageNet Residual Network with 18 layers \cite{he2016deep}, using a kernel test, reconstruction error and a distance between fitted Gaussians. Arranging the embeddings as a feature table lets image monitoring reuse the tabular detectors.
+\paragraph{Performance estimation without labels.} Average confidence \cite{hendrycks2017baseline}, difference of confidences (DoC) \cite{guillory2021predicting}, average thresholded confidence (ATC) \cite{garg2022atc} and confidence based performance estimation (CBPE) \cite{kivimaki2025performance} estimate accuracy from model outputs. All assume that calibration carries over to production, which fails under shift \cite{ovadia2019trust}.
 
-\subsection{Performance estimation without production labels}
-Delayed or missing production labels have motivated methods that estimate accuracy from model outputs alone. Examples are thresholded confidence \cite{garg2022atc}, comparison of confidence distributions \cite{guillory2021predicting} and Confidence Based Performance Estimation \cite{kivimaki2025performance,nannyml2023cbpe}. This pipeline uses a Confidence Based Performance Estimation signal to gate alerts and reserves held out labels for checking. Because confidence and calibration themselves change under shift \cite{ovadia2019trust}, the estimate needs the reliability checks described next.
+\paragraph{Reliability, explanation and remediation.} Models stay confident as accuracy falls under shift \cite{ovadia2019trust}. Out of distribution (OOD) scores such as the Isolation Forest \cite{liu2008isolation} flag unusual inputs. Shapley additive explanations (SHAP) \cite{lundberg2017unified} and class activation maps (CAM) \cite{zhou2016cam} attribute predictions to features or image regions. Importance weighting corrects covariate shift \cite{shimodaira2000,sugiyama2007,cortes2010weights}.
 
-\subsection{Uncertainty and reliability under distribution shift}
-Neural networks are often miscalibrated \cite{guo2017calibration}. Ovadia et al. show that many stay confident as their accuracy falls under shift \cite{ovadia2019trust}. Baseline out of distribution scores use the softmax output \cite{hendrycks2017baseline}, while anomaly methods such as Isolation Forest flag rare inputs \cite{liu2008isolation}. This pipeline does not equate confidence with correctness. It combines confidence, out of distribution risk, stability under perturbation, calibration risk and consistency of explanations into one risk score per prediction.
+\paragraph{Benchmarks.} Folktables \cite{ding2021retiring}, TableShift \cite{gardner2023tableshift} and CLEAR \cite{lin2021clear} provide real shifts without a ground truth for their type. Injected shifts give that ground truth \cite{rabanser2019failing} but risk matching the method under test, which our design B addresses.
 
-\subsection{Explanation and concept level interpretation}
-Shapley Additive Explanations attribute a prediction to its features \cite{lundberg2017unified}. Gradient weighted Class Activation Mapping highlights the image regions a model relies on \cite{selvaraju2017gradcam}. Testing with Concept Activation Vectors measures how much a human named concept influences a class, using gradients and a trained probe \cite{kim2018tcav}. This pipeline compares reference and production explanation patterns for diagnosis. For images it adds a concept probe built on a Contrastive Language Image Pretraining model \cite{radford2021clip,ilharco2021openclip}, which needs no gradients and no training and reports the shift as ranked phrases.
+Table~\ref{tab:positioning} sets the present work next to the closest methods.
 
-\subsection{Covariate shift correction and remediation}
-Weighting the training loss by the density ratio between production and reference is the classic correction for covariate shift \cite{shimodaira2000,sugiyama2007}. Isotonic regression recalibrates a model's scores on a small labelled sample \cite{zadrozny2002}. Most monitoring work stops at the alert and leaves the choice of repair to the team. This pipeline treats the repair as a decision. It runs cheap label free repairs as probes and reports whether a full retrain is likely to help.
-
-\subsection{Integrated monitoring and evaluation with injected shift}
-Shift detection \cite{rabanser2019failing}, performance estimation \cite{kivimaki2025performance} and uncertainty analysis \cite{ovadia2019trust} answer different questions. Few systems connect them. Evaluations also tend to use real drift, where the true cause and the true accuracy loss are unknown, so a stage can only be judged on whether it fires. This paper connects the stages into one workflow and adds a benchmark that injects drift with a known ground truth, so each stage can be graded on whether its answer is correct.
-
-\section{System Architecture}
-\label{sec:architecture}
-
-This section follows the data through the pipeline. Fig.~\ref{fig:architecture} shows the seven stages, labelled A to G. Stages D, E and F sit inside one diagnosis block in the figure. The user supplies a model and two sets of data. The pipeline puts both sets into a shared form, checks for drift, locates it, studies the cause, scores the trust due to each prediction and then advises on what to do. Every stage after detection is optional. When a later stage fails, the failure is logged and the results that succeeded are kept. Everything produced is written to one JavaScript Object Notation (JSON) file and shown in an interactive dashboard. The subsections below follow the labels in the figure.
-
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[
-        width=0.94\textwidth,
-        height=0.64\textheight,
-        keepaspectratio
-    ]{architecture.png}
-    \caption{Data Drift Autopsy system architecture.}
-    \label{fig:architecture}
-\end{figure*}
-
-\subsection{User input (A)}
-The pipeline is built for a team that knows only two things: the type of model in production and the data it serves. The inputs are the trained model, a reference dataset that represents the training distribution and a stream of production data. Production labels are never required. The rest of the pipeline runs on these inputs alone.
-
-\subsection{Data and representation (B)}
-This stage gives tabular and image models one shared interface, so the same monitoring code serves both. Tabular inputs pass through schema validation, categorical encoding and treatment of missing values. Images are converted into 512 dimensional embeddings by an ImageNet pretrained Residual Network with 18 layers (ResNet-18) with its classification head removed \cite{he2016deep}. An image tabularizer then arranges these embeddings as a feature table with one column per dimension. This lets image drift reuse the tabular detectors without comparing raw pixels \cite{bengio2013representation,rabanser2019failing}. The baseline model produces predictions and class probabilities for the reference data and for each production batch. All of this is stored as reference and production windows. A window can use a fixed reference or the window that came just before it.
-
-\subsection{Drift detection and localization (C)}
-This stage asks whether the input distribution has moved and where the change sits. A pipeline orchestrator pairs one required detector with optional localization and cause analysis. The detector set is mixed on purpose. Table~\ref{tab:detectors} lists the members and the role of each.
-
-\begin{table}[!htbp]
-\caption{Drift detector ensemble.}
-\label{tab:detectors}
+\begin{table}[!ht]
 \centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}p{1.9cm}p{2.1cm}p{3.0cm}@{}}
+\caption{Positioning against related methods}
+\label{tab:positioning}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
-\textbf{Detector} & \textbf{Statistic} & \textbf{Notes} \\
+Capability & \cite{rabanser2019failing} & \cite{lipton2018bbse} & \cite{kivimaki2025performance} & \cite{liu2023whyshift} & Ours \\
 \midrule
-KS test & Largest two sample KS statistic per feature; smallest $p$ & Numeric features; Bonferroni correction across features \\
-PSI & Largest PSI per feature & Reference quantile bins; numeric and categorical features \\
-MMD & Radial basis function kernel MMD; permutation $p$ & Multivariate; median bandwidth; 3000 row subsample \\
-PCA reconstruction & Relative rise in reconstruction error & Embedding manifold; components retain 95\% variance \\
-FID & Fr\'echet distance between fitted Gaussians & First and second moment shift in embeddings \\
-CBPE & Chi-square statistic on confidence bins & Needs class probabilities; performance proxy \\
+Detection with a stated error rate & \checkmark & \checkmark & -- & -- & \checkmark \\
+Accuracy estimate without labels & -- & -- & \checkmark & -- & \checkmark \\
+Feature localization & limited & -- & -- & \checkmark & \checkmark \\
+Drift type & -- & prior only & -- & with labels & four types \\
+Benchmark with true types & -- & -- & -- & -- & \checkmark \\
+Remediation advice & -- & reweighting & -- & -- & \checkmark \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:detectors} gives the statistic behind each detector. The Kolmogorov--Smirnov (KS) test takes the largest per feature statistic and applies a Bonferroni correction \cite{massey1951kolmogorov}. The Population Stability Index (PSI) compares proportions across reference quantile bins through $(a-e)\ln(a/e)$ \cite{yurdakul2018statistical}. Maximum Mean Discrepancy (MMD) is a multivariate kernel test with a median bandwidth, permutation testing and a 3000 row subsample \cite{gretton2012kernel}. On image embeddings the pipeline also tracks the rise in Principal Component Analysis (PCA) reconstruction error and the Fr\'echet Inception Distance (FID) between fitted Gaussians \cite{heusel2017gans}.
 
-A separate proxy stage estimates accuracy without labels. Reference and production top class confidences are placed in ten fixed bins. The bins are compared with Pearson's chi-square test, which is the Confidence Based Performance Estimation (CBPE) signal \cite{guillory2021predicting,kivimaki2025performance}. Accuracy is then estimated by reweighting the per bin accuracy of the reference with the production confidence histogram. Passing the chi-square $p$ value in place of the estimate is a category error, since the $p$ value is not a performance number. Labels are used only to check how good the estimate is.
+\section{Method}
+\label{sec:method}
 
-Localization runs Bonferroni corrected KS tests on numeric features and chi-square tests on categorical features. It also compares data slices, which isolates census drift by state and image drift by class or by source. The stage ends with a drift verdict: a severity label, the list of drifted features and the affected slices. This verdict decides whether the later stages run.
+Figure~\ref{fig:architecture} shows the pipeline. One principle runs through every stage. Each decision is a hypothesis test at a significance level $\alpha=\res{acs-alpha}$, with the family wise error rate controlled by the Holm procedure \cite{holm1979} or its Bonferroni bound.
 
-\subsection{Root cause analysis (D)}
-This stage links a detected shift to a change in how the model behaves. It does not prove cause. It narrows the search. For tabular models the pipeline computes mean absolute Shapley Additive Explanations (SHAP) attributions on 100 reference samples and 100 production samples \cite{lundberg2017unified}. The drifted features whose attribution has changed are the likely contributors. For image models the embedding dimensions that shifted are tied to the proxy estimate and to per class degradation. Gradient weighted Class Activation Mapping (Grad-CAM) overlays are drawn for the worst windows \cite{selvaraju2017gradcam}.
-
-Grad-CAM shows where the model looks, not what changed in the data. To make the visual change readable the pipeline adds a concept probe. It uses a Contrastive Language Image Pretraining (CLIP) model \cite{radford2021clip,ilharco2021openclip} to compare each image against a fixed list of short phrases such as ``a night photo'' or ``a crowd of people''. For each image the phrase similarities are turned into a distribution with a softmax. Let $p_i(t_c)$ be the weight image $i$ places on phrase $c$. The concept mass shift is
-\begin{equation}
-\Delta_c = \frac{1}{n_{\mathrm{prod}}}\sum_{i} p_i^{\mathrm{prod}}(t_c) \;-\; \frac{1}{n_{\mathrm{ref}}}\sum_{i} p_i^{\mathrm{ref}}(t_c),
-\label{eq:concept}
-\end{equation}
-where $n_{\mathrm{ref}}$ and $n_{\mathrm{prod}}$ are the reference and production sample sizes. A positive $\Delta_c$ means the production images lean more toward phrase $c$. The idea is related to concept activation testing \cite{kim2018tcav} but needs no gradients and no training. Section~\ref{sec:concept-results} checks the ranked phrases against dataset metadata.
-
-\subsection{Reliability layer (E)}
-Detection and cause analysis describe the population. This stage asks whether one particular prediction deserves trust. Each sampled prediction receives five scores in $[0,1]$. Confidence risk is one minus the top class probability. Out of distribution (OOD) risk comes from an Isolation Forest for tables \cite{liu2008isolation} and a percentile scaled distance for images \cite{hendrycks2017baseline}, both calibrated against the reference so that ordinary inputs score near zero. Instability is the mean change in the output under small input perturbations. Calibration risk is the gap between the confidence and the label free accuracy estimate. Explanation inconsistency is the change in the SHAP attribution pattern. The risk engine combines them as a weighted sum,
-\begin{equation}
-r = w_c(1-c) + w_o\,o + w_s\,s + w_k\,k + w_e\,e,
-\label{eq:risk}
-\end{equation}
-where $c$, $o$, $s$, $k$ and $e$ are confidence, OOD risk, instability, calibration risk and explanation inconsistency. The default weights are $(0.20, 0.25, 0.20, 0.20, 0.15)$ and are renormalized when a signal is missing. A score below $0.33$ is low risk, up to $0.66$ is medium and above that is high. A few override rules catch clear cases, such as high confidence next to a high OOD score.
-
-\subsection{Remediation triage (F)}
-This stage turns the evidence into advice. A full retrain is expensive and does not always help, so the triage tests cheaper options first. It runs two label free repairs as probes. The first is importance weighted retraining on the reference data \cite{shimodaira2000,sugiyama2007}. Its weights come from a classifier trained to tell reference rows from production rows, whose predicted odds give the density ratio. The second is retraining on the most recent window. If a probe recovers at least one quarter of the estimated accuracy gap, the triage recommends escalating to a full retrain. If not, it reports that retraining is unlikely to help and points to collecting labels or checking the target rule. The pipeline also carries a wider set of strategies for offline study: feature dropping, a head refit and isotonic recalibration on a small labelled slice \cite{zadrozny2002}.
-
-\subsection{Outputs (G)}
-Every stage writes its result to one JSON file. This keeps partial runs useful and makes the analysis reproducible. An interactive dashboard reads the file. It presents the run as a step by step story for the two real datasets and as a controlled verification for the injected benchmark.
-
-\section{Experimental Setup}
-
-The pipeline is tested on one tabular task and one image task under real shifts. It is then tested on a benchmark of injected shifts with a known ground truth.
-
-\subsection{Datasets}
-The two real datasets stand for structured census records and for images ordered in time.
-
-\textbf{American Community Survey (ACS) Income.} The Folktables income task uses ten demographic and employment features to predict whether income is above $\$50{,}000$ \cite{ding2021retiring}. California 2014 acts as the reference (183{,}941 rows; 35\% positive). California 2015 to 2018 give the temporal windows (187{,}475 to 195{,}665 rows). Texas, New York, Florida and Washington in 2014 give the geographic comparisons.
-
-\textbf{Continual Learning on Real World Imagery (CLEAR).} The CLEAR-10 benchmark is ordered in time. It holds ten concepts plus a background class over ten buckets of roughly 3{,}300 images each \cite{lin2021clear}. Bucket 1 is the reference. Every later bucket is compared with the one before it.
-
-\subsection{Models}
-The models keep a linear decision rule so the two representations stay comparable. ACS uses standardized logistic regression trained on the 2014 reference, reaching an accuracy of $0.7985$. CLEAR-10 uses logistic regression on 512 dimensional ResNet-18 embeddings from a 70/30 reference split, reaching $0.849$ accuracy, $0.863$ macro precision, $0.849$ macro recall and a macro F1 score of $0.850$.
-
-\subsection{Drift injection benchmark}
-\label{sec:benchmark-setup}
-Real drift has no ground truth, so a benchmark with injected drift is needed to grade the diagnosis. The reference is ACS Income for California in 2014. It is split into a training set of 20{,}000 rows, a reference set of 6{,}000 rows and a production pool of 4{,}800 rows. The model is the same standardized logistic regression. It reaches a reference accuracy of $0.7938$ on this smaller split, close to the full data value, with a positive rate of $0.35$. Four drift types are injected into copies of the production pool, each at three intensities, together with a no drift control. This gives 13 windows.
-
-Covariate shift rescales the age and weekly hours features for a random half to two thirds of the rows, using $x' = \mu + s(x-\mu) + o\,\sigma$ with $s$ from $1.5$ to $3.2$ and $o$ from $0.8$ to $2.8$. The labels are left alone. Prior shift resamples whole rows so the positive rate moves from $0.35$ to $0.49$, $0.58$ or $0.67$. Each class keeps its feature profile. Concept drift inverts the label for the rows with the highest education value, covering the top $15$, $30$ or $50$ percent. No feature value is touched. Label noise flips a random $8$, $18$ or $32$ percent of labels with no feature dependence.
-
-Each window is graded against its recipe. We record whether detection severity rises with intensity. We record the error of the label free accuracy estimate. We record the precision and recall of the localized features. We also record the area under the receiver operating characteristic curve (AUROC) of the reliability score against prediction error. A small delayed label audit of 600 labels is also run. It measures the accuracy drop and checks whether the loss sits in one feature range. A simple rule then reads these signals and names the drift type.
-
-\subsection{Configuration and metrics}
-Thresholds and sampling rules were fixed before any evaluation began. KS and CBPE alert at $p<0.05$. PSI alerts at $0.2$ for tables or $0.025$ for embeddings, MMD at $0.1$ or $0.02$, the rise in PCA reconstruction at $0.28$ and FID at $14.0$. Reliability sampling draws 200 tabular predictions and 80 image predictions per window, with fixed seeds and bin accuracy calibrated on the reference.
-
-The evaluation reports how far detectors agree, the mean absolute error of the proxy against labels held back only for checking, agreement on which features were localized and the spread of reliability scores. Everything ran on a single workstation, where the graphics processing unit (GPU) was used only to build embeddings. The software stack was scikit-learn \cite{pedregosa2011scikit}, SciPy \cite{virtanen2020scipy}, NumPy \cite{harris2020array}, SHAP, OpenCLIP and PyTorch.
-
-\section{Results and Discussion}
-
-The results cover detection, localization, cause analysis, performance estimation, reliability, remediation and the injection benchmark, in the order the pipeline produces them.
-
-\subsection{Temporal drift on ACS Income}
-The first question is whether the monitoring signals move together with measured accuracy. Table~\ref{tab:acs-temporal} collects the yearly results.
-
-\begin{table}[!htbp]
-\caption{ACS Income temporal drift.}
-\label{tab:acs-temporal}
+\begin{figure}[!ht]
 \centering
-\renewcommand{\arraystretch}{1.18}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Window} & \textbf{2015} & \textbf{2016} & \textbf{2017} & \textbf{2018} \\
-\midrule
-Measured accuracy & 0.7925 & 0.7894 & 0.7846 & 0.7789 \\
-Drop relative to 2014 & $-0.0059$ & $-0.0091$ & $-0.0139$ & $-0.0196$ \\
-Estimated accuracy & 0.7982 & 0.7970 & 0.7945 & 0.7945 \\
-\midrule
-KS statistic & 0.0077 & 0.0160 & 0.0230 & 0.0369 \\
-KS verdict & critical & critical & critical & critical \\
-PSI & 0.0005 & 0.0013 & 0.0037 & 0.0342 \\
-PSI verdict & none & none & none & none \\
-MMD & 0.000 & 0.0099 & 0.000 & 0.0276 \\
-MMD verdict & none & none & none & none \\
-CBPE $\chi^2$ & 11.2 & 24.1 & 213.0 & 201.3 \\
-CBPE verdict & medium & critical & critical & critical \\
-\midrule
-Mean confidence & 0.793 & 0.794 & 0.797 & 0.804 \\
-Drifted features & 4 & 8 & 8 & 8 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:acs-temporal} gives the aggregate detector statistics, with CBPE shown through its chi-square value. Every KS and CBPE outcome stays significant after correction. Measured accuracy slides from $0.7925$ in 2015 to $0.7789$ in 2018, a $1.96$ point fall from the 2014 baseline. The corrected KS test calls the drift critical in every window and grows larger as accuracy shrinks. PSI and MMD stay under their thresholds, which says that the marginal changes are small even though the combined input shift can still be detected. CBPE goes from medium severity in 2015 to critical severity in every year after that, which shows that the confidence distribution of the model moves with the data. Fig.~\ref{fig:acs-detectors} draws these detector responses.
-
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=0.90\textwidth]{7f3905fe-5a8e-4103-abfd-06179f7b2fe51.jpg}
-
-    \vspace{1mm}
-    (a)
-
-    \vspace{2mm}
-
-    \includegraphics[width=0.90\textwidth]{7f3905fe-5a8e-4103-abfd-06179f7b2fe5.jpg}
-
-    \vspace{1mm}
-    (b)
-
-    \caption{ACS Income detector trends: (a) cumulative detector scores with alert markers; (b) annual detector score comparison.}
-    \label{fig:acs-detectors}
-\end{figure*}
-
-Panel (a) tracks the running detector score with a marker at each alert. Panel (b) compares the annual scores. The KS and CBPE curves climb every year while PSI and MMD stay near the axis, which is the same split seen in Table~\ref{tab:acs-temporal}.
-
-A second pattern shows up in the confidence numbers. Accuracy drops by almost two points, yet mean confidence climbs from $0.793$ to $0.804$ and the CBPE mean shift stays positive in every window. The same growth in overconfidence under shift has been reported for deep networks \cite{ovadia2019trust,guo2017calibration}. The label free estimate sits $0.6$ to $1.6$ points above measured accuracy, because the confidence to accuracy mapping fitted on 2014 slowly goes stale. Fig.~\ref{fig:acs-confacc} sets the accuracy decline against the spread of detector severity.
-
-\begin{figure*}[!t]
-    \centering
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{pinkgraph fixed.png}
-
-        \vspace{1mm}
-        (a)
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.45\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{piechartfixed.png}
-
-        \vspace{1mm}
-        (b)
-    \end{minipage}
-
-    \caption{ACS Income performance summary: (a) measured accuracy with the change from the 2014 baseline; (b) distribution of drift severity.}
-    \label{fig:acs-confacc}
-\end{figure*}
-
-Panel (a) plots measured accuracy with the year on year change. Panel (b) shows that almost every window lands at critical severity, driven by the KS and CBPE alerts rather than the multivariate tests.
-
-The next step traces the yearly alerts down to single census variables. Table~\ref{tab:acs-features} uses the dataset codes for marital status (MAR), relationship (RELP), age (AGEP), educational attainment (SCHL), race (RAC1P), occupation (OCCP), place of birth (POBP) and weekly hours worked (WKHP).
-
-\begin{table}[!htbp]
-\caption{Localized ACS Income features.}
-\label{tab:acs-features}
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}clp{4.6cm}@{}}
-\toprule
-\textbf{Window} & \textbf{Count} & \textbf{Drifted features} \\
-\midrule
-2015 & 4 & MAR, RELP, AGEP, SCHL \\
-2016 & 8 & AGEP, SCHL, MAR, RELP, RAC1P, OCCP, POBP, WKHP \\
-2017 & 8 & AGEP, SCHL, MAR, RELP, RAC1P, OCCP, POBP, WKHP \\
-2018 & 8 & AGEP, SCHL, MAR, RELP, RAC1P, OCCP, POBP, WKHP \\
-\midrule
-\multicolumn{2}{@{}l}{Persistent} & AGEP, SCHL, MAR, RELP \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:acs-features} shows four drifting features in 2015 and eight from 2016 onward. AGEP, SCHL, MAR and RELP drift in every window, so they stand for lasting change rather than a one off event. OCCP and POBP also change how the model behaves, which is the reason for the attribution study in Table~\ref{tab:acs-shap}.
-
-\begin{table}[!htbp]
-\caption{ACS Income attribution changes.}
-\label{tab:acs-shap}
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}cll@{}}
-\toprule
-\textbf{Window} & \textbf{Reliance up} & \textbf{Reliance down} \\
-\midrule
-2015 & AGEP, SCHL, MAR & none \\
-2016 & none & OCCP, POBP, AGEP \\
-2017 & WKHP, AGEP, SCHL & OCCP, POBP \\
-2018 & OCCP, POBP, SCHL & WKHP, AGEP, RELP \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:acs-shap} keeps the SHAP comparison to drifted features only. Reliance on OCCP and POBP falls through 2016 and 2017 before rising again in 2018. From 2017 onward the likely root cause set settles around WKHP, SCHL, AGEP, POBP and OCCP. This sends an investigation toward the way occupation and place of birth were coded between survey years.
-
-\subsection{Geographic drift on ACS Income}
-The geographic study separates variation across places from the changes over time. California (CA) in 2014 stays as the reference. New York (NY), Florida (FL), Texas (TX) and Washington (WA) act as the production slices in Table~\ref{tab:acs-geo}.
-
-\begin{table}[!htbp]
-\caption{ACS Income geographic drift.}
-\label{tab:acs-geo}
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Comparison} & \textbf{POBP} & \textbf{RAC1P} & \textbf{Drift count} & \textbf{CBPE $\chi^2$} \\
-\midrule
-CA $\rightarrow$ CA & 0.00 & 0.00 & 0 & $\approx 0$ \\
-CA $\rightarrow$ NY & 0.487 & 0.161 & 10 & 1154 \\
-CA $\rightarrow$ FL & 0.440 & 0.246 & 10 & 1795 \\
-CA $\rightarrow$ TX & 0.423 & 0.198 & 9 & 543 \\
-CA $\rightarrow$ WA & 0.350 & 0.173 & 9 & 577 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:acs-geo} lists the KS statistics for each slice. Every comparison outside California turns out critical. POBP produces the biggest shift, from $0.350$ for WA up to $0.487$ for NY, with RAC1P next at $0.161$ to $0.246$. Nine or ten features drift in each cross state pair. The CBPE chi-square values sit between $543$ and $1795$. The picture is that moving the model to another state calls for adaptation and that POBP and RAC1P drive most of it.
-
-\subsection{Temporal visual drift on CLEAR-10}
-The image study looks at how detector sensitivity changes as the CLEAR-10 buckets follow one another. Table~\ref{tab:clear-detectors} lists the alerts raised alongside measured accuracy.
-
-\begin{table}[!htbp]
-\caption{CLEAR-10 detector alerts.}
-\label{tab:clear-detectors}
-\centering
-\setlength{\tabcolsep}{2.5pt}
-\renewcommand{\arraystretch}{1.05}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}lccccccccc@{}}
-\toprule
-\textbf{Bucket} & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
-\midrule
-KS & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-PCA reconstruction & & \checkmark & & \checkmark & \checkmark & \checkmark & & \checkmark & \checkmark \\
-PSI & & & & & & & & & \checkmark \\
-MMD & & & & & & & & & \checkmark \\
-FID & & & & & & & & & \checkmark \\
-\midrule
-\textbf{\raisebox{4pt}{Measured accuracy}} &
-\rotatebox{30}{0.852} &
-\rotatebox{30}{0.852} &
-\rotatebox{30}{0.859} &
-\rotatebox{30}{0.852} &
-\rotatebox{30}{0.847} &
-\rotatebox{30}{0.834} &
-\rotatebox{30}{0.827} &
-\rotatebox{30}{0.835} &
-\rotatebox{30}{0.841} \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-In Table~\ref{tab:clear-detectors} a check mark means an alert was raised. Measured accuracy falls from $0.852$ in bucket 2 to $0.827$ in bucket 8 before climbing back to $0.841$ in bucket 10. The KS test flags all nine buckets. PCA reconstruction flags six. PSI, MMD and FID fire together only for the strongest shift in bucket 10. The result is a ladder of sensitivity that gives early warning through the KS test and keeps the multivariate alarms for larger structural change. Fig.~\ref{fig:clear-multivariate} shows the matching detector trajectories with the embedding projections.
-
-\begin{figure*}[!tb]
-    \centering
-    \includegraphics[width=0.90\textwidth]{abcd1.png}
-
-    \vspace{1mm}
-    (a)
-
-    \vspace{2mm}
-
-    \includegraphics[width=0.90\textwidth]{abcd2.png}
-
-    \vspace{1mm}
-    (b)
-
-    \vspace{2mm}
-
-    \includegraphics[width=0.90\textwidth]{clear_10-detector.png}
-
-    \vspace{1mm}
-    (c)
-
-    \caption{CLEAR-10 multivariate drift analysis: (a) FID and MMD trends; (b) PCA reconstruction trend with a three dimensional bucket projection; (c) detector trends across CLEAR-10 buckets.}
-    \label{fig:clear-multivariate}
-\end{figure*}
-
-Panels (a) and (b) show the FID, MMD and PCA reconstruction curves staying flat until bucket 10. The projection in panel (b) pulls the later buckets away from bucket 1. Panel (c) places every detector score on one axis, where the KS test leads and the rest follow only at the end.
-
-Localization by class then asks whether the drift in the embeddings is concentrated or spread out. At bucket 10 the background class has 209 of its 512 dimensions at critical severity, while most object classes have only two or three. Root cause analysis ties the largest shifts to error within a class: baseball recall is overestimated by $0.186$ and soccer precision by $0.146$. Fig.~\ref{fig:gradcam} places a few of the worst drifting images next to their Grad-CAM overlays.
-
-\begin{figure*}[!tb]
-\centering
-\includegraphics[width=0.90\textwidth,height=0.42\textheight,keepaspectratio]{clear10-gradcam.png}
-\caption{CLEAR-10 visual root cause analysis: original images with the matching Grad-CAM overlays.}
-\label{fig:gradcam}
-\end{figure*}
-
-The overlays show that saliency stays tight on clean objects but scatters in cluttered or dim scenes. This helps separate a change in image content from a change in shooting conditions.
-
-\subsection{Concept level root cause on CLEAR-10}
-\label{sec:concept-results}
-Section~\ref{sec:architecture} described a concept probe that turns a visual shift into ranked phrases. This subsection checks whether that ranking is right. The test compares the concept mass shift of Equation~(\ref{eq:concept}) against the shift in the image dataset's own automatic tags. Fig.~\ref{fig:concept} shows the ranking for bucket 10, which is the strongest CLEAR-10 shift.
-
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=0.92\textwidth]{clip_concept_ranking.png}
-
-    \vspace{1mm}
-    (a)
-
-    \vspace{2mm}
-
-    \includegraphics[width=0.80\textwidth]{concept_exemplars.png}
-
-    \vspace{1mm}
-    (b)
-
-    \caption{CLEAR-10 bucket 10 concept level root cause: (a) ranked concept mass shift for all classes and for the background class; (b) extreme activation images for the top two drifted embedding dimensions.}
-    \label{fig:concept}
-\end{figure*}
-
-Fig.~\ref{fig:concept}(a) ranks the phrases whose mass grew most between bucket 1 and bucket 10. For the whole bucket the top gains are a sports field, a wide shot and low light. For the background class the shift is sharper. The phrases night photo, low light, a wide shot, low resolution and black and white all gain mass. Fig.~\ref{fig:concept}(b) shows the images with the most extreme activation on the two top drifting embedding dimensions. The production row is a cluster of night time traffic camera frames, which matches the phrase ranking.
-
-The ranking agrees with the dataset tags. Over the 11 phrases that map to a tag, the Spearman rank correlation between the concept mass shift and the tag shift is $0.71$ ($p = 0.014$). For the background class alone the correlation is again $0.71$ over 8 matched phrases. The median capture year of the background images moves from 2007 in the reference to 2013 in bucket 10, which fits a shift toward newer low light and phone camera imagery. This turns a statement such as ``embedding dimension 342 drifted'' into a cause a data engineer can act on.
-
-\subsection{Proxy estimation quality}
-Held out labels are used here for one purpose only, which is measuring how far the estimate misses. Table~\ref{tab:proxy} collects the CLEAR-10 errors over buckets 2 to 10.
-
-\begin{table}[!htbp]
-\caption{CLEAR-10 estimation error.}
-\label{tab:proxy}
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Metric} & \textbf{Mean absolute error} & \textbf{Maximum absolute error} \\
-\midrule
-Accuracy  & 0.0044 & 0.0105 \\
-Recall (macro) & 0.0050 & 0.0114 \\
-F1 (macro) & 0.0045 & 0.0098 \\
-Precision (macro) & 0.0132 & 0.0235 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:proxy} shows that the estimated aggregate accuracy stays within $0.44$ percentage points of the measured value on average, with the worst case at $1.05$ points. Recall and the F1 score miss by about the same margin. Macro precision comes out $1.3$ points too low on average. On ACS Income the same estimator instead reads $0.6$ to $1.6$ points too high as the fixed reference ages, as seen in Table~\ref{tab:acs-temporal}. The aggregate estimate is good enough to gate alerts. The class level numbers are better treated as hints for investigation. Fig.~\ref{fig:clear-proxy} places the estimated and measured accuracy curves side by side.
-
-\begin{figure*}[!tb]
-\centering
-\includegraphics[width=0.90\textwidth]{clear10-proxy.png}
-\caption{CLEAR-10 estimated and measured accuracy.}
-\label{fig:clear-proxy}
-\end{figure*}
-
-The two curves stay close across all nine buckets. The estimate tracks the small dip near bucket 8 and the partial recovery after it.
-
-\subsection{Reliability layer behaviour}
-\label{sec:reliability-results}
-The reliability analysis asks whether a change in calibration across the population reaches the risk attached to one prediction. Table~\ref{tab:reliability} summarizes the sampled predictions.
-
-\begin{table}[!htbp]
-\caption{Prediction reliability scores.}
-\label{tab:reliability}
-\centering
-\renewcommand{\arraystretch}{1.2}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}lcccccc@{}}
-\toprule
-\textbf{Window} & \textbf{Confidence} & \textbf{OOD risk} & \textbf{Calibration risk} & \textbf{Fused risk} & \textbf{Suspicious} & \textbf{High risk} \\
-\midrule
-ACS 2015 & 0.793 & 0.06 & 0.231 & 0.104 & 5.5\% & 3.0\% \\
-ACS 2016 & 0.794 & 0.05 & 0.238 & 0.101 & 3.0\% & 2.0\% \\
-ACS 2017 & 0.797 & 0.07 & 0.239 & 0.107 & 9.5\% & 3.5\% \\
-ACS 2018 & 0.804 & 0.09 & 0.256 & 0.114 & 8.0\% & 3.5\% \\
-ACS geographic & 0.752 & 0.06 & 0.177 & 0.101 & 4.5\% & 2.0\% \\
-CLEAR buckets 2--10 & 0.94--0.97 & 0.03--0.10 & 0.28--0.43 & 0.09--0.12 & 0\% & 1--5\% \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
-
-Table~\ref{tab:reliability} averages over 200 predictions for each tabular window and 80 for each image bucket. Calibration risk is the label free overconfidence term from Equation~(\ref{eq:risk}). The suspicious column is the share flagged by the calibration check. The high risk column is the share the override rules push into the top band. The mean fused risk stays in the low band in every window. Two to four percent of individual tabular predictions are still flagged high risk, almost all of them by the rule that fires on a confident prediction over an out of distribution input. On CLEAR-10 confidence sits near $0.96$ while accuracy is near $0.85$, which gives a mean calibration risk near $0.34$. No image window crosses the suspicious threshold. Fused risk stays between $0.09$ and $0.12$.
-
-The tabular rows show why the correction matters. Once the calibration check reads the per bin accuracy estimate instead of a test $p$ value, mean calibration risk rises from $0.231$ in 2015 to $0.256$ in 2018, following the widening gap between confidence and accuracy. A growing minority of predictions crosses the suspicious threshold, reaching $8\%$ by 2018. The geographic run, where the estimate comes closest to the measured value, records the lowest calibration risk and few flags. The signal moves along with the drift instead of saturating.
-
-The mean fused score still hardly budges. The OOD term is small. A single later census record looks close to an ordinary row, so its out of distribution score sits between $0.05$ and $0.09$, though it does climb as the drift grows. Stability under perturbation stays near zero because the output of a linear model changes smoothly when small noise is added. Equation~(\ref{eq:risk}) then averages a calibration term near $0.25$ against small point level terms and a confidence term near $0.20$, which lands near $0.10$ and inside the low band. In every window the population signal is outvoted by the point level ones. Section~\ref{sec:benchmark-results} measures this weakness against a known ground truth.
-
-\subsection{Remediation triage}
-\label{sec:remediation-results}
-The triage of Section~\ref{sec:architecture} claims to predict whether retraining will help. This subsection tests that claim on five settings: the ACS temporal shift, the ACS geographic shift to Washington, one controlled covariate shift on ACS and CLEAR-10 buckets 6 and 10. Table~\ref{tab:triage} reports the outcome.
-
-\begin{table}[!htbp]
-\centering
-\caption{Remediation triage across five drift settings.}
-\label{tab:triage}
-\renewcommand{\arraystretch}{1.2}\setlength{\tabcolsep}{3pt}\scriptsize
-\begin{tabular}{@{}l r l r r r l@{}}
-\toprule
-setting & gap (pp) & cheapest fix & recovered & cost (s) & full retrain & triage \\
-\midrule
-ACS temporal & 1.8 & retrain on recent & 12\% & 0.10 & 11\% & do not retrain \\
-ACS geographic & 2.3 & importance weighted & 5\% & 0.04 & 0\% & do not retrain \\
-ACS synthetic covariate shift & 7.7 & feature drop & 56\% & 0.02 & 0\% & escalate \\
-CLEAR-10 bucket 6 & 2.5 & retrain on recent & 41\% & 0.75 & 99\% & escalate \\
-CLEAR-10 bucket 10 & 3.2 & retrain on recent & 92\% & 0.69 & 82\% & escalate \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:triage} lists, for each setting, the accuracy gap, the recovery of the cheapest label free probe, the recovery of a full retrain and the triage verdict. On the two real ACS shifts no strategy recovers more than $0.2$ points. Dropping the KS localized features is worse than doing nothing, since those features carry the decision. Accuracy falls by 18 points on the temporal shift and 14 points on the geographic shift when they are removed. The triage reads the weak probe recovery and advises against a retrain. On the controlled covariate shift, where the cause is a known rescaling of two features, importance weighting recovers 55 percent of the gap with no labels and the triage escalates. On CLEAR-10 retraining on the previous bucket recovers 41 percent of the gap for bucket 6 and 92 percent for bucket 10, each in under a second, against a full retrain that costs 4 to 12 seconds. The triage escalates in both cases. Fig.~\ref{fig:remediation-pareto} places recovery against fitting cost for these settings.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.95\columnwidth]{remediation_pareto.png}
-\caption{Remediation recovery against fitting cost across five settings.}
-\label{fig:remediation-pareto}
+\begin{tikzpicture}[
+  node distance=1.8mm,
+  stage/.style={draw, rounded corners=1.5pt, text width=120mm, inner sep=1.2mm, align=left, font=\scriptsize},
+  flow/.style={-{Stealth[length=1.8mm]}, semithick}]
+\node[stage] (A) {\textbf{A. Input.} Deployed model, labelled reference data and unlabelled production windows. Optionally a small audit of late labels.};
+\node[stage, below=of A] (B) {\textbf{B. Data and representation.} Feature typing (numeric, ordinal, nominal). Images become frozen embeddings. The reference is split into training, calibration and test parts.};
+\node[stage, below=of B] (C) {\textbf{C. Detection, estimation and localization.} Feature tests, kernel test, confidence test. Label free accuracy estimate. Drifted features or embedding dimensions.};
+\node[stage, below=of C] (D) {\textbf{D. Root cause analysis and drift type.} SHAP changes or class activation maps. Hierarchical tests, label shift consistency test and audit test name the type.};
+\node[stage, below=of D] (E) {\textbf{E. Reliability.} Confidence, OOD and instability per prediction, combined by a fusion learned on the calibration part.};
+\node[stage, below=of E] (F) {\textbf{F. Remediation triage.} Importance weighted validation and a recent window probe predict whether a cheap retrain will help.};
+\foreach \a/\b in {A/B,B/C,C/D,D/E,E/F} \draw[flow] (\a) -- (\b);
+\end{tikzpicture}
+\caption{The monitoring pipeline}
+\label{fig:architecture}
 \end{figure}
 
-Fig.~\ref{fig:remediation-pareto} shows that the cheap strategies sit on the cost against recovery frontier for the recoverable shifts, while every strategy sits near zero recovery for the real ACS shifts. The verdict was correct for all five settings. The lesson is that separability is not the same as recoverability. The geographic shift is highly separable, with a domain classifier area under the curve of $0.85$, yet none of its accuracy loss can be recovered by retraining on the old target rule.
+Only the optional audit in stage D uses production labels. Each stage writes one record per window, from which every number in this paper and the dashboard are generated.
 
-\subsection{Drift injection benchmark}
-\label{sec:benchmark-results}
-The benchmark of Section~\ref{sec:benchmark-setup} grades every stage of the pipeline against a known ground truth. Table~\ref{tab:injection-benchmark} reports the strongest intensity of each drift type.
+\subsection{Data, representation and reference split}
+Nominal features, such as an occupation code, are declared categorical because their numeric order has no meaning. Images are mapped to the \res{clear-dim} dimensional global average pool output of a frozen ImageNet residual network with 18 layers (ResNet-18) \cite{he2016deep}, so image drift can reuse the tabular tests \cite{rabanser2019failing}.
 
-\begin{table}[!htbp]
+The labelled reference data are split into three disjoint parts, stratified by class: \res{acs-split-pct-train}\% for training, \res{acs-split-pct-calibration}\% for calibration and \res{acs-split-pct-test}\% for testing. The training part fits the model. The calibration part never enters training. It is the reference window for every detector and fits the accuracy estimator and the reliability fusion. The test part gives the reference accuracy and serves as a control window that should raise no alarm.
+
+\subsection{Detection, estimation and localization}
+Six detectors decide whether the inputs or the model outputs moved. The Kolmogorov--Smirnov (KS) test runs on each numeric feature, with a Bonferroni correction. The population stability index (PSI) alarms at the usual convention of \res{acs-psi-threshold} \cite{siddiqi2006}. Maximum mean discrepancy (MMD) \cite{gretton2012kernel} is a permutation test on standardized inputs with a Gaussian kernel. The confidence test compares histograms of the top class confidence with a $\chi^2$ test of homogeneity, pooling sparse cells until every expected count reaches \res{const-min-expected} \cite{cochran1954}. Two detectors from Rabanser et al. serve as baselines \cite{rabanser2019failing}. BBSD runs a KS test on each class probability of the model. The domain classifier is a classifier two sample test \cite{lopezpaz2017c2st}: gradient boosted trees learn to tell \res{acs-dc-n} reference rows from as many production rows. The held out accuracy is compared with $1/2$ by an exact binomial test. Every permutation p value is $(1+b)/(1+B)$, where $b$ of $B$ permutations reach the observed statistic \cite{phipson2010}.
+
+Accuracy is estimated without labels by CBPE \cite{kivimaki2025performance}. A map $a(\cdot)$ from confidence to the probability of a correct prediction is fitted by histogram binning \cite{zadrozny2001} on the calibration part. For a window with confidences $c_1,\dots,c_n$,
+\begin{equation}
+\widehat{\mathrm{acc}} = \frac{1}{n}\sum_{i=1}^{n} a(c_i).
+\label{eq:cbpe}
+\end{equation}
+The estimate is unbiased only while the probability of a correct prediction at a given confidence stays as in the calibration data. Average confidence, DoC and ATC with the negative entropy score are fitted on the same calibration part as baselines \cite{hendrycks2017baseline,guillory2021predicting,garg2022atc}.
+
+Localization tests every feature with KS (numeric) or $\chi^2$ homogeneity (nominal) under Holm correction. It reports an effect size in $[0,1]$, the KS statistic or Cram\'er's $V$. For nominal features it also gives the share of production rows whose category never occurs in the reference.
+
+\subsection{Drift type}
+\label{sec:diagnosis}
+The type is named in two stages. Figure~\ref{fig:decision} gives the decision path.
+
+\paragraph{Label free stage.} Three block tests share one Holm procedure at level $\alpha$: all feature tests pooled by their Bonferroni p value, a $\chi^2$ test on the predicted labels and the MMD test. Individual features are tested only if the pooled block rejects, within the block and at the level at which the block was rejected. This gatekeeping keeps the family wise error rate at $\alpha$ \cite{holm1979}. It lets a permutation test, whose smallest p value is $1/(B+1)$, compete with many feature tests. If no block rejects, the label free stage reports no shift.
+
+If a block rejects, BBSE \cite{lipton2018bbse} estimates the new class prior. With $C_{jk}=P(\hat y=j,y=k)$ on the calibration part and $\mu_j$ the share of production predictions in class $j$, the class weights solve
+\begin{equation}
+C\,w = \mu, \qquad w_k = q(y=k)/p(y=k).
+\label{eq:bbse}
+\end{equation}
+Under a pure prior shift the distribution of inputs within each class is unchanged. Reweighting each reference row by $w_{y}$ must then reproduce the production inputs. The feature tests are repeated against the reweighted reference, using Kish's effective sample size \cite{kish1965}, with Holm correction. A feature that still differs carries a covariate shift. If none differs and the predicted labels moved, the shift is a prior shift. A prior shift always moves the predicted labels of an informative classifier, so a shift without that move is called covariate.
+
+\paragraph{Audit stage.} Concept drift and label noise leave the inputs and model outputs unchanged, so no label free test can see them. The audit uses $m$ late labels. A one sided two proportion test asks whether accuracy fell. If it did, a likelihood ratio test checks each feature $f$. A logistic model of whether a prediction is correct is fitted on the calibration rows and the audit rows together. The null model holds \res{const-quantile-bins} confidence bins at reference quantiles, bins of $f$, an audit indicator and its interaction with the confidence bins. The alternative adds the interaction of the audit indicator with the bins of $f$. Uniform label noise at rate $r$ turns $P(\mathrm{correct}\mid x)$ into $r+(1-2r)P(\mathrm{correct}\mid x)$, a function of confidence alone, which the null absorbs. A feature significant after Holm correction means the target rule moved in a region of that feature: concept drift. No significant feature means label noise.
+
+\begin{figure}[!ht]
 \centering
-\caption{Drift injection benchmark results at the strongest injected intensity.}
-\label{tab:injection-benchmark}
-\renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{3pt}\scriptsize
-\begin{tabular}{@{}l r r r c c l l@{}}
-\toprule
-injected & true drop & label-free & audit & KS loc.\ & rel.\ & type & remediation \\
- & (pp) & err.\ (pp) & err.\ (pp) & F1 & AUROC & verdict & verdict \\
-\midrule
-no drift & -1.1 & -1.1 & -1.1 & clean & -- & none & -- \\
-covariate & +16.4 & +23.2 & +3.1 & 1.00 & 0.56 & covariate & escalate (ok) \\
-prior & +4.3 & +1.6 & +0.7 & -- & 0.47 & prior & hold (ok) \\
-concept & +24.8 & +24.8 & +0.3 & 0.00 & 0.43 & concept & hold (ok) \\
-label noise & +18.9 & +18.9 & -1.3 & clean & 0.51 & label noise & hold (ok) \\
-\bottomrule
-\end{tabular}
+\begin{tikzpicture}[
+  node distance=2.5mm and 6mm,
+  q/.style={draw, rounded corners=1.5pt, align=center, font=\footnotesize, inner sep=1.5mm, text width=30mm},
+  v/.style={draw, fill=black!8, align=center, font=\footnotesize\bfseries, inner sep=1.5mm, minimum width=18mm},
+  flow/.style={-{Stealth[length=1.6mm]}, semithick},
+  lab/.style={font=\scriptsize, midway, fill=white, inner sep=0.5pt}]
+\node[q] (q1) {Any block test rejects? (features, predictions, MMD)};
+\node[q, right=of q1] (q2) {Shift left after BBSE reweighting?};
+\node[q, right=of q2] (q3) {Predicted labels moved?};
+\node[q, below=of q1] (q4) {Audit: accuracy fell?};
+\node[q, below=of q4] (q5) {Audit: errors depend on a feature?};
+\node[v, below=of q2] (cov) {covariate};
+\node[v, below=of q3] (pri) {prior};
+\node[v, right=of q4, xshift=8mm] (non) {no drift};
+\node[v, right=of q5, xshift=8mm] (con) {concept};
+\node[v, below=of q5] (noi) {label noise};
+\draw[flow] (q1) -- node[lab]{yes} (q2);
+\draw[flow] (q2) -- node[lab]{yes} (cov);
+\draw[flow] (q2) -- node[lab]{no} (q3);
+\draw[flow] (q3) -- node[lab]{yes} (pri);
+\draw[flow] (q3.south west) -- node[lab]{no} (cov.north east);
+\draw[flow] (q1) -- node[lab]{no} (q4);
+\draw[flow] (q4) -- node[lab]{no} (non);
+\draw[flow] (q4) -- node[lab]{yes} (q5);
+\draw[flow] (q5) -- node[lab]{yes} (con);
+\draw[flow] (q5) -- node[lab]{no} (noi);
+\end{tikzpicture}
+\caption{Decision path of the drift type}
+\label{fig:decision}
+\end{figure}
+
+Only the lower part of Figure~\ref{fig:decision} uses labels.
+
+\subsection{Root cause analysis}
+For tabular models the pipeline computes SHAP values \cite{lundberg2017unified} of the deployed model with its preprocessing. It compares the mean absolute attribution of each feature between reference and production rows. Each change carries a percentile bootstrap interval \cite{efron1993} whose level is Bonferroni adjusted over the features. For images, the monitored head is linear in the pooled feature maps $A_j(u,v)$ of the last convolutional block, so for class $k$ with coefficients $w_{kj}$ and feature scales $s_j$ the class activation map
+\begin{equation}
+\mathrm{CAM}_k(u,v) = \sum_j \frac{w_{kj}}{s_j}\, A_j(u,v)
+\label{eq:cam}
+\end{equation}
+averages to the class logit up to a constant \cite{zhou2016cam}. Both explanations need the logistic model. SHAP for the boosted model would take hours per window, since the exact explainer over ten inputs evaluates 1{,}024 coalitions per explained row. CAM needs a linear head. Both are therefore reported for the logistic model only.
+
+\subsection{Reliability and remediation triage}
+Each prediction receives three signals in $[0,1]$: confidence risk $1-c$, an OOD score from an Isolation Forest \cite{liu2008isolation} with a standardized distance and instability under small input noise. A logistic regression fitted on the calibration part, with an indicator of a wrong prediction as the target, combines them into a probability of error.
+
+The triage predicts, without production labels, whether a cheap retrain will help. A classifier that tells reference rows from production rows gives cross fitted density ratio weights, truncated at \res{const-weight-clip} times their mean \cite{cortes2010weights}. A model trained with these weights is compared with an unweighted one on a held out \res{const-triage-valfrac}\% of the reference, weighted by the density ratio \cite{shimodaira2000,sugiyama2007}. When late labels from an earlier window exist, a second probe retrains on them and is validated on a held out part of that window. A retrain is recommended when a probe's predicted gain is significant after Holm correction across probes.
+
+\section{Experimental setup}
+\label{sec:setup}
+
+Every setting below was fixed before the evaluation it is used in. Design B in particular was specified and the diagnosis was frozen before design B was first run.
+
+\subsection{Datasets}
+Table~\ref{tab:datasets} lists the four datasets.
+
+\begin{table}[!ht]
+\centering
+\caption{Datasets, windows and reference accuracy}
+\label{tab:datasets}
+\input{generated/tab_datasets}
 \end{table}
 
-Table~\ref{tab:injection-benchmark} shows that the pipeline names the injected drift type in all 13 windows, including the no drift control. Covariate and prior shift are resolved from label free signals. Concept drift and label noise leave the inputs and the model outputs unchanged, so no label free monitor can see them. The pipeline reports this. The 600 label audit then resolves the type. The label free accuracy estimate is optimistic in every window. Under covariate shift it rises as true accuracy falls, reaching an error of 23 points, because the rescaled features make the model more confident. Under concept drift and label noise the estimate does not move at all, so its error equals the full accuracy drop, up to 25 points. The 600 label audit brings the estimate back to within 3 points in every case.
+\textbf{ACS Income and ACS Employment.} The two Folktables tasks \cite{ding2021retiring} predict whether a person earns more than \$50{,}000 (\res{inc-nfeatures} features) and whether a person aged 16 to 90 is employed (\res{emp-nfeatures} features). California 2014 is the reference. The temporal windows are California 2015 to 2019 and 2021 to 2023. There is no standard 2020 release \cite{census2021experimental}. The geographic windows are Texas, New York, Florida and Washington in 2014. From 2019 the relationship variable RELP was replaced by RELSHIPP \cite{census2019pums}, which we map back to RELP by the code labels of the 2018 and 2019 data dictionaries. The nine years hold five documented changes: new occupation codes in 2018 \cite{census2020occupation}, a redesigned relationship question in 2019, new coding of race answers from 2020 \cite{census2021race}, the pandemic and wage growth against the fixed income threshold.
 
-Fig.~\ref{fig:injection} shows how the drift types are told apart and how the pipeline responds to intensity.
+\textbf{Gas sensor array drift.} The UCI dataset holds 13{,}910 measurements of six gases by 16 metal oxide sensors over 36 months, in ten batches \cite{vergara2012gas,rodriguezlujan2014gas}. Each measurement has eight features per sensor. The sensors age, so their response to the same gas drifts while the labels stay exact: a documented change in $P(X\mid Y)$. Batches 1 and 2 form the reference and batches 3 to 10 the windows. Some batches are small, so the audit takes $\min(600,\lfloor n/2\rfloor)$ labels.
 
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=0.88\textwidth]{injection_signature.png}
+\textbf{CLEAR-10.} Ten object classes and a background class in ten time ordered buckets of about 3{,}300 images each \cite{lin2021clear}. Bucket 1 is the reference.
 
-    \vspace{1mm}
-    (a)
+In every dataset the held out test part of the reference is a control window.
 
-    \vspace{2mm}
+\subsection{Models}
+Two untuned model families are monitored by the same pipeline. The first is logistic regression (LR) with $L_2$ regularization ($C=1$) on standardized numeric and one hot encoded nominal features. The second is histogram gradient boosting (GB) \cite{friedman2001greedy,ke2017lightgbm} from scikit-learn \cite{pedregosa2011scikit}, with default settings, no early stopping and native splits on nominal codes. Codes beyond the 254 most frequent are pooled, which is the limit of the implementation. For CLEAR-10 both act on the frozen embeddings.
 
-    \includegraphics[width=0.95\textwidth]{injection_intensity_response.png}
+\subsection{Injection benchmark}
+\label{sec:benchmark-setup}
+Real drift has no ground truth for its type, so the type is graded on injected drift. The benchmark uses the 2014 data of \res{bench-nstates} states (\res{bench-states}) for both ACS tasks. Each state is a reference distribution with its own model, split as above. For each of \res{bench-nseeds} seeds the split, the window and the injection are redrawn, which gives \res{bench-nreps} replicates per configuration. Each replicate draws a production window of \res{bench-prodsize} rows and a grading holdout of \res{bench-holdsize} rows from the test part. Each mechanism is injected at three intensities into both.
 
-    \vspace{1mm}
-    (b)
+\textbf{Design A} injects the four types in ways that partly match the tests. Covariate shift rescales two numeric features (ACS Income: \res{bench-cov-features-inc}) for a random subset of rows. Prior shift drops rows of one class until the positive rate rises by \res{bench-prior-steps}. Concept drift inverts the labels of the \res{bench-concept-steps}\% of rows with the highest value of one feature (ACS Income: \res{bench-concept-feature-inc}). Label noise flips a random \res{bench-noise-steps}\% of labels. A control window without drift completes each replicate.
 
-    \caption{Drift injection benchmark: (a) label free and delayed label fingerprint at the strongest intensity; (b) response of each stage to injected intensity.}
-    \label{fig:injection}
-\end{figure*}
+\textbf{Design B} uses held out mechanisms that the tests were not built around. Covariate shift is selection bias: each row is kept with probability $\sigma(\beta s(x))$, where $s$ is a seeded random score over all inputs and $\beta\in\{\res{bench-b-betas}\}$. The rows stay real and $P(Y\mid X)$ is exactly unchanged. Prior shift lowers the positive rate by \res{bench-b-prior-steps}. Concept drift inverts the labels in the top \res{bench-b-concept-steps}\% of a second random score, an oblique region that no single feature defines. For ACS Income a second concept drift raises the income threshold to \res{bench-b-thresholds}. Label noise is class conditional: positive labels are flipped to negative at rates of \res{bench-b-noise-steps}\%.
 
-Fig.~\ref{fig:injection}(a) is the label free and audit fingerprint at the strongest intensity. Covariate shift lights up the input detectors and the domain separability. Prior shift moves the model's own positive rate. Concept drift and label noise leave every label free signal near zero and are separated only by the audit, which finds the loss concentrated in the education range for concept drift and spread evenly for label noise. Fig.~\ref{fig:injection}(b) shows that label free detector strength climbs with intensity for covariate and prior shift but stays flat for concept drift and label noise. The audit's measured drop climbs for all four. Localization matches the injected features for covariate shift, with an F1 score of $1.0$. The audit names the concept region feature every time.
+Each window is graded against its recipe. The audit uses \res{bench-audit-n} labels and is repeated with \res{bench-audit-sizes} labels. Proportions carry Wilson intervals \cite{wilson1927} and means bootstrap intervals over replicates.
 
-The reliability score is informative only for covariate shift, where its AUROC against prediction error is $0.56$. For concept drift the AUROC is $0.43$, below chance, because the model is confidently wrong exactly where the rule changed. For label noise it is $0.51$, since the predictions are not wrong. The labels are. This is the same limitation seen on the real ACS stream in Section~\ref{sec:reliability-results}. The benchmark shows why. The triage escalates a retrain only for covariate shift, which matches the fix each drift needs.
+\subsection{Baselines and ablations}
+\label{sec:baselines}
+Every method names one of the five types from the same test results and the same audit labels. \emph{Input monitoring} reads any input alarm as covariate shift, which is how drift alarms are commonly read. \emph{BBSE first} reads a shift of the predicted labels as prior shift \cite{lipton2018bbse,rabanser2019failing} and any other alarm as covariate shift. It is our label free stage without the consistency test. \emph{Error rate monitoring} adds a significant audit accuracy drop read as concept drift, as an error rate detector would \cite{gama2004ddm}. The \emph{learned meta classifier} is GB on nine statistics of each window: the evidence $-\log_{10}p$ of each block test, the share of features with residual shift, the BBSE prior change, the CBPE change, the evidence and size of the audit accuracy drop and the evidence of the error structure test. In design A it is validated leaving one state out. In design B it is trained on design A, again leaving out the predicted state, so it never sees a held out mechanism. Three ablations remove the MMD block, remove the confidence term of the audit null, or replace the confidence bins by cells of predicted class and confidence.
 
-\subsection{Runtime}
-On the 2018 ACS window, which holds about 196{,}000 rows and 10 features, one detector pass with localization runs in $0.5$ to $1.6$ seconds. The KS pipeline with Shapley analysis on 200 samples takes $1.6$ seconds. MMD with 20 permutations on a 3{,}000 row subsample takes $5.9$ seconds. The cost of reliability is dominated by the five perturbed predictions made for every sampled record. For CLEAR-10 the biggest one time cost is pulling embeddings out of roughly 33{,}000 images. The concept probe adds one CLIP pass over the sampled images. The injection benchmark runs the whole pipeline on 13 windows in a few minutes on the same workstation.
+Ours is compared with each other method by the per replicate difference in the share of correctly typed windows, with a sign flip permutation test (\res{bench-nflips} flips) and Holm correction. Replicates are the unit, since the windows of one replicate share a model and a reference.
 
-\section{Comparative Study with Related Work}
-\label{sec:comparative}
+\subsection{Configuration}
+The significance level is $\alpha=\res{acs-alpha}$ throughout, PSI alarms at \res{acs-psi-threshold} and permutation tests use \res{acs-mmd-perm} permutations. SHAP uses \res{acs-shap-bg} background rows and explains \res{acs-shap-n} rows per side. The real audits use \res{acs-audit-n} labels, drawn from a random stream of their own for each window. All randomness is seeded and results repeat exactly. Everything ran on one workstation with a \res{const-cpu-cores} core processor and one graphics processor. The graphics processor extracted the image embeddings and ran the permutation tests in double precision with the same seeded permutations as the processor code. Both paths gave identical p values in our checks. On the CA 2023 ACS Income window of \res{inc-ca2023-n} rows the KS pipeline with SHAP takes \res{inc-ca2023-time-ks} seconds and the diagnosis \res{inc-ca2023-time-diagnosis} seconds. The \res{bench-total-windows} benchmark windows took \res{bench-total-hours} hours. The software was scikit-learn \cite{pedregosa2011scikit}, SciPy, NumPy, SHAP, OpenCLIP and PyTorch.
 
-This comparison sets the proposed pipeline next to three representative research methods. Rabanser et al. study statistical tests for spotting dataset shift \cite{rabanser2019failing}. Kivim\"aki et al. estimate classification performance from confidence when no production labels exist \cite{kivimaki2025performance}. Ovadia et al. examine predictive uncertainty and calibration under dataset shift \cite{ovadia2019trust}. Concept level explanation is closest to Testing with Concept Activation Vectors \cite{kim2018tcav}, which needs gradients and a trained probe, while the probe here needs neither. Table~\ref{tab:comparative} lines up what each method covers against the integrated pipeline.
 
-\begin{table}[!htbp]
+\section{Results}
+\label{sec:results}
+
+The results follow the order of the contributions. The drift type comes first, graded on the benchmark. Detection and accuracy estimation follow, then the real drifts.
+
+\subsection{Drift type against baselines}
+\label{sec:res-methods}
+Table~\ref{tab:methods} gives the share of benchmark windows whose type each method names correctly, for both tasks, both designs and both model families. Each configuration has \res{bench-nreps} replicates.
+
+\begin{table}[!ht]
 \centering
-\caption{Comparison with related methods.}
-\label{tab:comparative}
-\renewcommand{\arraystretch}{1.25}
-\setlength{\tabcolsep}{2.5pt}
-\scriptsize
-\begin{tabular}{|>{\raggedright\arraybackslash}m{2.35cm}|>{\centering\arraybackslash}m{1.1cm}|>{\centering\arraybackslash}m{1.0cm}|>{\centering\arraybackslash}m{1.0cm}|>{\centering\arraybackslash}m{1.1cm}|}
-\hline
-\multicolumn{1}{|c|}{\textbf{Capability}} &
-\textbf{\shortstack{Rabanser\\et al.}} &
-\textbf{\shortstack{Kivim\"aki\\et al.}} &
-\textbf{\shortstack{Ovadia\\et al.}} &
-\textbf{Proposed} \\
-\hline
-Drift detection & $\checkmark$ & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Performance estimation & -- & $\checkmark$ & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Drift localization & Limited & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Root cause analysis & -- & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Concept level explanation & -- & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Calibration analysis & -- & Limited & $\checkmark$ & $\boldsymbol{\checkmark}$ \\
-\hline
-Prediction level reliability & -- & -- & $\checkmark$ & $\boldsymbol{\checkmark}$ \\
-\hline
-Remediation with cost analysis & -- & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Controlled drift type evaluation & -- & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-Integrated diagnosis & -- & -- & -- & $\boldsymbol{\checkmark}$ \\
-\hline
-\end{tabular}
+\caption{Share of windows typed correctly (\%)}
+\label{tab:methods}
+\input{generated/tab_methods}
 \end{table}
 
-Table~\ref{tab:comparative} mirrors the main aim of each study. Rabanser et al. contribute sensitive tests for shift with a limited view at the sample level. Kivim\"aki et al. estimate aggregate performance from calibrated confidence. Ovadia et al. judge the quality of uncertainty under shift. The proposed pipeline draws these aims into one workflow. It adds localization at the level of a feature or a slice, root cause analysis based on SHAP, Grad-CAM and a concept probe, per prediction reliability scoring, a remediation triage and a benchmark that grades each stage against a known drift type.
+An arrow in Table~\ref{tab:methods} marks a method that differs significantly from ours after Holm correction. A down arrow means ours is better and an up arrow means ours is worse. On ACS Income with logistic regression (LR) our procedure names the type in \res{b-inc-a-lr-ours-acc}\% of design A windows (95\% interval \res{b-inc-a-lr-ours-ci}). The three rule baselines reach \res{b-inc-a-lr-inputmonitoring-acc}\%, \res{b-inc-a-lr-bbsefirst-acc}\% and \res{b-inc-a-lr-errorratemonitoring-acc}\%. Each of them can name only two to four of the five types. Over all eight configurations ours is significantly better in \res{bench-nbetter} of the \res{bench-ntests} comparisons with a baseline or the learned rule and significantly worse in \res{bench-nworse}, \res{bench-worse-cells}.
 
-\section{Limitations}
-\label{sec:limits}
+The learned meta classifier is the strongest competitor on design A. Validated on states it has not seen, it reaches \res{b-inc-a-lr-metaclassifier-acc}\% on ACS Income, above our \res{b-inc-a-lr-ours-acc}\%. It learns the recipes of design A well. On the held out mechanisms of design B the picture reverses. Trained on design A, the meta classifier falls to \res{b-inc-b-lr-metaclassifier-acc}\% on ACS Income and \res{b-emp-b-lr-metaclassifier-acc}\% on ACS Employment, while ours keeps \res{b-inc-b-lr-ours-acc}\% and \res{b-emp-b-lr-ours-acc}\%. The learned rule had tied the type to the size and shape of the injected shift, for example covariate shift to a large shift of two features, so it misses selection bias that moves many features a little. The tests do not depend on such recipes.
 
-The limitations mark where the reported evidence should not be stretched. The main one is in reliability fusion. A calibration signal measured over a population is averaged with smaller point level signals, so it rarely lifts the mean risk label. The benchmark puts a number on this. The reliability score separates errors only under covariate shift, with an AUROC of $0.56$. It drops below chance under concept drift.
+The ablations show which parts matter. Removing the confidence term from the audit null costs \res{b-inc-a-lr-noconfidencenull-diffabs} points on ACS Income design A, because uniform label noise then looks like concept drift. Removing the MMD block changes little on the benchmark (\res{b-inc-a-lr-nommd-diff} points), whose shifts are visible feature by feature. Its value shows on the image embeddings of Section~\ref{sec:res-real}. Replacing the confidence bins by cells of predicted class and confidence helps on ACS Employment design B (\res{b-emp-b-lr-classconfidencenull-acc}\% against \res{b-emp-b-lr-ours-acc}\%) but costs on ACS Income design A (\res{b-inc-a-lr-classconfidencenull-acc}\%). Adopting it now would mean choosing the method after seeing design B, so it remains an ablation and a direction for future work.
 
-Label free monitors cannot see concept drift or label noise when the inputs and the model outputs do not change. This is a property of the setting, not a bug. The delayed label audit needs a few hundred labels to resolve these cases.
+Figure~\ref{fig:confusion} shows where our procedure errs with LR.
 
-The concept vocabulary is a fixed list of English phrases. CLIP carries the bias of its own training data. The automatic tags used for validation are noisy. The concept result is clean for the strongest CLEAR-10 shift and weaker for the milder ones.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{gen_bench_confusion.pdf}
+\caption{Injected against diagnosed drift type}
+\label{fig:confusion}
+\end{figure}
 
-Static thresholds can overreact to changes that are significant but small in practice. The accuracy estimate is built on a fixed reference and goes stale, reading up to $1.6$ points too high on ACS as the reference ages. The pipeline runs in batches. It advises but does not retrain, roll back or talk to a scheduler.
+In design A most errors sit in the label noise row, where noise is read as concept drift or as no drift. The control row holds the false alarms. Their rate stays near the nominal level, as Section~\ref{sec:res-detection} shows. In design B the errors concentrate on two mechanisms, discussed next.
 
-Only two datasets, two modalities and linear decision rules were tested. The benchmark injects one drift type at a time, while real drift is often a mix of several.
+\subsection{Held out mechanisms}
+\label{sec:res-mechanisms}
+Table~\ref{tab:mechanisms} breaks design B down by mechanism. Each cell gives the share typed correctly and the mean true accuracy drop in points.
 
-\section{Conclusion and Future Work}
+\begin{table}[!ht]
+\centering
+\caption{Design B by mechanism}
+\label{tab:mechanisms}
+\input{generated/tab_mechanisms}
+\end{table}
 
-The study shows that signals which need no labels can hold together a single monitoring workflow across tabular and image models. The pipeline goes from a label free accuracy estimate to a named cause and a remediation verdict.
+Selection bias is named covariate shift in \res{b-inc-lr-mech-selection-id}\% of ACS Income windows with LR, although no value is distorted and the shift spreads over all features. A lower positive rate is named prior shift in \res{b-inc-lr-mech-priordecrease-id}\%. Concept drift in an oblique region is found in \res{b-inc-lr-mech-conceptoblique-id}\%, although no single feature defines the region. These three mechanisms transfer.
 
-On real drift the pipeline followed a gradual two point loss on ACS Income and named the features whose influence was changing. On CLEAR-10 it produced a ladder of detector sensitivity along with accurate aggregate estimates. The concept probe turned image drift into readable causes that agree with the dataset tags at a rank correlation of $0.71$. The remediation triage predicted, for every tested setting, whether retraining would recover the loss.
+Two mechanisms do not. Raising the income threshold relabels some rows in every window but barely changes accuracy (mean drop \res{b-inc-lr-mech-conceptthreshold-drop} points). The audit asks first whether accuracy fell, so it reports no drift in \res{b-inc-lr-mech-conceptthreshold-as-none} of the \res{b-inc-lr-mech-conceptthreshold-n} windows. The procedure is built to find drift that harms the model. This drift does not. Class conditional label noise is named correctly in only \res{b-inc-lr-mech-classnoise-id}\% of ACS Income windows. At low rates the accuracy drop is too small for \res{bench-audit-n} labels. At high rates the errors follow the true class, which correlates with the features, so the error structure test reads concept drift. This is a real limit of a null that conditions on confidence alone.
 
-The injection benchmark tied the evidence together. The pipeline named every injected drift type. The label free accuracy estimate was optimistic in every window. For concept drift and label noise it did not move at all. Per prediction reliability helped only under covariate shift. The benchmark also confirmed the fusion weakness in the reliability layer.
+The patterns repeat on ACS Employment and with gradient boosting (GB). Our procedure names the type in \res{b-emp-a-lr-ours-acc}\% of ACS Employment design A windows with LR and in \res{b-inc-a-hgb-ours-acc}\% and \res{b-emp-a-hgb-ours-acc}\% of the design A windows with GB. Label noise is the hardest type on ACS Employment, where it is named in \res{b-emp-a-lr-id-labelnoise}\% of windows. The ranking of the methods is the same for both model families. The tests read only the model's outputs and its errors, so they need no change for a nonlinear model.
 
-The immediate plan is to let a sustained population level signal raise the risk label on its own, as the current rules already do for a high OOD score. A second plan is to tie thresholds to the estimated loss in performance. Later work includes streaming execution, tests on mixed drift, a learned concept vocabulary and support for text.
+\subsection{Detection and accuracy estimation}
+\label{sec:res-detection}
+Table~\ref{tab:detectors} pools the four design A configurations. The control column is the false alarm rate, which should not exceed $\alpha=\res{acs-alpha}$.
 
-\bibliographystyle{IEEEtran}
+\begin{table}[!ht]
+\centering
+\caption{Detector alarm rates on design A}
+\label{tab:detectors}
+\input{generated/tab_detectors}
+\end{table}
+
+On \res{det-ncontrols} control windows the false alarm rates are \res{det-ks-none}\% for KS, \res{det-mmd-none}\% for MMD, \res{det-conf-none}\% for the confidence test, \res{det-bbsd-none}\% for BBSD and \res{det-dc-none}\% for the domain classifier. Every detector catches covariate shift. Prior shift is caught by KS, MMD and BBSD in \res{det-bbsd-prior}\% of windows, by the confidence test in \res{det-conf-prior}\%, by the domain classifier in \res{det-dc-prior}\% and by PSI in \res{det-psi-prior}\%. Concept drift and label noise windows share their inputs with the control window of their replicate, so their alarm rates equal the false alarm rates: no detector can see them. This is why the audit is needed.
+
+Table~\ref{tab:estimators} compares the four label free accuracy estimates by their mean absolute error. The benchmark columns are pooled over design A. The real columns pool both model families over all drift windows.
+
+\begin{table}[!ht]
+\centering
+\caption{Mean absolute error of the accuracy estimates (pp)}
+\label{tab:estimators}
+\input{generated/tab_estimators}
+\end{table}
+
+CBPE is not the best estimate. ATC has the smallest error in \res{est-nbest-atc} of the \res{est-ncols} columns and CBPE in \res{est-nbest-cbpe}. The differences are small next to the shared failure. Under concept drift and label noise every error equals the whole loss, about \res{est-bench-conceptnoise-cbpe} points, because the inputs do not change. On the gas sensor data, where the sensors drift far from the reference, the mean error ranges from \res{est-gas-atc} points for ATC to \res{est-gas-cbpe} for CBPE.
+
+\subsection{Real drift}
+\label{sec:res-real}
+Figure~\ref{fig:timelines} shows the measured accuracy of both models and the CBPE estimate on the temporal windows of the four datasets.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\textwidth]{gen_timelines.pdf}
+\caption{Measured and estimated accuracy over time}
+\label{fig:timelines}
+\end{figure}
+
+On ACS Income accuracy falls with time for both models, from \res{inc-ca2015-acc} in 2015 to \res{inc-ca2023-acc} in 2023 with LR. The gap in the lines marks the missing 2020 release. Table~\ref{tab:income} gives the details.
+
+\begin{table}[!ht]
+\centering
+\caption{ACS Income windows}
+\label{tab:income}
+\input{generated/tab_income}
+\end{table}
+
+The control window raises no alarm with either model. CA 2015, whose accuracy did not change significantly, is diagnosed as no drift by both models. Every other window is diagnosed as covariate shift by both models. In an earlier run CA 2015 was called label noise, because its 600 label audit happened to show an accuracy drop that the full window does not confirm. This is the kind of error the significance level allows. The documented events appear in the localization. In 2018 the occupation codes were revised and \res{inc-ca2018-unseen-occp}\% of rows carry a code never seen in 2014. The model's use of occupation then falls (SHAP change \res{inc-ca2018-shap-occp}). In 2019 the relationship question was redesigned and relationship shifts with an effect size of \res{inc-ca2019-eff-relp}. From 2021 race shifts with an effect size of \res{inc-ca2021-eff-rac1p}, after the Census Bureau changed how written race answers are coded \cite{census2021race}. Wage growth against the fixed threshold shows in the labels. The share of positive labels rises from \res{inc-ctrl-posrate} in the control to \res{inc-ca2023-posrate} in 2023, while the model predicts \res{inc-ca2023-predposrate}. Part of the 2023 loss is therefore a change in the label rule, which no label free test can see.
+
+Both models diagnose every window of ACS Employment and the gas sensor array as covariate shift. On CLEAR-10 they report no drift in buckets \res{clr-windownums-none} and covariate shift in buckets \res{clr-windownums-covariate}. The controls of all four datasets are diagnosed as no drift. The only detector alarm on a control is the domain classifier baseline on CLEAR-10 ($p=\res{clr-ctrl-dc-p}$), a false alarm of the kind $\alpha$ allows.
+
+On ACS Employment every window is diagnosed as covariate shift, yet accuracy changes by at most \res{emp-dacc-maxabs} points with LR. The inputs move, including relationship in 2019 and race from 2021, but the model is barely affected. A drift alarm alone would overstate the problem. The accuracy estimate and the audit put it in proportion. On the gas sensor array accuracy changes by \res{gas-b8-dacc} points in batch 8 with LR and every batch is diagnosed as covariate shift with both models. This matches the known cause. The sensors age, so $P(X\mid Y)$ changes. The shift is not explained by the changing mix of gases. BBSE first calls every one of these batches a prior shift, because the predicted labels move as well. On CLEAR-10 the change is subtle. The covariate shift there is found by the MMD test while the predicted labels stay put. This is where the multivariate block matters: no single embedding dimension moves enough on its own.
+
+Figure~\ref{fig:cam} shows where the LR head looks on the most out of distribution images of the last CLEAR-10 bucket.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.64\textwidth]{gen_cam.pdf}
+\caption{Class activation maps for unusual CLEAR-10 images}
+\label{fig:cam}
+\end{figure}
+
+The images were chosen by a fixed rule, the largest unclipped OOD score. Each map is scaled within its own image. Red marks the most evidence for the predicted class and blue the least. The maps are a starting point for a person, not proof of a cause.
+
+\section{Analysis and negative findings}
+\label{sec:negative}
+
+Four parts of the pipeline did not work as hoped. We report them because they mark the limits of label free monitoring.
+
+\paragraph{The accuracy estimate is optimistic.} CBPE, like its baselines, assumes that the accuracy at a given confidence stays as in the calibration data. It cannot move under concept drift and label noise. It also misses losses far from the reference. On gas batch 8 the LR model's mean confidence falls from \res{gas-ref-conf} to \res{gas-b8-conf} and its accuracy to \res{gas-b8-acc}, yet CBPE estimates \res{gas-b8-est}: \res{gas-b8-sparse-share}\% of the batch falls in confidence bins that hold only \res{gas-b8-sparse-cal-n} calibration rows, all of them correct. The estimate should be read as an upper bound on accuracy, not as a measurement.
+
+\paragraph{Per prediction reliability reduces to confidence.} On ACS and CLEAR-10 the learned fusion of confidence, OOD score and instability never improves meaningfully on confidence alone. Its AUROC differs from that of confidence by \res{rel-other-diff-min} to \res{rel-other-diff-max} over \res{rel-other-n} windows and by \res{rel-bench-gain-min} to \res{rel-bench-gain-max} on the benchmark. On the gas sensor array the fusion is fitted on only \res{rel-gas-lr-cal-errors} wrong predictions with LR and \res{rel-gas-hgb-cal-errors} with GB among \res{rel-gas-cal-n} calibration rows. It is then unstable and differs from confidence by \res{rel-gas-diff-min} to \res{rel-gas-diff-max}. A learned fusion needs enough errors to learn from.
+
+\paragraph{The remediation triage needs labelled history.} Table~\ref{tab:remediation} grades the triage on every real window, \res{rem-n} settings over both model families. A retrain counts as truly helping when importance weighting (IW) or retraining on the latest labelled window (Recent) raises accuracy significantly on a labelled holdout. Where an earlier window with labels exists, the triage is right in \res{rem-recent-correct} of \res{rem-recent-n} settings, because its recent window probe is validated on real production labels. Where none exists, it relies on importance weighted validation alone. It is then right in \res{rem-norecent-correct} of \res{rem-norecent-n} real settings, mostly by holding, since a retrain truly helped in only \res{rem-norecent-helps} of them. On the benchmark its recall is only \res{b-inc-a-lr-triage-recall}\%. Importance weighted validation cannot see gains that a reweighted model makes by extrapolating outside the reference support, so without labelled history the triage is conservative exactly where drift is strongest.
+
+\begin{table}[!ht]
+\centering
+\caption{Remediation on the real drift settings}
+\label{tab:remediation}
+\input{generated/tab_remediation}
+\end{table}
+
+\paragraph{The concept probe is not validated.} For CLEAR-10 a CLIP model names the visual change by a fixed list of phrases. The number of significant concepts grows with the distance in time, from \res{concept-b2-nsig} in bucket 2 to \res{concept-b10-nsig} in bucket 10. Their ranking, however, agrees significantly with the shift in the dataset's own image tags in \res{concept-nbuckets-sig} of the \res{concept-nbuckets} buckets (Spearman $\rho=\res{concept-b10-rho}$, $p=\res{concept-b10-p}$, in bucket 10). Its phrases are hypotheses for a person to check, not causes.
+
+\section{Threats to validity}
+\label{sec:threats}
+
+\paragraph{Construct validity.} Injected drift is cleaner than real drift. Each benchmark window holds one type, while real windows mix several. ACS Income 2023 combines covariate shift with a change in the label rule. The four types are also an idealization. Sensor aging changes $P(X\mid Y)$ and through it $P(Y\mid X)$. Our procedure names it covariate shift because the inputs move in a way a prior change does not explain. Design B reduces, but cannot remove, the risk that the benchmark favours the tests. Its mechanisms were fixed before it was run and the diagnosis was not changed afterwards.
+
+\paragraph{Internal validity.} The weighted residual tests treat the BBSE weights as fixed and ignore their sampling error. With hundreds of thousands of rows small shifts are significant, so effect sizes are reported next to every decision. Comparisons use replicates as the unit.
+
+\paragraph{External validity.} The study covers two tabular tasks from one survey, one sensor dataset, one image stream and two model families. It does not cover deep models trained end to end, text or streaming data.
+
+\paragraph{Reproducibility.} All code and outputs are available\ifanonymous{} (link withheld for review)\else{} in the project repository\fi.
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+A drift alarm is useful only if it leads to the right action. That action depends on the type of drift. We showed that the type can be named by hypothesis tests with a stated error rate. On injected drift our procedure clearly beats rules from monitoring practice and the label shift literature. A learned meta classifier beats it on the mechanisms it was trained on but fails on held out mechanisms, where the tests keep most of their accuracy. The procedure works unchanged for logistic regression and gradient boosting. On real drift its diagnosis reported no drift on every control window and traced documented events: new occupation codes, a redesigned survey question, new coding of race answers and aging sensors.
+
+The evaluation also marks the limits. Drift that does not reduce accuracy passes the audit unnoticed. Class conditional label noise is mistaken for concept drift. Future work will condition the audit on the full model output, account for the sampling error of the label shift weights, test mixed drift and extend the pipeline to streaming data and deep models.
+
+\ifanonymous\else
+\begin{acknowledgements}
+FUNDING STATEMENT: to be completed by the authors (the journal requires the source of funding, or a statement that the research received no external funding).
+\end{acknowledgements}
+\fi
+
+\bibliographystyle{cs-agh}
 \bibliography{references}
 
 \end{document}
