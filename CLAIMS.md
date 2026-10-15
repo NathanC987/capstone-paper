@@ -12,7 +12,7 @@ Repository paths are relative to the code repository root.
 
 | Claim | Evidence | Code |
 |---|---|---|
-| Every decision is a test at alpha = 0.05 with Holm or Bonferroni | `acs-alpha`; config of every output | `src/drift_autopsy/diagnosis.py`, `stats.py`, detectors |
+| Every decision except the PSI alarm (conventional threshold 0.2) is a test at alpha = 0.05 with Holm, weighted Holm or Bonferroni | `acs-alpha`, `acs-psi-threshold`; config of every output | `src/drift_autopsy/diagnosis.py`, `stats.py`, detectors |
 | Label-free stage: one weighted Holm family over all feature, prediction and MMD tests | diagnosis docstring | `diagnosis.label_free_diagnosis` |
 | Prior vs covariate: BBSE reweighting, then weighted feature tests | diagnosis docstring | `diagnosis.bbse_weights`, `_weighted_feature_tests` |
 | Audit: accuracy drop test, then LR test of error structure with confidence bins in the null | `const-quantile-bins` | `diagnosis.audit_diagnosis` |
@@ -22,7 +22,7 @@ Repository paths are relative to the code repository root.
 | Before the 2026-10-15 correction, the rewritten benchmark code reproduced the original 650 windows exactly (a check of the refactoring, not a current result; after the correction the verdicts differ by design) | comparison run on `outputs/drift_injection_benchmark_runs.json` (old) | not in the paper text |
 | GPU and CPU permutation tests give identical p-values | 14 MMD cases and 6 CLEAR Frechet/PCA cases checked; unit test | `src/drift_autopsy/gpu.py`, `test_gpu_permutation_tests_match_cpu` |
 
-## Benchmark (Tables methods, mechanisms, detectors, estimators; confusion figure)
+## Benchmark (Tables 3, 4 and 6; Figure 3; estimator results in prose)
 
 | Claim | Keys | Source |
 |---|---|---|
@@ -38,7 +38,9 @@ Repository paths are relative to the code repository root.
 | False alarm rates near alpha (pooled design A controls) | `det-*-none`, `det-*-none-ci` | `tab_detectors` from the design A runs |
 | Our diagnosis raised false alarms on 13 of 200 controls (6.5%), within its 2 alpha bound (each stage at alpha) | `diag-fa-*` | `build_artifacts.benchmark` from the design A runs |
 | Concept and noise windows share the control inputs, so their detector alarm rates equal the false alarm rate | identical columns in `tab_detectors` | `benchmark/evaluate.run_replicate` (one production sample per replicate) |
-| ATC has the smallest estimate error in most columns; CBPE does not win | `est-nbest-atc`, `est-nbest-cbpe` | `tab_estimators`; `estimation.label_free_estimates` |
+| Estimate errors: below `est-bench-none-max` without drift and `est-bench-covariate-max` under covariate shift; whole loss under concept and noise; ATC best in 6 of 8 comparisons, CBPE in 2 | `est-bench-*-min/max`, `est-bench-conceptnoise-cbpe`, `est-nbest-*`, `est-gas-*` | `build_artifacts.estimators` (the table `tab_estimators` is still written but no longer printed); `estimation.label_free_estimates` |
+| Every detector false alarm interval contains alpha or lies below it | `det-*-none-ci` | guarded in `build_artifacts.benchmark` (the build fails otherwise) |
+| KS, MMD and BBSD catch the same share of prior shifts | `det-bbsd-prior` | guarded in `build_artifacts.benchmark` |
 
 ## Real drift
 
@@ -52,19 +54,24 @@ Repository paths are relative to the code repository root.
 | 2019 relationship redesign shows in RELP | `inc-ca2019-eff-relp` | localization effect size (Cramer's V) |
 | Race shifts from 2021 after the coding change | `inc-ca2021-eff-rac1p`; Census user note 2021-03 | localization |
 | Positive rate rises against the fixed threshold while predictions lag | `inc-ctrl-posrate`, `inc-ca2023-posrate`, `inc-ca2023-predposrate` | study output |
-| CA 2015 verdict changed from label noise to no drift with its own audit sample | old vs new output comparison | per-window random streams (`experiments/common.window_rng`) |
 | ACS Employment: every window covariate, accuracy changes little | `emp-dacc-maxabs` | `outputs/folktables_employment_drift_results_lr.json` |
 | Gas sensor: every batch covariate; BBSE first calls them prior | `gas-*-type`, `gas-*-v-bbsefirst` | `outputs/gas_drift_results_*.json` |
-| CLEAR-10: covariate from bucket 4, found by MMD | `clr-windows-covariate` | `outputs/clear10_drift_results.json` |
+| CLEAR-10: covariate from bucket 4; in buckets 4, 5, 6 and 9 no single dimension shifts and only MMD finds the change | `clr-windownums-covariate`, `clr-windownums-mmdonly` | `outputs/clear10_drift_results.json` (`diagnosis.n_input_shift_dimensions`) |
 
-## Negative findings
+## Accuracy estimate, reliability and triage (Section 6)
 
 | Claim | Keys | Source |
 |---|---|---|
 | Accuracy estimates are optimistic; on gas batch 8 CBPE estimates 0.618 against a true 0.330, because drift breaks the confidence-to-accuracy relation (bins with fewer than 5 calibration rows keep the model's own confidence) | `gas-b8-acc`, `gas-b8-est`, `gas-b8-conf` | gas output; `estimation.BinnedAccuracyCalibration` |
 | Fused reliability adds nothing beyond confidence on ACS and CLEAR-10; on gas no fusion is learned (4 or 11 calibration errors, fewer than 10 per signal) | `rel-other-diff-*`, `rel-gas-*-cal-errors`, `rel-min-events`, `rel-bench-gain-*` | study outputs; `reliability.fusion.MIN_EVENTS_PER_SIGNAL` |
 | Triage is right where a labelled recent window exists, conservative without one (benchmark recall 6%) | `rem-recent-*`, `rem-norecent-*`, `b-inc-a-lr-triage-recall` | `outputs/remediation_results*.json`, benchmark |
-| Concept probe not validated by image tags (Holm over buckets) | `concept-nbuckets-sig`, `concept-b10-rho` | `outputs/clip_concepts/concept_rca_results.json` |
+
+## Removed from the paper for length (still in the code and dashboard)
+
+- CAM figure for CLEAR-10 (`gen_cam.pdf` is still generated).
+- Concept probe result (`concept-*` keys; no tag agreement in any bucket).
+- Remediation table (`tab_remediation`; its key numbers stay in Section 6).
+- Estimator table (`tab_estimators`; summarized in prose).
 
 ## Facts that need a citation (checked)
 
