@@ -13,27 +13,30 @@ Repository paths are relative to the code repository root.
 | Claim | Evidence | Code |
 |---|---|---|
 | Every decision is a test at alpha = 0.05 with Holm or Bonferroni | `acs-alpha`; config of every output | `src/drift_autopsy/diagnosis.py`, `stats.py`, detectors |
-| Label-free stage: Holm over three block tests, gatekeeping for features | diagnosis docstring | `diagnosis.label_free_diagnosis` |
+| Label-free stage: one weighted Holm family over all feature, prediction and MMD tests | diagnosis docstring | `diagnosis.label_free_diagnosis` |
 | Prior vs covariate: BBSE reweighting, then weighted feature tests | diagnosis docstring | `diagnosis.bbse_weights`, `_weighted_feature_tests` |
 | Audit: accuracy drop test, then LR test of error structure with confidence bins in the null | `const-quantile-bins` | `diagnosis.audit_diagnosis` |
-| The diagnosis was frozen before design B ran | design B code and outputs postdate the last change to the default path of `diagnosis.py`; the only later edits add optional arguments (`null`, `precomputed_mmd`) whose defaults reproduce the method, verified by `test_recomputed_verdict_and_precomputed_mmd_match_the_method` and by the exact reproduction of the old 650 windows | git history; `tests/unit/test_baselines_models_and_design_b.py` |
-| Old benchmark reproduced exactly (650 windows, 0 differences) | comparison run on `outputs/drift_injection_benchmark_runs.json` (old) vs `outputs/benchmark/acs_income_A_lr_runs.json` | not in the paper text; see the dashboard redesign notes |
+| The diagnosis was fixed before design B first ran; a later code review found two errors, corrected without regard to results, and every result was regenerated | `fwer-gate-pct`, `fwer-wholm-pct`, `fix-nchanged`, `fix-nwindows` | `examples/quickstart/fwer_check.py` -> `outputs/fwer_check.json`; `outputs/benchmark/prefix_verdicts.json` (pre-correction verdicts) vs the current `*_runs.json`; `diagnosis.label_free_decisions`, `diagnosis._bins` |
+| Label-free decisions: weighted Holm over features (sharing 1/3), prediction (1/3) and MMD (1/3); controls FWER over every decision | `fwer-wholm-pct` | `stats.weighted_holm_reject`, `test_weighted_holm_equal_weights_is_holm_and_controls_fwer` |
+| Audit fits are exact maximum likelihood (Newton, float64), identical on CPU and GPU | unit test | `stats.logistic_loglik`, `test_logistic_loglik_is_exact_and_device_independent` |
+| Before the 2026-10-15 correction, the rewritten benchmark code reproduced the original 650 windows exactly (a check of the refactoring, not a current result; after the correction the verdicts differ by design) | comparison run on `outputs/drift_injection_benchmark_runs.json` (old) | not in the paper text |
 | GPU and CPU permutation tests give identical p-values | 14 MMD cases and 6 CLEAR Frechet/PCA cases checked; unit test | `src/drift_autopsy/gpu.py`, `test_gpu_permutation_tests_match_cpu` |
 
 ## Benchmark (Tables methods, mechanisms, detectors, estimators; confusion figure)
 
 | Claim | Keys | Source |
 |---|---|---|
-| Ours names the type in 87 to 94% of design A windows | `bench-a-ours-min/max`, `b-*-a-*-ours-acc` | `outputs/benchmark/summary.json` -> `methods` |
+| Ours names the type in 86 to 94% of design A windows | `bench-a-ours-min/max`, `b-*-a-*-ours-acc` | `outputs/benchmark/summary.json` -> `methods` |
 | Rule baselines are significantly worse in every configuration | `bench-nbetter`, `bench-ntests`, arrows in `tab_methods` | `summary.json` -> `paired_tests` (sign-flip over replicates, Holm) |
 | Meta-classifier beats ours on design A (leave one state out) | `b-*-a-*-metaclassifier-acc` | `benchmark/metrics.meta_classifier_predictions` |
-| Meta-classifier trained on design A falls to 32 to 51% on design B; ours keeps 63 to 82% | `bench-b-meta-min/max`, `bench-b-ours-min/max` | `examples/quickstart/benchmark_summary.py::meta_transfer` |
-| Removing the confidence term from the audit null costs about 14 points (Income A, LR) | `b-inc-a-lr-noconfidencenull-diff` | ablation `null="none"` in `audit_diagnosis` |
+| Meta-classifier trained on design A falls to 31 to 51% on design B; ours keeps 62 to 82% | `bench-b-meta-min/max`, `bench-b-ours-min/max` | `examples/quickstart/benchmark_summary.py::meta_transfer` |
+| Removing the confidence term from the audit null costs about 15 points (Income A, LR) | `b-inc-a-lr-noconfidencenull-diffabs` | ablation `null="none"` in `audit_diagnosis` |
 | The MMD block adds nothing on the benchmark | `b-inc-a-lr-nommd-diff` | ablation `use_mmd=False` in `diagnosis_baselines.ours` |
 | Class x confidence null helps on Employment B but is not adopted | `b-emp-b-lr-classconfidencenull-acc` | ablation `null="class_confidence"` |
 | Income threshold concept drift is read as no drift; it barely changes accuracy | `b-inc-lr-mech-conceptthreshold-*` | `summary.json` -> `mechanisms` |
 | Class-conditional noise is often read as concept drift | `b-*-mech-classnoise-*` | same |
 | False alarm rates near alpha (pooled design A controls) | `det-*-none`, `det-*-none-ci` | `tab_detectors` from the design A runs |
+| Our diagnosis raised false alarms on 13 of 200 controls (6.5%), within its 2 alpha bound (each stage at alpha) | `diag-fa-*` | `build_artifacts.benchmark` from the design A runs |
 | Concept and noise windows share the control inputs, so their detector alarm rates equal the false alarm rate | identical columns in `tab_detectors` | `benchmark/evaluate.run_replicate` (one production sample per replicate) |
 | ATC has the smallest estimate error in most columns; CBPE does not win | `est-nbest-atc`, `est-nbest-cbpe` | `tab_estimators`; `estimation.label_free_estimates` |
 
@@ -61,7 +64,7 @@ Repository paths are relative to the code repository root.
 | Accuracy estimates are optimistic; on gas batch 8 CBPE estimates 0.618 against a true 0.330, because drift breaks the confidence-to-accuracy relation (bins with fewer than 5 calibration rows keep the model's own confidence) | `gas-b8-acc`, `gas-b8-est`, `gas-b8-conf` | gas output; `estimation.BinnedAccuracyCalibration` |
 | Fused reliability adds nothing beyond confidence on ACS and CLEAR-10; on gas no fusion is learned (4 or 11 calibration errors, fewer than 10 per signal) | `rel-other-diff-*`, `rel-gas-*-cal-errors`, `rel-min-events`, `rel-bench-gain-*` | study outputs; `reliability.fusion.MIN_EVENTS_PER_SIGNAL` |
 | Triage is right where a labelled recent window exists, conservative without one (benchmark recall 6%) | `rem-recent-*`, `rem-norecent-*`, `b-inc-a-lr-triage-recall` | `outputs/remediation_results*.json`, benchmark |
-| Concept probe not validated by image tags | `concept-nbuckets-sig`, `concept-b10-rho` | `outputs/clip_concepts/concept_rca_results.json` |
+| Concept probe not validated by image tags (Holm over buckets) | `concept-nbuckets-sig`, `concept-b10-rho` | `outputs/clip_concepts/concept_rca_results.json` |
 
 ## Facts that need a citation (checked)
 
