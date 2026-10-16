@@ -73,6 +73,14 @@ Repository paths are relative to the code repository root.
 - Remediation table (`tab_remediation`; its key numbers stay in Section 6).
 - Estimator table (`tab_estimators`; summarized in prose).
 
+## Novelty and closest work (checked 2026-10-16)
+
+| Claim | Source |
+|---|---|
+| Roschewitz et al. separate prevalence from covariate shift without labels by prevalence adjustment and retesting (medical images); no concept drift or label noise | MICCAI 2025, LNCS pp. 67-76, doi 10.1007/978-3-032-04981-0_7 (arXiv 2411.07940) |
+| DetectShift tests shifts in (X,Y), X, Y, X given Y and Y given X but needs labelled target data (its authors list this as a limitation); no label noise | Information Sciences 649, 119612 (2023) |
+| No published method found that separates concept drift from label noise with a small audit, or grades a type diagnosis on held out mechanisms | literature search 2026-10-16 (arXiv, Google Scholar style queries); stated as "to our knowledge" |
+
 ## Facts that need a citation (checked)
 
 - RELP replaced by RELSHIPP from 2019: 2019 PUMS data dictionary (`census2019pums`).
@@ -85,6 +93,7 @@ Repository paths are relative to the code repository root.
 
 - Read every row above and the generated tables once more against the outputs.
 - Choose five suggested reviewers (journal requirement; not chosen here).
+- Funding statement in the paper: "This research received no external funding" (capstone project; the mentor is the first author).
 - Fill in the funding statement in `main.tex` (acknowledgements are hidden in the anonymous build).
 - For review, publish the code at an anonymised address and set it in the
   reproducibility paragraph; switch `\anonymousfalse` for the final version.
