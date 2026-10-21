@@ -10,7 +10,7 @@ corresponding: sanjay.mirchandani@ves.ac.in
 note: Section, figure, table and equation numbers without the prefix S refer to the main paper.
 ---
 
-This supplement gives three pieces of detail that support the main paper: how the size of the delayed audit affects the diagnosis, the remediation triage in every real setting and the mapping of the ACS relationship codes across the 2019 redesign.
+This supplement gives four pieces of detail that support the main paper: how the size of the delayed audit affects the diagnosis, the remediation triage in every real setting, the mapping of the ACS relationship codes across the 2019 redesign and the dashboard through which the pipeline reports its results.
 
 # Size of the delayed audit {#sec:budget}
 
@@ -39,5 +39,15 @@ Table: Mapping from RELSHIPP (2019 on) back to RELP (2014 to 2018) {#tab:relp}
 <<code:relp_map>>
 
 Same-sex and opposite-sex spouses both map to husband/wife and both partner codes to unmarried partner. RELP 11 (roomer or boarder) has no successor, so it never occurs from 2019 onward. This removed category is itself a documented change that the localization can detect.
+
+\newpage
+
+# The monitoring dashboard {#sec:dashboard}
+
+Every stage of the pipeline writes its results to one file, which an interactive dashboard presents to the monitoring team. Fig. @fig:dashboard shows two of its views for ACS Income with LR.
+
+![The dashboard of the pipeline for ACS Income with LR. (a) The overview: dataset, task and model selectors, the headline results and the five steps of the pipeline, each of which opens a detailed view. (b) The drift type step: for every window, the answer to each question of the decision path in Fig. 2 of the paper (filled circle yes, open circle no, small dot not reached) and the resulting verdict, followed by a summary sentence computed from the results](FigS2.png){#fig:dashboard width=148}
+
+Panel (b) is the decision path of Fig. @m:fig:decision applied to real windows. CA 2015 passes every label-free test. The audit then finds no significant accuracy drop, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels do not move, yet the feature tests reject and the shift survives the prior correction, so these windows are covariate shift. The remaining windows answer yes to every label-free question and are also covariate shift. Each view of the dashboard opens with the question it answers and ends with such a summary sentence, so a team can read the diagnosis without reading the code.
 
 # References {-}

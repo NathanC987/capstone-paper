@@ -236,6 +236,8 @@ The last two stages score individual predictions and advise on retraining. The f
 
 A retrain truly helps when retraining with importance weights or on the latest labeled window significantly raises holdout accuracy. Over \res{rem-n} real settings (Table @s:tab:remediation in the Supplement), the triage is right in \res{rem-recent-correct} of the \res{rem-recent-n} settings that have an earlier labeled window, because its recent-window probe is validated on real labels. Without one it relies on importance-weighted validation and is right in \res{rem-norecent-correct} of \res{rem-norecent-n} settings, but mostly by advising against retraining, since one truly helped in only \res{rem-norecent-helps} of them. On the benchmark its recall is \res{b-inc-a-lr-triage-recall}%, because importance-weighted validation cannot see gains outside the reference data.
 
+Every stage writes its results to one file, which an interactive dashboard presents to the monitoring team as a step-by-step report for each study. Fig. @s:fig:dashboard in the Supplement shows its overview and the drift type step for ACS Income.
+
 # Discussion {#sec:discussion}
 
 The results support the central claim. A diagnosis built from tests of the type definitions transfers to drift it was not designed for, whereas a learned rule does not. The cost is a small label audit, needed only for concept drift and label noise.
