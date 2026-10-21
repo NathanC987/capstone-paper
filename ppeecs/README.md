@@ -9,8 +9,8 @@ The journal works from Word files made with its template, so the paper is writte
 
 | File | Content |
 |---|---|
-| `paper.md` | main text (8 pages) |
-| `supplement.md` | online supplement (Table S1, Fig. S1, ...) |
+| `paper.md` | main text (12 pages, every table and figure that supports a claim) |
+| `supplement.md` | online supplement: audit size (Fig. S1), triage by setting (Table S1), RELP code mapping (Table S2) |
 | `references.bib` | references with DOIs or full-text URLs, formatted in the journal style |
 | `template.docx` | the journal's MS Word template (styles, header) |
 | `tikz/` | sources of Fig. 1 and Fig. 2 |
