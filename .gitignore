@@ -10,3 +10,5 @@
 
 # generated single-file submissions (examples/paper/build_artifacts.py --flatten)
 submission/
+!ppeecs/figures/*.pdf
+!ppeecs/build/*.pdf
