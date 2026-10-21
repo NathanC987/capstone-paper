@@ -38,7 +38,7 @@ We evaluate the diagnosis on a benchmark of injected drift where the true type i
 
 \noindent Section @sec:sota positions the work against existing methods. Sections @sec:method to @sec:results present the pipeline, the experiments and the results, while Section @sec:discussion discusses them and concludes.
 
-# State of the art {#sec:sota}
+# Related work {#sec:sota}
 
 Work related to ours comes from several directions: how drift types are defined, how drift is detected, how label shift is estimated and how accuracy can be estimated without labels. Before reviewing each of them, Table @tab:positioning sets our work beside the methods closest to it. These are black-box shift detection (BBSD), BBSE, confidence-based performance estimation (CBPE), DetectShift and the method of Roschewitz et al.
 
