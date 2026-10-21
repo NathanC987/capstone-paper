@@ -40,7 +40,7 @@ Repository paths are relative to the code repository root.
 | Concept and noise windows share the control inputs, so their detector alarm rates equal the false alarm rate | identical columns in `tab_detectors` | `benchmark/evaluate.run_replicate` (one production sample per replicate) |
 | Estimate errors: below `est-bench-none-max` without drift and `est-bench-covariate-max` under covariate shift; whole loss under concept and noise; ATC best in 6 of 8 comparisons, CBPE in 2 | `est-bench-*-min/max`, `est-bench-conceptnoise-cbpe`, `est-nbest-*`, `est-gas-*` | `build_artifacts.estimators` (the table `tab_estimators` is still written but no longer printed); `estimation.label_free_estimates` |
 | Every detector false alarm interval contains alpha or lies below it | `det-*-none-ci` | guarded in `build_artifacts.benchmark` (the build fails otherwise) |
-| KS, MMD and BBSD catch the same share of prior shifts | `det-bbsd-prior` | guarded in `build_artifacts.benchmark` |
+| Every detector catches covariate shift and all except PSI catch most prior shifts (rates in Table 6, not repeated in the text) | `tab_detectors` | `build_artifacts.benchmark` |
 
 ## Real drift
 
