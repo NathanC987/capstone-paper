@@ -10,44 +10,44 @@ corresponding: sanjay.mirchandani@ves.ac.in
 note: Section, figure, table and equation numbers without the prefix S refer to the main paper.
 ---
 
-This supplement gives four pieces of detail that support the main paper: how the size of the delayed audit affects the diagnosis, the remediation triage in every real setting, the mapping of the ACS relationship codes across the 2019 redesign and the dashboard through which the pipeline reports its results.
+This supplement adds four pieces of detail to the main paper. It shows how the size of the delayed audit affects the diagnosis, reports the remediation triage for every real setting, lists how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign and shows the dashboard through which the pipeline reports its results.
 
 # Size of the delayed audit {#sec:budget}
 
-The audit stage of Section @m:sec:diagnosis separates concept drift from label noise with a few hundred late labels. The paper uses \res{acs-audit-n} labels throughout. Fig. @fig:budget shows how the share of correctly diagnosed windows changes with the number of audit labels on ACS Income design A with logistic regression (LR).
+The audit stage of Section @m:sec:diagnosis needs late labels. Labels cost money, so it matters how many are enough. The paper uses \res{acs-audit-n} labels throughout. Fig. @fig:budget shows how the share of correctly diagnosed windows changes with the size of the audit on ACS Income design A with logistic regression (LR).
 
 ![Share of correctly diagnosed windows on ACS Income design A with LR against the number of audit labels. The shaded bands are 95% Wilson intervals](FigS1.png){#fig:budget width=83.5}
 
-Concept drift is identified in \res{b-inc-a-lr-budget-concept-200}% of windows with 200 labels and \res{b-inc-a-lr-budget-concept-600}% with 600, while label noise is identified in \res{b-inc-a-lr-budget-labelnoise-200}% and \res{b-inc-a-lr-budget-labelnoise-600}%. With 1,000 labels neither rate rises much further (\res{b-inc-a-lr-budget-concept-1000}% and \res{b-inc-a-lr-budget-labelnoise-1000}%), so the 600 labels used in the paper lie where the gain from more labels has largely flattened. The control windows are diagnosed correctly in the same share of cases at every audit size.
+With 200 labels, concept drift is identified in \res{b-inc-a-lr-budget-concept-200}% of windows and label noise in \res{b-inc-a-lr-budget-labelnoise-200}%. With 600 labels the two rates reach \res{b-inc-a-lr-budget-concept-600}% and \res{b-inc-a-lr-budget-labelnoise-600}%. Going on to 1,000 labels adds little (\res{b-inc-a-lr-budget-concept-1000}% and \res{b-inc-a-lr-budget-labelnoise-1000}%). The 600 labels of the paper therefore sit where more labels stop paying off. The control windows are diagnosed correctly in the same share of cases at every audit size.
 
 \newpage
 
 # Remediation triage by setting {#sec:remediation}
 
-Section @m:sec:res-reliability summarizes how often the triage of Section @m:sec:triage gives the right advice. Table @tab:remediation shows the result for every real setting and both model families.
+Section @m:sec:res-reliability of the paper summarizes how often the triage of Section @m:sec:triage gives the right advice. Table @tab:remediation breaks this summary down by real setting and model family, so that the source of each right or wrong verdict can be seen.
 
 Table: Remediation triage on the real windows. n is the number of windows; Significant gains counts the windows in which a strategy significantly raised holdout accuracy, by importance weighting (IW), retraining on the most recent labeled window (Recent) or retraining on labels of the window itself (Labels); n/a marks settings without an earlier window. Escalated counts the windows in which the triage recommended a retrain, Truly helps those in which a cheap retrain did help and Correct the windows in which the advice was right {#tab:remediation}
 <<gen:tab_remediation>>
 
-The pattern behind the summary in the paper is visible here. Wherever an earlier labeled window exists, retraining on it helps in almost every temporal window and the triage escalates accordingly. The geographic windows of the census tasks have no earlier window. Importance weighting rarely helps there. The triage advises against retraining in most of them. The remaining wrong verdicts fall mostly on CLEAR-10 with LR and on the geographic ACS Employment windows.
+Where an earlier labeled window exists, retraining on it helps in almost every temporal window. The triage escalates in those windows. The geographic windows of the census tasks have no earlier window. There, importance weighting rarely helps and the triage mostly advises against a retrain. Most of the remaining wrong verdicts come from CLEAR-10 with LR and from the geographic windows of ACS Employment.
 
 # Relationship codes across the 2019 redesign {#sec:relp}
 
-From 2019 the Census Bureau replaced the relationship variable RELP with RELSHIPP, which splits spouses and partners by sex [@census2019pums]. To compare windows before and after 2019, the RELSHIPP codes are mapped back to RELP by matching the code labels of the 2018 and 2019 data dictionaries. Table @tab:relp lists the mapping that the code applies.
+The ACS windows run from 2014 to 2023, but one of their features changed its coding halfway through. From 2019 the Census Bureau replaced the relationship variable RELP with RELSHIPP, whose codes split spouses and partners by sex [@census2019pums]. To compare windows before and after 2019, we map the RELSHIPP codes back to RELP by matching the code labels of the 2018 and 2019 data dictionaries. Table @tab:relp lists the mapping as the code applies it.
 
 Table: Mapping from RELSHIPP (2019 on) back to RELP (2014 to 2018) {#tab:relp}
 <<code:relp_map>>
 
-Same-sex and opposite-sex spouses both map to husband/wife and both partner codes to unmarried partner. RELP 11 (roomer or boarder) has no successor, so it never occurs from 2019 onward. This removed category is itself a documented change that the localization can detect.
+RELP 11 (roomer or boarder) has no successor, so it never occurs from 2019 on. The loss of this category is itself a documented change that the localization can pick up.
 
 \newpage
 
 # The monitoring dashboard {#sec:dashboard}
 
-Every stage of the pipeline writes its results to one file, which an interactive dashboard presents to the monitoring team. Fig. @fig:dashboard shows two of its views for ACS Income with LR.
+A diagnosis is only useful if the team can read it. Every stage of the pipeline therefore writes its results to one file, which an interactive dashboard presents. Fig. @fig:dashboard shows two of its views for ACS Income with LR.
 
 ![The dashboard of the pipeline for ACS Income with LR. (a) The overview: dataset, task and model selectors, the headline results and the five steps of the pipeline, each of which opens a detailed view. (b) The drift type step: for every window, the answer to each question of the decision path in Fig. 2 of the paper (filled circle yes, open circle no, small dot not reached) and the resulting verdict, followed by a summary sentence computed from the results](FigS2.png){#fig:dashboard width=148}
 
-Panel (b) is the decision path of Fig. @m:fig:decision applied to real windows. CA 2015 passes every label-free test. The audit then finds no significant accuracy drop, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels do not move, yet the feature tests reject and the shift survives the prior correction, so these windows are covariate shift. The remaining windows answer yes to every label-free question and are also covariate shift. Each view of the dashboard opens with the question it answers and ends with such a summary sentence, so a team can read the diagnosis without reading the code.
+Panel (b) applies the decision path of Fig. @m:fig:decision to the real California (CA) windows. CA 2015 passes every label-free test. The audit then finds no significant drop in accuracy, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels stay where they were. The feature tests still reject and the shift survives the prior correction, so these windows are covariate shift. All other windows answer yes to every label-free question and are covariate shift as well. Each view of the dashboard opens with the question it answers and closes with a summary sentence of this kind, so a team can follow the diagnosis without reading the code.
 
 # References {-}
