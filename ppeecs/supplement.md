@@ -1,12 +1,12 @@
 ---
 title: Supplementary Material for "Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models"
-author: Sanjay Mirchandani; 1*
+author: Rahul Guhagarkar; 1*
 author: Nathan Cherian; 1
-author: Rahul Guhagarkar; 1
 author: Alok Pal; 1
 author: Akul Patre; 1
+author: Sanjay Mirchandani; 1
 affiliation: 1; Department of Computer Engineering, Vivekanand Education Society's Institute of Technology, Hashu Advani Memorial Complex, Collector's Colony, Chembur, Mumbai 400074, India
-corresponding: sanjay.mirchandani@ves.ac.in
+corresponding: 2023.rahul.guhagarkar@ves.ac.in
 note: Section, figure, table and equation numbers without the prefix S refer to the main paper.
 ---
 
