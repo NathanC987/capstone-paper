@@ -10,7 +10,7 @@ corresponding: 2023.rahul.guhagarkar@ves.ac.in
 note: Section, figure, table and equation numbers without the prefix S refer to the main paper.
 ---
 
-This supplement adds four pieces of detail to the main paper. It shows how the size of the delayed audit affects the diagnosis, reports the remediation triage for every real setting, lists how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign and shows the dashboard through which the pipeline reports its results.
+Four topics that the main paper only touches on are expanded here. Section @sec:budget asks how many delayed labels the audit needs before its diagnosis settles. Section @sec:remediation breaks the remediation triage down by real setting, while Section @sec:relp records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. The last section, Section @sec:dashboard, presents the dashboard in which the pipeline displays its results.
 
 # Size of the delayed audit {#sec:budget}
 
