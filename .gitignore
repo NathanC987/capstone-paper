@@ -14,3 +14,5 @@ submission/
 !ppeecs/build/*.pdf
 !dacs/build/*.pdf
 !dacs/build/figures/*.pdf
+!icmmdu/build/*.pdf
+!icmmdu/figures/*.pdf
