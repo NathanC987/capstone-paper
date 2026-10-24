@@ -1,0 +1,257 @@
+Springer Nature is a leading publisher of conference proceedings, with more than 2,000 titles published each year. Our expertise and dedicated services help conference organizers publish high-quality proceedings and maximize their visibility and impact worldwide. 
+
+There are no publication fees for publishing your conference proceedings, except in the case of open access publication.
+
+Are you interested in publishing your Computer Science conference proceedings with us? Please find all relevant information here. 
+For proceedings in all other disciplines, we look forward to hearing from you via this form. The appropriate editorial team will review your proposal and get in touch with you.
+Once your conference proceedings have been accepted for publication, please follow the Volume Editor Guidelines carefully to ensure a smooth and timely publication process.
+
+Information for volume editors
+Please make the author guidelines and the templates/style files available to the authors by including a link to this page on the conference website. 
+Springer Nature’s editorial team communicates with the editors but not with chapter authors.
+Integrity practice at Springer Nature
+As a volume editor, you are responsible for the integrity of your work, and as such:
+
+You should adhere to the standards as set out in our individual code of conduct and publishing policies. 
+You should review these as you are preparing your Proceedings before submitting your manuscript.
+Learn more about our book publishing policies.
+
+Contracting
+Volume editors are responsible for ensuring that the corresponding author of each paper delivers a contract with their submitted paper.
+
+Each contribution must be accompanied by a Springer Nature publishing agreement. 
+
+The corresponding author signs the agreement and accepts responsibility for releasing the material on behalf of any and all co-authors, having gained their permission to do so.
+
+Modified agreements are not acceptable. 
+
+We will ask you for exclusive publication and dissemination rights. This will give you the best protection under copyright law. 
+
+The contract will be provided by Springer Nature. However forms for the following series can be downloaded here:
+
+
+
+Licence to publish form for LNCS, CCIS and LNBIP
+
+Licence to publish form for IFIP-AICT (also for IFIP volumes in LNCS, LNBIP)
+
+Asian Singapore Licence to publish form for LNCS, CCIS and LNBIP
+Editor guidelines and templates
+There is a checklist of all of the files we need at the end of the Guidelines for editors.
+
+Important Downloads for Editors
+
+EDITORS_Proceedings_guidelines_ ComputerScience	EDITORS_Proceeding_guidelines_ otherDisciplines	Frontmatter_template_ ALLdisciplines
+ORCID
+ORCID (Open Researcher and Contributor ID) distinguishes you from every other researcher ensuring you receive proper credit for your work. We recommend that you apply for an ORCID and encourage authors to do likewise. 
+
+Learn more about ORCID.
+
+Open access
+Springer Nature offers a publication model for a fee to allow free access to books and chapters immediately on publication via Springer Nature Link, Springer Nature’s platform for all published content. Explore our Funding OA books page to discover and apply for funding book processing charges.
+
+There are two options available for open access publishing in proceedings
+
+Individual open access papers in a regular volume (open choice)
+Entire open access volumes (open access)
+Authors interested in open access for their papers (open choice) should inform the volume editor as soon as possible. Special open access contracts should be signed and the full invoicing address should be provided as soon as possible. This information has to be available before the start of the publication process.
+
+Please note that the open choice publishing mode is only available if fewer than 40% of the papers select this option.
+
+Funding
+Some institutions and funders will cover the fees for open access publishing. Learn more about open access funding.
+
+Plagiarism checks
+Springer Nature proceedings should contain original research that has neither been published nor submitted for publication elsewhere, and that adheres to our ethical standards. 
+
+If you, as volume editor, wish to make use of our plagiarism-checking tool, in order to check the papers submitted, please send a request to your editorial contact at Springer Nature.
+
+Embedded videos in proceedings
+Springer Nature offers authors the option of including embedded videos in their proceedings papers, free of charge.  
+
+Technical requirements
+
+Resolution
+
+16:9 or 4:3
+
+Maximum file size
+
+25 GB
+
+Minimum duration
+
+1 second
+
+Formats supported
+
+avi, wmv, mp4, mov, m2p, mp2, mpg, mpeg, flv, mxf, mts, m4v, and 3gp
+
+Authors must not violate privacy and confidentiality rules and, as always, permission must be sought for use of third-party content. 
+
+All types of Electronic Supplementary Material, including videos, should be sent with the authors’ files. If videos are to be embedded, unequivocal instructions as to their positioning must be included.
+
+Logos 
+You may also add a series or a Springer Nature imprint logo to your conference website.
+
+Please feel free to download the relevant logo and add it to your conference website.
+
+Springer Logo | LNCS | LNAI | LNBI | CCIS | LNBIP 
+
+Information for authors
+Below you will find our guidelines and technical instructions for the preparation of proceedings papers. These may be stand-alone proceedings or part of a series.
+
+Preparing your proceedings paper
+For your convenience, we have summarized in the "Author Guidelines" document how a proceedings paper should be structured, how elements (headings, figures, references) should be formatted using our predefined styles, etc. We also give some insight on how your paper will be typeset at Springer Nature. 
+The PDF of the Authors Guidelines can be downloaded here or as part of the zip files containing the complete sets of instructions and templates for the different text preparation systems.
+Springer Nature has developed LaTeX style files and Word templates to help you prepare your paper. LaTeX is the preferred format for texts containing several formulae, but Word templates are also available below.
+Important Downloads
+
+Instructions_forAUTHORS_
+Proceedings_ComputerScience
+
+Instructions_forAUTHORS_
+Proceedings_otherDisciplines
+
+Proceedings LaTeX2e package	
+Proceedings Word templates
+
+Using AI
+Readers should be able to trust the accuracy and authenticity of content they are basing their research on. AI is safe when it helps you communicate your research. It becomes unsafe without adequate human oversight and accountability.  Please familiarize yourself with our AI Editorial Policy when using AI to support you in manuscript preparation. 
+
+Using AI for Content Generation (text and/or figures).  AI models have been known to plagiarize content, breach copyright and create false information, such as fabricating references. You should always carry out due diligence on any AI-generated content in your manuscript to ensure it is correct and appropriately referenced, and that all content is free from plagiarism and copyright infringement.  
+
+We do not permit: 
+
+AI-written content that has been reproduced without any human verification
+Deepfake or photorealistic AI-generated or manipulated image, audio, or video content that resembles real persons, objects, places, entities or events
+Disclosing Use of AI in Your Manuscript. Use of AI should be properly documented in the manuscript. Detailed guidance on how to acknowledge responsible use of AI can be accessed here: Disclosing AI Use in Manuscripts or Offenlegung der KI-Nutzung in Manuskripten.
+
+Content that may be harmful  to human population groups
+We believe that authors, editors, reviewers and publishers need to be mindful about research and its dissemination that may potentially harm population groups, as a result of discrimination in the assumptions or framing, methodology, interpretation or presentation of the research. We achieve this by presenting principles and guidelines intended to assist those considering the interests of population groups and also ethical aspects of various forms of discrimination.
+
+Inclusive language guidance
+Springer Nature is committed to supporting clear and unbiased communication of research, consistent with our commitment to embedding inclusive principles in our editorial and publishing practices. We recommend that all authors review the Springer Nature Inclusive Language guide (available in our Global Inclusion in Research Publishing) when writing, to ensure accurate, culturally sensitive, and bias-free language
+
+Integrity practice at Springer Nature
+As an author, you are responsible for the integrity of your work, and as such:
+
+You should adhere to the standards as set out in our individual code of conduct and publishing policies. 
+You should review these as you are preparing your paper before submitting your manuscript.
+Learn more about our book publishing policies.
+
+Chapter author contract
+Each contribution must be accompanied by a Springer Nature publishing agreement. 
+Modified agreements are not acceptable. 
+The corresponding author signs the agreement and accepts responsibility for releasing the material on behalf of any and all co-authors, having gained their permission to do so.
+We will ask you for exclusive publication and dissemination rights. This will give you the best protection under copyright law. Learn more about publication and dissemination rights.
+
+The corresponding author must be available to check the paper before it is published. Please note that once a paper has been delivered to Springer Nature, changes relating to the authorship of the paper cannot be made. Authors’ names cannot be added or deleted, their order cannot be changed, and the corresponding author cannot be altered.
+
+The publishing contract will be provided by your volume editor. However forms for the following series can be downloaded here:
+
+Licence to publish form for LNCS, CCIS and LNBIP	
+Licence to publish form for IFIP-AICT (also for IFIP volumes in LNCS, LNBIP)
+
+Asian Singapore Licence to publish form for LNCS, CCIS and LNBIP
+Obtaining permission for use of third-party content
+Third-party content is any content that has been reproduced, derived or adapted from other sources. 
+
+What to consider when using third-party content:
+
+You should only use third-party content if it is strictly necessary. 
+If you do intend to use third-party content in your manuscript, please review the information provided on our third-party permissions guidelines and enclose the permissions checklist in the final manuscript files.
+Springer Nature is not able to give you legal advice and the information provided is to be considered as guidance. If in doubt, you should always seek your own independent legal advice.
+ORCID
+ORCID (Open Researcher and Contributor ID) distinguishes you from every other researcher ensuring you receive proper credit for your work. We recommend that you apply for an ORCID and encourage authors to do likewise. 
+
+Learn more about ORCID.
+
+Open access
+Authors interested in open access for their papers (open choice) should inform their volume editor as soon as possible. This information has to be available three weeks before the start of the publication process at the latest. 
+
+Special open access contracts should be signed and the full invoicing address should be provided as soon as possible. This information has to be available before the start of the publication process.
+
+Funding
+Some institutions and funders will cover the fees for open access publishing. Learn more about open access funding.
+
+Open access pricing 
+The chapter processing charge (CPC) covers all the costs of copyediting and proofreading, production, dissemination and promotion of our authors’ work, including online hosting and indexing.
+
+Accessibility
+At Springer Nature, we’re committed to Accessibility and we want to help you make your research accessible too. Many factors regarding accessibility are handled by Springer Nature, but we request you to take some actions as well to help make your research accessible.
+
+Write alternative text (alt text) for all figures, illustrations and tables.
+
+Alternative text, also known as 'alt text', is a brief description that explains how an image looks or what purpose it serves in a digital format. Alt text is crucial for individuals using screen reader technology, as well as for those trying to comprehend the content of an image in case it doesn't load.
+
+Alt text is not the same as a caption, which typically provides information that is not already in the visual element itself.
+
+For more tips on how to write good alt text, please check our document How to Write Good Alt Text.
+
+Please note that if you are not able/not willing to create alt text, this will be created for you during the production process by an AI supported tool. You will be asked to edit/approve this text during the proofing stage.
+
+Ensure that the figures display adequate color contrast and refrain from relying solely on color to
+communicate important or essential information.
+
+Use the table feature of your editor to create tables. Keep tables simple and avoid nesting tables.
+When writing a URL, consider users who must speak it out loud and who must listen to a screen reader announce it.
+Do not capitalize all letters in the link text
+Do not use the word ‘link’ as part of the link text.
+Do use meaningful words to describe your link.
+Embedded videos in proceedings
+Springer Nature offers authors the option of including embedded videos in their proceedings papers, free of charge.  
+
+Technical Requirements
+
+Resolution
+
+16:9 or 4:3
+
+Maximum file size
+
+25 GB
+
+Minimum duration
+
+1 second
+
+Formats supported
+
+avi, wmv, mp4, mov, m2p, mp2, mpg, mpeg, flv, mxf, mts, m4v, and 3gp
+
+Authors must not violate privacy and confidentiality rules and, as always, permission must be sought for use of third-party content. 
+
+All types of Electronic Supplementary Material, including videos, should be sent with the authors’ files. If videos are to be embedded, unequivocal instructions as to their positioning must be included.
+
+Author benefits (discount, personal free ebook)
+Volume editors and authors who have provided their email address in the manuscript are entitled to receive a complimentary eBook of your final publication. Shortly after the proceedings is published, you will receive an email with a link that allows you to download your personal free copy of your proceedings eBook from Springer Nature Link. 
+
+As an author or editor you are entitled to receive a special discount on book orders, for both eBook and print books. Request your author discount. 
+
+If you need further help, visit customer support.
+
+Frequently asked questions
+
+Is there a minimum/maximum number of pages per volume?
+A proceedings volume should contain at least 120 pages in total. We can fit up to 500 pages in one single volume. The option of multiple volumes should be discussed with your project manager.
+
+Are a mixture of LaTeX and Word files permitted in one single proceedings volume?
+Yes. Please see the Guidelines above for more details.
+
+Can an author submit a paper to Springer Nature directly?
+No. We do not select the papers for publication here in editorial. The papers for presentation are selected by the Program Committees of the conferences. We select the conferences for which the proceedings are to be published by us. 
+
+How can a researcher check whether a conference is being truthful about having its proceedings published by Springer Nature?
+If you suspect that a conference is using any Springer Nature logo under false pretenses, please report this to your Springer Nature contact.
+
+What is the maximum number of pages in a paper?
+This is set by the conference and not by Springer Nature.
+
+May authors place their papers on their institutional repositories?
+Please see your publishing agreement or License to Publish.
+
+May authors submit an extended version of their proceedings paper to a journal?
+Authors wishing to publish an extended version of their proceedings paper as a journal article must adhere to the following principles: a) the extended version has to include at least 30% new material; b) it has to cite the original publication; and c) it must include an explicit statement about the increment (e.g., new results, better description of materials, etc.).
+
+

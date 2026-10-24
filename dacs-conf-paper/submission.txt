@@ -1,0 +1,28 @@
+Submission Instructions
+Submission Portal:
+Microsoft CMT Portal
+Page Length:
+Maximum 12 Pages (Standard Springer Format)
+Publication Series:
+Springer LNEE (SCOPUS Indexed)
+Formatting Guidelines:
+Author Instructions
+LaTeX Template:
+Overleaf Template
+Word Template:
+Download .doc Template
+ Important Note on Plagiarism: Ensure all content is original. Higher similarity indices or lack of proper citation may lead to immediate rejection or removal from final proceedings, even after acceptance.
+
+The Microsoft CMT service was used for managing the peer-reviewing process for this conference. This service was provided for free by Microsoft and they bore all expenses, including costs for Azure cloud services as well as for software development and support.
+
+Journal Publication (Extended Version)
+Outstanding papers will be recommended for extended publication in the following indexed journals:
+
+Springer Nature Computer Science Journal
+(Q1 Ranking)
+Wiley Security and Privacy Journal
+(Impact Factor: 1.5)
+Elsevier Alexandria Engineering Journal
+(Impact Factor: 6.2)
+Note from Springer Nature:
+“It is planned to publish the peer-reviewed and selected papers of the conference as proceedings with Springer in their prestigious “Lecture Notes in Electrical Engineering” series. Springer will conduct quality checks; only papers passing these checks will be published. Springer Nature does not charge for Non-Open Access publication. Abstracts and short papers (under 4 pages) will not be considered.”

@@ -12,3 +12,5 @@
 submission/
 !ppeecs/figures/*.pdf
 !ppeecs/build/*.pdf
+!dacs/build/*.pdf
+!dacs/build/figures/*.pdf
