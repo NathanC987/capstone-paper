@@ -38,6 +38,8 @@ python examples/paper/build_dacs.py              # LaTeX and PDF
 python examples/paper/build_dacs.py --figures    # also redraw Fig. 3 and Fig. 4
 ```
 
-It needs tectonic (`TECTONIC=...`) for the PDF and fails if the paper exceeds 12 pages
-or a table or figure is not on the page of its first mention. `build/` also compiles
+It needs tectonic (`TECTONIC=...`) for the PDF. Figures and tables are set in the text
+flow right after the paragraph that introduces them (not as LaTeX floats), so their
+explanation follows below them. The build fails if the paper exceeds 12 pages or a
+table or figure is not on the page of its first mention, below that mention. `build/` also compiles
 with pdflatex and bibtex, for example on Overleaf.
