@@ -8,11 +8,16 @@ reference style `sn-mathphys-num`).
 
 `paper.md` is the PPEECS text (`../ppeecs/paper.md`) shortened to 12 pages by removing
 whole parts: the positioning, datasets, mechanism, detector, estimator and ACS Income
-tables, the confusion and timeline figures, root cause analysis, the reliability and
-triage stages (Fig. 1 still shows them; the text says they are not evaluated here), the
-ablations and several detail sentences. The remaining sentences are unchanged apart
-from a few joins (an abbreviation spelled out where it is now first used, a shortened
-sentence). There is no supplement.
+tables, root cause analysis, the reliability and triage stages (Fig. 1 still shows them;
+the text says they are not evaluated here), the ablations, two related-work paragraphs
+and several detail sentences. Because reliability is no longer evaluated, the title is
+"Drift Detection and Diagnosis for Deployed Machine Learning Models". The remaining
+sentences are unchanged apart from a few joins (an abbreviation spelled out where it is
+now first used, a shortened sentence). There is no supplement.
+
+Fig. 1 and Fig. 2 are the PPEECS drawings. The result figures (Fig. 3, confusion matrices;
+Fig. 4, accuracy over time) are redrawn as one row of four panels across the 131 mm text
+width, which takes far less height than the PPEECS 2 x 2 versions; they are in `figures/`.
 
 | File | Content |
 |---|---|
@@ -20,7 +25,8 @@ sentence). There is no supplement.
 | `build/DACS_paper.tex` | generated LaTeX on the Springer template |
 | `build/DACS_paper.pdf` | the paper (12 pages) |
 | `build/references.bib` | the PPEECS references; proceedings and journal entries without the full-text URLs |
-| `build/figures/` | Fig. 1 and Fig. 2 as vector PDF |
+| `figures/` | Fig. 3 and Fig. 4 drawn for this version (vector PDF) |
+| `build/figures/` | the four figures used by the LaTeX file |
 | `build/sn-jnl.cls`, `build/sn-mathphys-num.bst` | template files, copied so the folder compiles on its own |
 
 ## Build
@@ -28,7 +34,8 @@ sentence). There is no supplement.
 From the repository root:
 
 ```
-python examples/paper/build_dacs.py
+python examples/paper/build_dacs.py              # LaTeX and PDF
+python examples/paper/build_dacs.py --figures    # also redraw Fig. 3 and Fig. 4
 ```
 
 It needs tectonic (`TECTONIC=...`) for the PDF and fails if the paper exceeds 12 pages

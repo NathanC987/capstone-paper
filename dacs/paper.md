@@ -1,5 +1,5 @@
 ---
-title: Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models
+title: Drift Detection and Diagnosis for Deployed Machine Learning Models
 author: Rahul Guhagarkar; 1*
 author: Nathan Cherian; 1
 author: Alok Pal; 1
@@ -23,7 +23,7 @@ Nobody announces it when a deployed classifier starts to slip. The production da
 
 Existing monitors do the first part of that job well. They flag a changed distribution [@rabanser2019failing] and give a fair estimate of how much accuracy has gone [@kivimaki2025performance]. Far fewer say what kind of change took place. That gap matters, since each kind has its own remedy. Moreno-Torres et al. [@moreno2012unifying] distinguish three types of dataset shift. Under covariate shift the inputs drift but the mapping from inputs to labels holds, so reweighting the training data is often enough. Under prior shift it is only the class balance that moves, which recalibration usually fixes. Concept drift alters the mapping itself; nothing short of fresh labels will repair it. To these we add label noise as a fourth type. Here the labels used to grade the model are themselves corrupted, so the fault lies in how labels are collected rather than in the model.
 
-This paper presents Data Drift Autopsy, an end-to-end monitoring pipeline that takes a deployed model, its labeled training data and a stream of unlabeled production data. For every production window it answers the questions a monitoring team asks in turn. Has the data changed? How much accuracy has been lost? Which features moved? What type of drift is it and what probably caused it? The pipeline works for tabular and image models.
+This paper presents Data Drift Autopsy, an end-to-end monitoring pipeline that takes a deployed model, its labeled training data and a stream of unlabeled production data. For every production window it answers the questions a monitoring team asks in turn. Has the data changed? How much accuracy has been lost? Which features moved? What type of drift is it and what probably caused it?
 
 The core of the pipeline is the step that names the drift type, which is also the main subject of this paper. Nothing in this step is learned from examples of drift: it is a handful of hypothesis tests that share one significance level and one family-wise error rate. The first stage, which needs no labels, combines existing tools. The second stage is new. It uses a few hundred late labels to ask whether accuracy has dropped and, if so, whether the errors changed in a way that depends on some input feature. Uniform label noise changes the error rate only in line with how confident the model is, while concept drift changes it inside one region of the input space. Because every step is a formal test, the false alarm rate is fixed before the data are seen.
 
@@ -36,7 +36,7 @@ We evaluate the diagnosis on a benchmark of injected drift where the true type i
 
 # Related work {#sec:sota}
 
-*Drift types.* Moreno-Torres et al. [@moreno2012unifying] define covariate shift, prior shift and concept shift by the part of the joint distribution of inputs and labels that changes. DetectShift tests for a change in this joint distribution and in each of its parts, $P(X)$, $P(Y)$, $P(X\mid Y)$ and $P(Y\mid X)$ [@maiapolo2023detectshift]. It needs labels for the new data, however, which its authors acknowledge as a limitation. We keep the same definitions, add label noise as a fourth type and ask for labels only in a small audit.
+*Drift types.* DetectShift tests for a change in the joint distribution of inputs and labels and in each of its parts, $P(X)$, $P(Y)$, $P(X\mid Y)$ and $P(Y\mid X)$ [@maiapolo2023detectshift]. It needs labels for the new data, however, which its authors acknowledge as a limitation. We keep the same definitions, add label noise as a fourth type and ask for labels only in a small audit.
 
 *Label shift.* Black-box shift estimation (BBSE) recovers the new class prior from the confusion matrix of any classifier [@lipton2018bbse]. It assumes that the inputs inside each class stay as they were, which is exactly the property that separates prior shift from covariate shift. Roschewitz et al. [@roschewitz2025shiftid] test this property on medical images. They resample the reference data to the estimated prevalence and attribute the shift to prevalence if the features then stop differing. Our label-free stage follows the same idea. It differs in two ways: it uses importance weights in place of resampling and it puts every label-free decision into one family with a stated error rate.
 
@@ -56,15 +56,13 @@ To test for a drift type we first have to say exactly what that type changes. Wr
 
 ## Reference split, detection and estimation {#sec:detection}
 
-Stage C answers three questions: have the data moved, how much accuracy might the change cost and where in the inputs is it located? The labeled reference data are therefore split into three disjoint parts, stratified by class: \res{acs-split-pct-train}% for training, \res{acs-split-pct-calibration}% for calibration and \res{acs-split-pct-test}% for testing. The model is fitted on the training part alone. The calibration part is the reference window for every detector and fits the accuracy estimator. The test part gives the reference accuracy and doubles as the control window. Images are mapped to the \res{clear-dim}-dimensional output of the global average pooling layer of a frozen residual network with 18 layers (ResNet-18) trained on ImageNet [@he2016deep].
+Stage C answers three questions: have the data moved, how much accuracy might the change cost and where in the inputs is it located? The labeled reference data are split into three disjoint parts, stratified by class: \res{acs-split-pct-train}% for training, \res{acs-split-pct-calibration}% for calibration and \res{acs-split-pct-test}% for testing. The calibration part is the reference window for every detector and fits the accuracy estimator. The test part gives the reference accuracy and doubles as the control window. Images are mapped to the \res{clear-dim}-dimensional output of the global average pooling layer of a frozen residual network with 18 layers (ResNet-18) trained on ImageNet [@he2016deep].
 
 Three detectors decide whether the inputs or the model outputs have moved. The Kolmogorov–Smirnov (KS) test compares each numeric feature, with a Bonferroni correction over features. The maximum mean discrepancy (MMD) test [@gretton2012kernel] compares all standardized inputs jointly through a Gaussian kernel, with a permutation p value. The confidence test compares histograms of $c$ with a $\chi^2$ test of homogeneity.
 
 Labels arrive late, so the accuracy is first estimated from the model's own confidence with confidence-based performance estimation (CBPE) [@kivimaki2025performance]. A map $a(\cdot)$ from confidence to the probability of a correct prediction is fitted by histogram binning on the calibration part. For a window with confidences $c_1$ to $c_n$, the estimate $\hat A$ is given by
 
 $$\hat A = \frac{1}{n}\sum_{i=1}^{n} a(c_i)$$. {#eq:cbpe}
-
-\noindent A confidence bin that holds fewer than \res{const-min-expected} calibration rows cannot give a reliable accuracy, so predictions in such a bin keep their own confidence in Eq. (@eq:cbpe).
 
 An alarm helps more when it also says where the change sits. Localization tests every feature, with KS for numeric features and the $\chi^2$ homogeneity test for nominal ones, under Holm correction. It reports an effect size between 0 and 1 for each feature: the KS statistic or Cramér's $V$. For nominal features it also gives the share of production rows whose category never occurs in the reference.
 
@@ -80,7 +78,7 @@ A rejection raises the next question: could a change in the class balance alone 
 
 $$C\,w = \mu$$. {#eq:bbse}
 
-\noindent If the shift really is a pure prior shift, each class keeps its own input distribution. Reweighting every reference row by the weight $w_{y}$ of its class, as given by Eq. (@eq:bbse), ought then to reproduce the production inputs. Checking this is the label shift consistency test, which borrows the prevalence adjustment idea of Roschewitz et al. [@roschewitz2025shiftid]. The feature tests are repeated against the weighted reference. A feature that still differs carries a covariate shift. If no feature differs and the predicted labels have moved, the shift is a prior shift. A prior shift always moves the predicted labels of an informative classifier, so a shift that leaves them in place is called covariate.
+\noindent If the shift really is a pure prior shift, each class keeps its own input distribution. Reweighting every reference row by the weight $w_{y}$ of its class, as given by Eq. (@eq:bbse), ought then to reproduce the production inputs. Checking this is the label shift consistency test, which borrows the prevalence adjustment idea of Roschewitz et al. [@roschewitz2025shiftid]. The feature tests are repeated against the weighted reference. A feature that still differs carries a covariate shift. If no feature differs and the predicted labels have moved, the shift is a prior shift.
 
 *Audit stage.* Concept drift and label noise do not touch the inputs or the model outputs, so only labels can reveal them. The audit draws $m$ late labels and first checks, with a one-sided two-proportion test, whether accuracy has dropped. If it has, the next question is whether the change in errors depends on a feature. To answer it, a logistic model of whether a prediction is correct is fitted on the calibration rows and the audit rows together. Its null form holds \res{const-quantile-bins} confidence bins at reference quantiles, bins of a feature $f$, an audit indicator and the interaction of that indicator with the confidence bins. The alternative adds the interaction of the indicator with the bins of $f$. A likelihood ratio test compares the two for each feature.
 
@@ -90,11 +88,11 @@ The confidence term is what separates the two types. In a binary task, uniform l
 
 The experiments are built around two questions. First, does the procedure name the type correctly when the truth is known, including for drift it was not designed for? Second, does it behave sensibly on real drift, where the type is unknown but the causes are on record?
 
-*Protocol.* Every setting below was fixed before the evaluation that uses it. The diagnosis was frozen before the held-out design B was run for the first time. All randomness is seeded, so every result can be repeated exactly.
+*Protocol.* Every setting below was fixed before the evaluation that uses it. The diagnosis was frozen before the held-out design B was run for the first time.
 
 ## Models
 
-A diagnosis that worked for only one kind of model would be of limited use, so the pipeline monitors two untuned model families. The first is logistic regression (LR) with $L_2$ regularization ($C=1$) on standardized numeric and one-hot encoded nominal features. The second is histogram gradient boosting (GB) [@ke2017lightgbm] from scikit-learn [@pedregosa2011scikit] with default settings, no early stopping and native splits on nominal codes. For CLEAR-10 both models work on the frozen embeddings.
+A diagnosis that worked for only one kind of model would be of limited use, so the pipeline monitors two untuned model families. The first is logistic regression (LR) with $L_2$ regularization ($C=1$) on standardized numeric and one-hot encoded nominal features. The second is histogram gradient boosting (GB) from scikit-learn [@pedregosa2011scikit] with default settings, no early stopping and native splits on nominal codes. For CLEAR-10 both models work on the frozen embeddings.
 
 ## Datasets {#sec:datasets}
 
@@ -102,7 +100,7 @@ The real datasets were chosen because the cause of their drift is documented, wh
 
 *ACS Income and ACS Employment.* Both tasks come from the ACS of the United States Census Bureau, as packaged by Folktables [@ding2021retiring]. ACS Income predicts from \res{inc-nfeatures} features whether a person earns more than \$50,000. ACS Employment predicts from \res{emp-nfeatures} features whether a person aged 16 to 90 is employed. CA 2014 is the reference. The temporal windows are CA 2015 to 2019 and 2021 to 2023, as no standard 2020 release exists [@census2021experimental]. Five documented changes fall in these years: new occupation codes in 2018 [@census2020occupation], a redesigned relationship question in 2019, a new coding of race answers from 2020 [@census2021race], the pandemic and wage growth against the fixed income threshold.
 
-*Gas sensor array drift.* This dataset from the machine learning repository of the University of California, Irvine (UCI) holds 13,910 measurements of six gases by 16 metal oxide sensors, taken over 36 months in ten batches [@vergara2012gas]. As the sensors age, their response to the same gas drifts while the labels stay exact. This is a documented change in $P(X\mid Y)$. Batches 1 and 2 form the reference and batches 3 to 10 the windows. Some batches are small, so the number of audit labels for a window of $n$ rows is given by $\min(600,\lfloor n/2\rfloor)$.
+*Gas sensor array drift.* This dataset from the machine learning repository of the University of California, Irvine (UCI) holds 13,910 measurements of six gases by 16 metal oxide sensors, taken over 36 months in ten batches [@vergara2012gas]. As the sensors age, their response to the same gas drifts while the labels stay exact. This is a documented change in $P(X\mid Y)$. Batches 1 and 2 form the reference and batches 3 to 10 the windows.
 
 *CLEAR-10.* This image stream has ten object classes and a background class, spread over ten time-ordered buckets of about 3,300 images each [@lin2021clear]. Bucket 1 is the reference.
 
@@ -136,15 +134,19 @@ The most direct test of the diagnosis is how often it names the injected type, c
 
 Inc. and Emp. stand for ACS Income and ACS Employment. A and B are the two designs. An arrow marks a method that differs significantly from ours after Holm correction: a down arrow means that ours is better and an up arrow that ours is worse.
 
-With LR on ACS Income, our procedure names the type in \res{b-inc-a-lr-ours-acc}% of design A windows (95% interval \res{b-inc-a-lr-ours-ci}). The best rule baseline reaches \res{b-inc-a-lr-errorratemonitoring-acc}%. The rules are held back by design, since each can name only some of the five outcomes. Over all eight configurations our procedure is significantly better in \res{bench-nbetter} of the \res{bench-ntests} comparisons with a baseline or the learned rule. It is significantly worse in \res{bench-nworse}, \res{bench-worse-cells}.
+With LR on ACS Income, our procedure names the type in \res{b-inc-a-lr-ours-acc}% of design A windows (95% interval \res{b-inc-a-lr-ours-ci}). The best rule baseline reaches \res{b-inc-a-lr-errorratemonitoring-acc}%. Over all eight configurations our procedure is significantly better in \res{bench-nbetter} of the \res{bench-ntests} comparisons with a baseline or the learned rule. It is significantly worse in \res{bench-nworse}, \res{bench-worse-cells}.
 
 On design A the learned meta-classifier is the strongest competitor. Validated on states it has not seen, it reaches \res{b-inc-a-lr-metaclassifier-acc}% on ACS Income, above our \res{b-inc-a-lr-ours-acc}%. The held-out mechanisms of design B turn this around. Trained on design A, the meta-classifier drops to \res{b-inc-b-lr-metaclassifier-acc}% on ACS Income and \res{b-emp-b-lr-metaclassifier-acc}% on ACS Employment, while our procedure keeps \res{b-inc-b-lr-ours-acc}% and \res{b-emp-b-lr-ours-acc}%. The learned rule had tied each type to the size and shape of the injected shift. It had learned, for example, that covariate shift means a large shift in two features. It therefore misses selection bias, which moves many features a little. This is the main argument for tests over a learned rule. The tests encode what the drift types are, not what the training examples happened to look like.
 
-Design B has no control windows, so false alarms are measured on design A. Our procedure raised one on \res{diag-fa-n} of \res{det-ncontrols} control windows (\res{diag-fa-pct}%), \res{diag-fa-labelfree-n} in the label-free stage and \res{diag-fa-audit-n} in the audit. That is below the bound of \res{diag-fa-bound-pct}% derived in Section @sec:diagnosis.
+The overall rates do not show which types get confused with which. Fig. @fig:confusion breaks the results down by type for LR.
+
+![Injected (rows) and diagnosed (columns) drift types on the benchmark with LR, in counts of windows; darker cells hold a larger share of their row](Fig03.png){#fig:confusion width=131}
+
+A perfect diagnosis would fill only the diagonal. Design B has no control windows, so false alarms are measured on design A. There, most errors sit in the label noise row, where noise is read either as concept drift or as no drift. The control row holds the false alarms. Our procedure raised one on \res{diag-fa-n} of \res{det-ncontrols} control windows (\res{diag-fa-pct}%), \res{diag-fa-labelfree-n} in the label-free stage and \res{diag-fa-audit-n} in the audit. That is below the bound of \res{diag-fa-bound-pct}% derived in Section @sec:diagnosis.
 
 ## Held-out mechanisms {#sec:res-mechanisms}
 
-Design B asks whether the procedure carries over to drift it was not built for. It is the harder of the two tests, since none of its mechanisms shaped any part of the procedure.
+Design B asks whether the procedure carries over to drift it was not built for.
 
 Three of the five mechanisms carry over well. Selection bias is named covariate shift in \res{b-inc-lr-mech-selection-id}% of ACS Income windows with LR, even though no value is distorted and the shift is spread across all features. A lower positive rate is named prior shift in \res{b-inc-lr-mech-priordecrease-id}%. Concept drift in an oblique region, which no single feature bounds, is still recognized in \res{b-inc-lr-mech-conceptoblique-id}%.
 
@@ -152,9 +154,13 @@ The other two mechanisms are harder. A higher threshold relabels some rows in ea
 
 ## Real drift {#sec:res-real}
 
-On real data the type of drift is not known, but its causes are on record. Here we ask whether the verdicts agree with those causes and whether the control windows stay quiet.
+On real data the type of drift is not known, but its causes are on record. Here we ask whether the verdicts agree with those causes and whether the control windows stay quiet. Fig. @fig:timelines shows how accuracy changes over time in all four datasets.
 
-ACS Income shows the clearest trend, so we start there. Its accuracy falls over time for both models, with LR going from \res{inc-ca2015-acc} in 2015 to \res{inc-ca2023-acc} in 2023, while the CBPE estimate falls far less.
+![Measured accuracy of both models and the label-free CBPE estimate on the temporal windows](Fig04.png){#fig:timelines width=131}
+
+C marks the control window. The numbers mark years (ACS), batches (gas sensor) or buckets (CLEAR-10). The gap in the ACS lines is the missing 2020 release.
+
+Its accuracy falls over time for both models, with LR going from \res{inc-ca2015-acc} in 2015 to \res{inc-ca2023-acc} in 2023, while the CBPE estimate falls far less.
 
 Neither model raises an alarm on the control window. Both call CA 2015, whose accuracy did not change significantly, no drift and every other window covariate shift. The documented events can be read off the localization. The 2018 revision of the occupation codes left \res{inc-ca2018-unseen-occp}% of rows with a code that never occurred in 2014. Relationship moves in 2019 (effect size \res{inc-ca2019-eff-relp}), when its survey question was redesigned. Race moves from 2021 (effect size \res{inc-ca2021-eff-rac1p}), once the Census Bureau had changed its coding of written race answers [@census2021race]. Wage growth, measured against a fixed income threshold, shows up in the labels instead: their positive share rises from \res{inc-ctrl-posrate} in the control window to \res{inc-ca2023-posrate} in 2023 while the model predicts only \res{inc-ca2023-predposrate}. Part of the 2023 loss comes from a change in what the labels mean, something no label-free test can detect.
 
@@ -166,6 +172,6 @@ CLEAR-10 drifts more gently: buckets \res{clr-windownums-none} show no drift for
 
 This paper showed that hypothesis tests with a stated error rate can name the drift type, which decides the right response, from label-free tests and a few hundred late labels. On injected drift the procedure beats rules from monitoring practice and the label shift literature and works for both model families. Unlike a learned meta-classifier, it also carries over to held-out drift, because the tests encode the definitions of the types. On real drift it reported no drift on any control window and traced documented events, from new occupation codes to aging sensors.
 
-Several limits apply. Each benchmark window holds a single type, while real windows such as ACS Income 2023 mix several. The four types are also an idealization: sensor aging changes $P(X\mid Y)$ and, through it, $P(Y\mid X)$, yet our procedure reports it as covariate shift. Design B reduces, but cannot remove, the risk that the benchmark favors the tests. The weighted residual tests do not account for the sampling error of the BBSE weights. At several hundred thousand rows almost any shift is significant, so each decision carries an effect size. The audit lets through drift that does not hurt accuracy and often mistakes class-conditional label noise for concept drift. Deep models trained end to end, text and streaming data remain untested. The next steps are an audit conditioned on the full model output, a model of the sampling error of the BBSE weights and benchmark windows that mix several types.
+Several limits apply. Each benchmark window holds a single type, while real windows such as ACS Income 2023 mix several. The four types are also an idealization: sensor aging changes $P(X\mid Y)$ and, through it, $P(Y\mid X)$, yet our procedure reports it as covariate shift. Design B reduces, but cannot remove, the risk that the benchmark favors the tests. The audit lets through drift that does not hurt accuracy and often mistakes class-conditional label noise for concept drift. Deep models trained end to end, text and streaming data remain untested. The next steps are an audit conditioned on the full model output, a model of the sampling error of the BBSE weights and benchmark windows that mix several types.
 
 # References {-}
