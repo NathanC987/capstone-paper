@@ -353,6 +353,8 @@ def ieee_reference(e: Dict[str, str]) -> List[Tuple[str, str, Optional[str]]]:
                  (tex_unicode(e["booktitle"]).replace("{", "").replace("}", ""), "i", None), (f", {year}{pp}", "", None)]
     elif t == "book":
         where = f"{tex_unicode(e['address'])}: " if e.get("address") else ""
+        if not authors and e.get("editor"):
+            authors = ieee_authors(e["editor"]) + ", Eds."
         segs += [(f"{authors}, " if authors else "", "", None), (title, "i", None),
                  (f". {where}{tex_unicode(e.get('publisher', ''))}, {year}", "", None)]
     elif t in ("techreport", "phdthesis"):
@@ -364,7 +366,8 @@ def ieee_reference(e: Dict[str, str]) -> List[Tuple[str, str, Optional[str]]]:
                   f"{e.get('note', '')}{ieee_date(e['date'])}", "", None)]
     elif t in ("online", "misc"):
         org = authors or tex_unicode(e.get("organization", ""))
-        segs += [(f"{org}, \u201c{title},\u201d {year}" if org else f"\u201c{title},\u201d {year}", "", None)]
+        where = f"{tex_unicode(e['howpublished'])}, " if e.get("howpublished") else ""
+        segs += [(f"{org}, \u201c{title},\u201d {where}{year}" if org else f"\u201c{title},\u201d {where}{year}", "", None)]
     else:
         raise ValueError(f"unsupported entry type {t}")
     if e.get("doi"):
@@ -533,7 +536,8 @@ class Book:
         text = b.text.rstrip(".")
         if kind in ("fig", "tab"):
             shown = self.plain(text)
-            self.entries.append(Entry(kind, f"{tag} {b.number}: {shown}", f"{tag} {b.number}: " + " ".join(shown.split()[:3])))
+            short = re.split(r"(?<=[a-z0-9)])[.;] ", shown)[0]      # the lists carry the first sentence only
+            self.entries.append(Entry(kind, f"{tag} {b.number}: {short}", f"{tag} {b.number}: " + " ".join(shown.split()[:3])))
         jc = '<w:jc w:val="both"/>' if len(text) > 120 and kind == "fig" else ""
         return para(style_, run(f"{tag} {b.number}: ", "<w:b/><w:bCs/>") + self.inline(text), jc)
 
@@ -592,7 +596,8 @@ class Book:
                 w = sum(widths[col:col + c.span])
                 span = f'<w:gridSpan w:val="{c.span}"/>' if c.span > 1 else ""
                 fill = f'<w:shd w:val="clear" w:color="auto" w:fill="{HEAD_FILL}"/>' if head and shade else ""
-                body = self.inline(c.text, rpr + ("<w:b/><w:bCs/>" if head else ""))
+                text = re.sub(r"(\$[^$]*\$)|_", lambda m: m.group(1) or "_\u200b", c.text)
+                body = self.inline(text, rpr + ("<w:b/><w:bCs/>" if head else ""))
                 keep = "<w:keepNext/>" if ri < last and ri < 3 else ""
                 tcs.append(f'<w:tc><w:tcPr><w:tcW w:w="{w}" w:type="dxa"/>{span}{fill}<w:vAlign w:val="center"/></w:tcPr>'
                            + para("TableText", body, f'{keep}<w:jc w:val="{align}"/>') + "</w:tc>")
@@ -743,7 +748,7 @@ class Book:
         b = "<w:b/><w:bCs/>"
         out = []
         # certificate
-        out.append(page_break() + self.institute_block() + self.logo(24) + para("FrontTitle", run("Certificate")))
+        out.append(self.institute_block() + self.logo(24) + para("FrontTitle", run("Certificate")))   # the section break starts the page
         out.append(para("Normal", self.inline(
             f"This is to certify that **{name_list}** of Fourth Year Computer Engineering studying in Vivekanand "
             "Education Society\u2019s Institute of Technology, affiliated to University of Mumbai have satisfactorily "

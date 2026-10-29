@@ -54,7 +54,7 @@ $$D = \sup_x \left| F_P(x) - F_Q(x) \right|$$ {#eq:ks}
 
 $$\mathrm{PSI} = \sum_{b=1}^{B} {(q_b - p_b)\ln\frac{q_b}{p_b}}$$ {#eq:psi}
 
-\noindent An alarm is raised when the index of Eq. (@eq:psi) exceeds its conventional value of \res{acs-psi-threshold} [@siddiqi2006]. The **maximum mean discrepancy (MMD)** test compares all standardized inputs jointly [@gretton2012kernel]. With a Gaussian kernel $k(x,y)=\exp\left(-\|x-y\|^2/2\sigma^2\right)$, reference rows $x_1$ to $x_m$ and window rows $y_1$ to $y_n$, its statistic is given by
+\noindent An alarm is raised when the index of Eq. (@eq:psi) exceeds its conventional value of \res{acs-psi-threshold} [@siddiqi2006]. The **maximum mean discrepancy (MMD)** test compares all standardized inputs jointly [@gretton2012kernel]. With a Gaussian kernel $k(x,y)=\exp(-\|x-y\|^2/2\sigma^2)$, reference rows $x_1$ to $x_m$ and window rows $y_1$ to $y_n$, its statistic is given by
 
 $$\mathrm{MMD}^2 = \frac{1}{m^2}\sum_{i,j} k(x_i,x_j) + \frac{1}{n^2}\sum_{i,j} k(y_i,y_j) - \frac{2}{mn}\sum_{i,j} k(x_i,y_j)$$ {#eq:mmd}
 

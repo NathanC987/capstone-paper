@@ -27,7 +27,7 @@ Security and load tests were not considered relevant: the system runs locally on
 
 Table @tab:testcases lists the main test case scenarios. Each is tied to a requirement of Chapter @ch:req and the last column gives the outcome with the test or result that supports it.
 
-Table: Test case scenarios and their results {#tab:testcases widths=0.8,1.3,2.2,2.1,2.1,1.4 size=8.5}
+Table: Test case scenarios and their results {#tab:testcases widths=0.75,1.05,2.0,2.0,1.35,2.85 size=8.5}
 | ID | Requirement | Input / precondition | Expected result | Actual result | Status / evidence |
 |---|---|---|---|---|---|
 | TC-01 | FR-01 | Dataset with a target of the wrong length; invalid detector options | Rejected with a clear error | Rejected | Pass; test_dataset_and_detector_options_are_validated |
