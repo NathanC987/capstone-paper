@@ -16,3 +16,4 @@ submission/
 !dacs/build/figures/*.pdf
 !icmmdu/build/*.pdf
 !icmmdu/figures/*.pdf
+!black-book/*.pdf

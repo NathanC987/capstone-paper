@@ -1,0 +1,211 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.8, pytest-9.0.2, pluggy-1.6.0
+rootdir: /home/nathan/data-drift-autopsy
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.12.1, cov-7.0.0
+collected 113 items
+
+tests/integration/test_dashboard.py .............                        [ 11%]
+tests/test_smoke.py ......                                               [ 16%]
+tests/unit/test_baselines_models_and_design_b.py ....................    [ 34%]
+tests/unit/test_cbpe_detector.py ....                                    [ 38%]
+tests/unit/test_clip_extractor.py ......                                 [ 43%]
+tests/unit/test_drift_injection_benchmark.py .............               [ 54%]
+tests/unit/test_embedding_drift_detectors.py ...                         [ 57%]
+tests/unit/test_extractor_registry.py ..                                 [ 59%]
+tests/unit/test_image_baseline_classifier.py .....                       [ 63%]
+tests/unit/test_image_tabularization_runner.py ....                      [ 67%]
+tests/unit/test_phase2_data_foundation.py .......                        [ 73%]
+tests/unit/test_proxy_metrics.py ..                                      [ 75%]
+tests/unit/test_reliability.py .....                                     [ 79%]
+tests/unit/test_remediation.py .....                                     [ 84%]
+tests/unit/test_resnet_extractor.py ...                                  [ 86%]
+tests/unit/test_shap_and_mmd_fixes.py .....                              [ 91%]
+tests/unit/test_stats_and_categorical.py ..........                      [100%]
+
+==================================== PASSES ====================================
+_____________________ test_app_renders_without_exceptions ______________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-30 00:53:03.504 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+________________ test_clip_dependency_guard_or_basic_behaviour _________________
+----------------------------- Captured stderr call -----------------------------
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+------------------------------ Captured log call -------------------------------
+WARNING  huggingface_hub.utils._http:_http.py:965 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+_____________________ test_clear10_build_bucket_dataframe ______________________
+------------------------------ Captured log call -------------------------------
+WARNING  drift_autopsy.data.loaders:loaders.py:402 CLEAR-10 bucket 1: 1 metadata records have no image file
+============================== slowest durations ===============================
+15.53s call     tests/unit/test_drift_injection_benchmark.py::test_run_replicate_end_to_end_small
+5.25s call     tests/unit/test_remediation.py::test_triage_escalates_on_correctable_covariate_shift_and_iw_recovers
+5.23s call     tests/unit/test_remediation.py::test_strategies_are_deterministic
+3.69s call     tests/unit/test_baselines_models_and_design_b.py::test_shap_importances_are_reproducible_above_ten_features
+2.64s call     tests/unit/test_remediation.py::test_triage_holds_on_concept_shift
+2.64s call     tests/unit/test_remediation.py::test_strategies_that_need_missing_data_are_skipped_not_faked
+1.51s call     tests/unit/test_clip_extractor.py::test_clip_dependency_guard_or_basic_behaviour
+1.49s call     tests/integration/test_dashboard.py::test_app_renders_without_exceptions
+0.94s call     tests/unit/test_remediation.py::test_density_ratio_weights_are_normalised
+0.94s call     tests/unit/test_clip_extractor.py::test_clip_image_text_alignment
+0.43s call     tests/unit/test_baselines_models_and_design_b.py::test_recomputed_verdict_and_precomputed_mmd_match_the_method
+0.37s call     tests/unit/test_shap_and_mmd_fixes.py::test_shap_change_intervals_separate_noise_from_real_change
+0.30s call     tests/integration/test_dashboard.py::test_window_study_loaders_charts_and_text[acs]
+0.29s call     tests/unit/test_stats_and_categorical.py::test_weighted_holm_equal_weights_is_holm_and_controls_fwer
+0.27s call     tests/integration/test_dashboard.py::test_benchmark_views[A]
+0.27s call     tests/unit/test_baselines_models_and_design_b.py::test_gpu_permutation_tests_match_cpu
+0.23s call     tests/unit/test_clip_extractor.py::test_metadata_validation_counts_each_tag_once
+0.20s call     tests/unit/test_baselines_models_and_design_b.py::test_hgb_is_deterministic_and_both_families_fit
+0.19s call     tests/unit/test_reliability.py::test_analyzer_end_to_end_ranks_errors_above_chance
+0.19s call     tests/unit/test_shap_and_mmd_fixes.py::test_shap_explains_positive_class_probability_of_full_pipeline
+0.17s call     tests/unit/test_baselines_models_and_design_b.py::test_bbsd_and_domain_classifier_detect_a_strong_shift_only
+0.17s call     tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[none-none]
+0.16s call     tests/unit/test_reliability.py::test_ood_score_is_calibrated_on_reference_and_flags_extremes_and_unseen
+0.15s call     tests/integration/test_dashboard.py::test_benchmark_views[B]
+0.15s call     tests/integration/test_dashboard.py::test_window_study_loaders_charts_and_text[clear]
+0.15s call     tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[covariate-covariate]
+0.14s call     tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[concept-concept]
+0.14s call     tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[label_noise-label_noise]
+0.13s call     tests/unit/test_drift_injection_benchmark.py::test_aggregate_counts_and_intervals
+0.12s call     tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[prior-prior]
+0.12s call     tests/integration/test_dashboard.py::test_window_study_loaders_charts_and_text[gas]
+0.11s call     tests/unit/test_reliability.py::test_analyzer_without_calibration_is_marked_uncalibrated
+0.10s call     tests/unit/test_shap_and_mmd_fixes.py::test_mmd_permutation_test_controls_type_one_error
+0.08s call     tests/integration/test_dashboard.py::test_acs_specific_views
+0.07s call     tests/unit/test_resnet_extractor.py::test_resnet_extractor_dependency_guard_or_basic_metadata
+0.06s call     tests/integration/test_dashboard.py::test_clear_specific_views
+0.06s call     tests/integration/test_dashboard.py::test_decision_path_matches_the_verdicts
+0.05s call     tests/unit/test_phase2_data_foundation.py::test_clear10_build_bucket_dataframe
+0.04s call     tests/integration/test_dashboard.py::test_remediation_views
+0.03s call     tests/unit/test_stats_and_categorical.py::test_logistic_loglik_is_exact_and_device_independent
+0.03s call     tests/integration/test_dashboard.py::test_year_gap_breaks_the_acs_lines
+0.02s call     tests/integration/test_dashboard.py::test_gas_specific_views
+0.02s call     tests/unit/test_shap_and_mmd_fixes.py::test_mmd_standardize_exposes_shift_hidden_by_large_scale_feature
+0.01s call     tests/unit/test_embedding_drift_detectors.py::test_pca_reconstruction_detects_shift_and_not_null
+0.01s call     tests/unit/test_clip_extractor.py::test_concept_shift_intervals_flag_planted_shift_only
+0.01s call     tests/unit/test_image_tabularization_runner.py::test_quantity_chunking_builds_multiple_analysis_chunks_and_previous_reference_map
+0.01s call     tests/unit/test_embedding_drift_detectors.py::test_frechet_distance_detects_shift_and_not_null
+0.01s call     tests/integration/test_dashboard.py::test_concept_views
+0.01s call     tests/unit/test_image_tabularization_runner.py::test_image_tabularization_runner_trains_baseline_when_bootstrap_disabled
+0.01s call     tests/unit/test_stats_and_categorical.py::test_mmd_categorical_shift_is_seen_without_numeric_change
+0.01s call     tests/unit/test_stats_and_categorical.py::test_label_free_decisions_first_step_matches_block_holm
+0.01s call     tests/unit/test_image_tabularization_runner.py::test_image_tabularization_runner_persists_artifacts
+0.01s call     tests/unit/test_stats_and_categorical.py::test_weighted_ks_matches_scipy_with_unit_weights_and_detects_reweighting
+0.01s call     tests/unit/test_shap_and_mmd_fixes.py::test_mmd_permutation_pvalue_is_seeded
+
+(285 durations < 0.005s hidden.  Use -vv to show these durations.)
+=========================== short test summary info ============================
+PASSED tests/integration/test_dashboard.py::test_window_study_loaders_charts_and_text[acs]
+PASSED tests/integration/test_dashboard.py::test_window_study_loaders_charts_and_text[clear]
+PASSED tests/integration/test_dashboard.py::test_window_study_loaders_charts_and_text[gas]
+PASSED tests/integration/test_dashboard.py::test_decision_path_matches_the_verdicts
+PASSED tests/integration/test_dashboard.py::test_acs_specific_views
+PASSED tests/integration/test_dashboard.py::test_clear_specific_views
+PASSED tests/integration/test_dashboard.py::test_gas_specific_views
+PASSED tests/integration/test_dashboard.py::test_year_gap_breaks_the_acs_lines
+PASSED tests/integration/test_dashboard.py::test_concept_views
+PASSED tests/integration/test_dashboard.py::test_remediation_views
+PASSED tests/integration/test_dashboard.py::test_benchmark_views[A]
+PASSED tests/integration/test_dashboard.py::test_benchmark_views[B]
+PASSED tests/integration/test_dashboard.py::test_app_renders_without_exceptions
+PASSED tests/test_smoke.py::test_dataset_creation
+PASSED tests/test_smoke.py::test_detector_registry
+PASSED tests/test_smoke.py::test_ks_detector_no_drift
+PASSED tests/test_smoke.py::test_ks_detector_with_drift
+PASSED tests/test_smoke.py::test_pipeline_basic
+PASSED tests/test_smoke.py::test_univariate_localizer
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_relshipp_mapping_matches_the_dictionary_labels
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_harmonize_relationship_adds_relp_and_rejects_unknown_codes
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_category_codes_caps_levels_and_pools_unseen
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_hgb_is_deterministic_and_both_families_fit
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_label_free_estimates_on_a_known_case
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_atc_threshold_matches_calibration_accuracy
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_bbsd_and_domain_classifier_detect_a_strong_shift_only
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_sign_flip_test
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_macro_f1
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_rule_baselines_on_hand_built_records
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_recomputed_verdict_and_precomputed_mmd_match_the_method
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_random_direction_is_a_fixed_standardised_function
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_selection_keeps_real_rows_with_their_labels
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_oblique_concept_threshold_and_class_noise_leave_x_untouched
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_gpu_permutation_tests_match_cpu
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_cbpe_keeps_own_confidence_in_sparse_bins
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_fusion_falls_back_without_enough_errors
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_dataset_and_detector_options_are_validated
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_shap_importances_are_reproducible_above_ten_features
+PASSED tests/unit/test_baselines_models_and_design_b.py::test_audit_bins_count_categories_in_the_audit_only
+PASSED tests/unit/test_cbpe_detector.py::test_cbpe_produces_finite_score_with_zero_reference_bins
+PASSED tests/unit/test_cbpe_detector.py::test_cbpe_reference_mean_uses_actual_confidences
+PASSED tests/unit/test_cbpe_detector.py::test_cbpe_estimates_accuracy_from_labelled_reference
+PASSED tests/unit/test_cbpe_detector.py::test_cbpe_binary_1d_probability_is_read_as_positive_class
+PASSED tests/unit/test_clip_extractor.py::test_clip_extractor_is_registered
+PASSED tests/unit/test_clip_extractor.py::test_clip_dependency_guard_or_basic_behaviour
+PASSED tests/unit/test_clip_extractor.py::test_clip_image_text_alignment
+PASSED tests/unit/test_clip_extractor.py::test_concept_probe_ranking_shapes
+PASSED tests/unit/test_clip_extractor.py::test_concept_shift_intervals_flag_planted_shift_only
+PASSED tests/unit/test_clip_extractor.py::test_metadata_validation_counts_each_tag_once
+PASSED tests/unit/test_drift_injection_benchmark.py::test_inject_none_is_identity
+PASSED tests/unit/test_drift_injection_benchmark.py::test_inject_covariate_touches_only_target_features
+PASSED tests/unit/test_drift_injection_benchmark.py::test_inject_prior_preserves_conditionals_but_moves_px
+PASSED tests/unit/test_drift_injection_benchmark.py::test_inject_concept_freezes_px_and_flips_only_the_region
+PASSED tests/unit/test_drift_injection_benchmark.py::test_inject_label_noise_freezes_px_and_flips_about_rate
+PASSED tests/unit/test_drift_injection_benchmark.py::test_bbse_recovers_a_prior_shift
+PASSED tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[none-none]
+PASSED tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[covariate-covariate]
+PASSED tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[prior-prior]
+PASSED tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[concept-concept]
+PASSED tests/unit/test_drift_injection_benchmark.py::test_diagnosis_names_each_injected_type[label_noise-label_noise]
+PASSED tests/unit/test_drift_injection_benchmark.py::test_aggregate_counts_and_intervals
+PASSED tests/unit/test_drift_injection_benchmark.py::test_run_replicate_end_to_end_small
+PASSED tests/unit/test_embedding_drift_detectors.py::test_embedding_detectors_are_registered
+PASSED tests/unit/test_embedding_drift_detectors.py::test_pca_reconstruction_detects_shift_and_not_null
+PASSED tests/unit/test_embedding_drift_detectors.py::test_frechet_distance_detects_shift_and_not_null
+PASSED tests/unit/test_extractor_registry.py::test_extractor_registry_register_and_create
+PASSED tests/unit/test_extractor_registry.py::test_extractor_registry_unknown_name
+PASSED tests/unit/test_image_baseline_classifier.py::test_baseline_classifier_fit_with_split_and_predict
+PASSED tests/unit/test_image_baseline_classifier.py::test_baseline_classifier_save_and_load
+PASSED tests/unit/test_image_baseline_classifier.py::test_create_monitored_model_logistic_regression
+PASSED tests/unit/test_image_baseline_classifier.py::test_create_monitored_model_invalid_name_raises
+PASSED tests/unit/test_image_baseline_classifier.py::test_create_monitored_model_resnet_classifier_if_available
+PASSED tests/unit/test_image_tabularization_runner.py::test_image_tabularization_runner_builds_reference_and_analysis
+PASSED tests/unit/test_image_tabularization_runner.py::test_image_tabularization_runner_persists_artifacts
+PASSED tests/unit/test_image_tabularization_runner.py::test_image_tabularization_runner_trains_baseline_when_bootstrap_disabled
+PASSED tests/unit/test_image_tabularization_runner.py::test_quantity_chunking_builds_multiple_analysis_chunks_and_previous_reference_map
+PASSED tests/unit/test_phase2_data_foundation.py::test_clear10_list_buckets_and_class_names
+PASSED tests/unit/test_phase2_data_foundation.py::test_clear10_build_bucket_dataframe
+PASSED tests/unit/test_phase2_data_foundation.py::test_validate_embedding_contract_valid
+PASSED tests/unit/test_phase2_data_foundation.py::test_validate_embedding_contract_invalid_probability_sum
+PASSED tests/unit/test_phase2_data_foundation.py::test_validate_embedding_contract_allows_missing_y_true
+PASSED tests/unit/test_phase2_data_foundation.py::test_image_config_accepts_chunking_and_monitored_model_fields
+PASSED tests/unit/test_phase2_data_foundation.py::test_image_config_rejects_invalid_chunking_strategy
+PASSED tests/unit/test_proxy_metrics.py::test_multiclass_proxy_estimator_estimate_values
+PASSED tests/unit/test_proxy_metrics.py::test_multiclass_proxy_estimator_supports_missing_y_true
+PASSED tests/unit/test_reliability.py::test_ood_score_is_calibrated_on_reference_and_flags_extremes_and_unseen
+PASSED tests/unit/test_reliability.py::test_stability_uses_reference_scale_and_never_perturbs_categoricals
+PASSED tests/unit/test_reliability.py::test_fusion_learns_weights_and_labels_by_meaningful_bands
+PASSED tests/unit/test_reliability.py::test_analyzer_end_to_end_ranks_errors_above_chance
+PASSED tests/unit/test_reliability.py::test_analyzer_without_calibration_is_marked_uncalibrated
+PASSED tests/unit/test_remediation.py::test_density_ratio_weights_are_normalised
+PASSED tests/unit/test_remediation.py::test_triage_escalates_on_correctable_covariate_shift_and_iw_recovers
+PASSED tests/unit/test_remediation.py::test_triage_holds_on_concept_shift
+PASSED tests/unit/test_remediation.py::test_strategies_that_need_missing_data_are_skipped_not_faked
+PASSED tests/unit/test_remediation.py::test_strategies_are_deterministic
+PASSED tests/unit/test_resnet_extractor.py::test_resnet_extractor_is_registered
+PASSED tests/unit/test_resnet_extractor.py::test_resnet_extractor_dependency_guard_or_basic_metadata
+PASSED tests/unit/test_resnet_extractor.py::test_custom_extractor_registration_with_unique_name
+PASSED tests/unit/test_shap_and_mmd_fixes.py::test_shap_explains_positive_class_probability_of_full_pipeline
+PASSED tests/unit/test_shap_and_mmd_fixes.py::test_mmd_standardize_exposes_shift_hidden_by_large_scale_feature
+PASSED tests/unit/test_shap_and_mmd_fixes.py::test_mmd_permutation_pvalue_is_seeded
+PASSED tests/unit/test_shap_and_mmd_fixes.py::test_mmd_permutation_test_controls_type_one_error
+PASSED tests/unit/test_shap_and_mmd_fixes.py::test_shap_change_intervals_separate_noise_from_real_change
+PASSED tests/unit/test_stats_and_categorical.py::test_holm_step_down_stops_at_first_non_rejection
+PASSED tests/unit/test_stats_and_categorical.py::test_chi2_homogeneity_same_vs_shifted_and_pooling
+PASSED tests/unit/test_stats_and_categorical.py::test_weighted_ks_matches_scipy_with_unit_weights_and_detects_reweighting
+PASSED tests/unit/test_stats_and_categorical.py::test_kish_and_proportions_and_wilson
+PASSED tests/unit/test_stats_and_categorical.py::test_ks_skips_categorical_and_localizer_uses_chi2
+PASSED tests/unit/test_stats_and_categorical.py::test_psi_counts_values_outside_reference_range
+PASSED tests/unit/test_stats_and_categorical.py::test_mmd_categorical_shift_is_seen_without_numeric_change
+PASSED tests/unit/test_stats_and_categorical.py::test_weighted_holm_equal_weights_is_holm_and_controls_fwer
+PASSED tests/unit/test_stats_and_categorical.py::test_label_free_decisions_first_step_matches_block_holm
+PASSED tests/unit/test_stats_and_categorical.py::test_logistic_loglik_is_exact_and_device_independent
+============================= 113 passed in 48.69s =============================
+exit 0
