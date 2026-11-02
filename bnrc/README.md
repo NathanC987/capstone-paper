@@ -39,10 +39,6 @@ reworded apart from what that structure needs:
 | `build/figures/` | the figures used by the LaTeX files |
 | `build/sn-jnl.cls`, `build/sn-basic.bst` | template files, copied so the folder compiles on its own |
 
-## Still to fill
-
-The DOI of the code release archived on Zenodo is printed in red until it exists.
-
 ## Build
 
 From the repository root:
