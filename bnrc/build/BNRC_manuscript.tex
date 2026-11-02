@@ -10,6 +10,10 @@
 \usepackage{textcomp}%
 \usepackage{manyfoot}%
 \usepackage{booktabs}%
+\usepackage{array}%
+\usepackage{tabularx}%
+% floats are never set above the text that introduces them
+\usepackage{flafter}%
 % figures and tables are set in the text flow, right after the paragraph that introduces them
 \makeatletter\providecommand\captionof[1]{\def\@captype{#1}\caption}\makeatother
 
@@ -67,22 +71,23 @@ We evaluate the diagnosis on a benchmark of injected drift where the true type i
 
 Work related to ours comes from several directions: how drift types are defined, how drift is detected, how label shift is estimated and how accuracy can be estimated without labels. Before reviewing each of them, Table~\ref{tab:positioning} sets our work beside the methods closest to it. These are black-box shift detection (BBSD), BBSE, confidence-based performance estimation (CBPE), DetectShift and the method of Roschewitz et al.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Capabilities of the closest methods and of ours}\label{tab:positioning}%
-\begin{tabular}{@{}lcccccc@{}}
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Capabilities of the closest methods and of ours}\label{tab:positioning}%
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xcccccc@{}}
 \toprule
-Method & \multicolumn{1}{c}{Error rate stated} & \multicolumn{1}{c}{Accuracy estimate} & \multicolumn{1}{c}{Localizes features} & \multicolumn{1}{c}{Types named} & \multicolumn{1}{c}{Concept vs noise} & \multicolumn{1}{c}{Held-out drift} \\
+Method & \multicolumn{1}{c}{\begin{tabular}[b]{@{}c@{}}Error rate\\ stated\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[b]{@{}c@{}}Accuracy\\ estimate\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[b]{@{}c@{}}Localizes\\ features\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[b]{@{}c@{}}Types\\ named\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[b]{@{}c@{}}Concept\\ vs noise\end{tabular}} & \multicolumn{1}{c}{\begin{tabular}[b]{@{}c@{}}Held-out\\ drift\end{tabular}} \\
 \midrule
-BBSD~\citep{rabanser2019failing} & \checkmark{} & -- & limited & -- & -- & -- \\
-BBSE~\citep{lipton2018bbse} & \checkmark{} & -- & -- & prior & -- & -- \\
-CBPE~\citep{kivimaki2025performance} & -- & \checkmark{} & -- & -- & -- & -- \\
-DetectShift~\citep{maiapolo2023detectshift} & \checkmark{} & -- & -- & needs labels & -- & -- \\
-Roschewitz et al.~\citeyearpar{roschewitz2025shiftid} & \checkmark{} & -- & -- & prior, cov. & -- & -- \\
+BBSD \mbox{\citep{rabanser2019failing}} & \checkmark{} & -- & limited & -- & -- & -- \\
+BBSE \mbox{\citep{lipton2018bbse}} & \checkmark{} & -- & -- & prior & -- & -- \\
+CBPE \mbox{\citep{kivimaki2025performance}} & -- & \checkmark{} & -- & -- & -- & -- \\
+DetectShift \mbox{\citep{maiapolo2023detectshift}} & \checkmark{} & -- & -- & needs labels & -- & -- \\
+Roschewitz \mbox{et al.~\citeyearpar{roschewitz2025shiftid}} & \checkmark{} & -- & -- & prior, cov. & -- & -- \\
 Ours & \checkmark{} & \checkmark{} & \checkmark{} & four & \checkmark{} & \checkmark{} \\
 \botrule
-\end{tabular}\par\vspace{3pt}
-{\footnotesize\noindent A tick marks a capability that the method provides\par}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{tabularx}
+\footnotetext{A tick marks a capability that the method provides}
+\end{table}
 
 Each existing method covers one or two of the columns. Roschewitz et al. come closest, separating prior from covariate shift without labels, while DetectShift names types only when the production data are labeled. The paragraphs below look at each line of work in turn.
 
@@ -106,10 +111,10 @@ This section describes the monitoring pipeline and then the experiments used to 
 
 This section first defines the four drift types precisely and then follows the data through the pipeline introduced in Section~\ref{sec:intro}. Its input is a deployed model, the labeled data on which it was built and a stream of unlabeled production data, plus a few hundred late labels once they arrive. Fig.~\ref{fig:architecture} lays out the stages.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=81.6mm,height=0.6\textheight,keepaspectratio]{Fig01.pdf}
-\captionof{figure}{Stages of the monitoring pipeline, from the inputs (A) to the advice on retraining (F)}\label{fig:architecture}
-\end{minipage}\par\vspace{0.7\intextsep}
+\caption{Stages of the monitoring pipeline, from the inputs (A) to the advice on retraining (F)}\label{fig:architecture}
+\end{figure}
 
 Stages A to C bring the data into a common form, test whether anything has changed and estimate how much accuracy the change may cost. Stage D, the core of the paper, names the type of change and points to its likely cause. Stages E and F then act on what was found, first for single predictions and then for the decision to retrain. Only the optional audit in stage D uses production labels. With one exception, every decision in the pipeline is a hypothesis test at the significance level $\alpha=0.05$. The exception is the population stability index (PSI), which raises an alarm at a conventional threshold. When many tests are run together, the chance of at least one false alarm is held at $\alpha$ by the Holm procedure~\citep{holm1979}, its weighted form or its Bonferroni bound.
 
@@ -137,10 +142,10 @@ An alarm helps more when it also says where the change sits. Localization tests 
 
 Stage D turns an alarm into one of the four types and thereby into a response. It follows the decision path in Fig.~\ref{fig:decision}. The questions in the upper row use no labels and separate covariate shift from prior shift. The lower row separates concept drift from label noise. It runs only when no label-free test rejects and an audit is available.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=83.5mm,height=0.6\textheight,keepaspectratio]{Fig02.pdf}
-\captionof{figure}{Decision path that names the drift type. Questions are shown in white boxes and verdicts in gray boxes; the upper row needs no labels and the lower row uses the audit}\label{fig:decision}
-\end{minipage}\par\vspace{0.7\intextsep}
+\caption{Decision path that names the drift type. Questions are shown in white boxes and verdicts in gray boxes; the upper row needs no labels and the lower row uses the audit}\label{fig:decision}
+\end{figure}
 
 \emph{Label-free stage.} The first question is whether anything has moved at all. Three blocks of tests answer it: the feature tests, a $\chi^2$ test on the predicted labels and the MMD test. They form one family tested at level $\alpha$ with a weighted Holm procedure~\citep{holm1979}. The weight starts out split evenly, one third per block. Inside the feature block it is divided again among the individual features. A test that rejects hands its weight on to those still waiting, which is how the family-wise error rate survives every label-free decision. In its first step the procedure reduces to ordinary Holm over the three blocks, each feature block entering through its Bonferroni p value. We pool in this way on purpose. A permutation test cannot return a p value below $1/(B+1)$, so without pooling the MMD test would have little chance against dozens of feature tests. If nothing rejects, the stage stops and reports no shift.
 
@@ -180,9 +185,10 @@ A diagnosis that worked for only one kind of model would be of limited use, so t
 
 The real datasets were chosen because the cause of their drift is documented, which lets us check the verdicts against known events. Table~\ref{tab:datasets} lists the four of them. Two are census tasks from the American Community Survey (ACS) with data from California (CA), Texas (TX), New York (NY), Florida (FL) and Washington (WA). The other two are a gas sensor array and an image stream.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Datasets, drift windows and reference accuracy}\label{tab:datasets}%
-\begin{tabular}{@{}lllrrrrr@{}}
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Datasets, drift windows and reference accuracy}\label{tab:datasets}%
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}ll>{\raggedright\arraybackslash}Xrrrrr@{}}
 \toprule
  &  &  & \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Ref. accuracy} \\
 \cmidrule(lr){7-8}
@@ -193,8 +199,8 @@ ACS Employment & CA 2014 & CA 2015--19 and 2021--23; TX, NY, FL, WA 2014 & 56,57
 Gas sensor & batches 1--2 & batches 3--10 & 161--3,613 & 128 & 6 & 0.982 & 0.985 \\
 CLEAR-10 & bucket 1 & buckets 2--10 & 3,297--3,300 & 512 & 11 & 0.914 & 0.897 \\
 \botrule
-\end{tabular}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{tabularx}
+\end{table}
 
 Rows gives the smallest and the largest window, Inputs the number of features or embedding dimensions and the last two columns the reference test accuracy of LR and GB.
 
@@ -228,8 +234,8 @@ The benchmark comes first: how often the type is named, whether the procedure ca
 
 The most direct test of the diagnosis is how often it names the injected type, compared with the baselines. Table~\ref{tab:methods} gives this share for every configuration, each with 50 replicates.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Share of benchmark windows with the correct drift type (\%)}\label{tab:methods}%
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Share of benchmark windows with the correct drift type (\%)}\label{tab:methods}%
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
  & \multicolumn{1}{c}{Inc. A} & \multicolumn{1}{c}{Inc. B} & \multicolumn{1}{c}{Emp. A} & \multicolumn{1}{c}{Emp. B} \\
@@ -258,9 +264,9 @@ Ours, no MMD & 95.1 & 63.9 & 90.5 & 81.3 \\
 Ours, no confidence & 78.0$\downarrow$ & 62.9 & 85.4$\downarrow$ & 82.0 \\
 Ours, class cells & 92.9$\downarrow$ & 66.5$\uparrow$ & 90.6 & 93.7$\uparrow$ \\
 \botrule
-\end{tabular}\par\vspace{3pt}
-{\footnotesize\noindent Values are given for each model family, task and design\par}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{tabular}
+\footnotetext{Values are given for each model family, task and design}
+\end{table}
 
 Inc. and Emp. stand for ACS Income and ACS Employment. A and B are the two designs. An arrow marks a method that differs significantly from ours after Holm correction: a down arrow means that ours is better and an up arrow that ours is worse. Within each model family the upper block lists the competing methods and the lower block the ablations of our procedure.
 
@@ -270,10 +276,10 @@ On design A the learned meta-classifier is the strongest competitor. Validated o
 
 The overall rates do not show which types get confused with which. Fig.~\ref{fig:confusion} breaks the results down by type for LR.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=83.5mm,height=0.6\textheight,keepaspectratio]{Fig03.pdf}
-\captionof{figure}{Injected (rows) and diagnosed (columns) drift types on the benchmark with LR. Cells give counts of windows; darker cells hold a larger share of their row}\label{fig:confusion}
-\end{minipage}\par\vspace{0.7\intextsep}
+\caption{Injected (rows) and diagnosed (columns) drift types on the benchmark with LR. Cells give counts of windows; darker cells hold a larger share of their row}\label{fig:confusion}
+\end{figure}
 
 A perfect diagnosis would fill only the diagonal. Design B has no control windows, so false alarms are measured on design A. There, most errors sit in the label noise row, where noise is read either as concept drift or as no drift. The control row holds the false alarms. Our procedure raised one on 13 of 200 control windows (6.5\%), 7 in the label-free stage and 6 in the audit. That is below the bound of 10\% derived in Section~\ref{sec:diagnosis}. In design B the errors gather in the concept and noise rows, for reasons given in Section~\ref{sec:res-mechanisms}.
 
@@ -283,8 +289,8 @@ The ablations show which parts of the procedure carry the weight. Without the co
 
 Design B asks whether the procedure carries over to drift it was not built for. It is the harder of the two tests, since none of its mechanisms shaped any part of the procedure. Table~\ref{tab:mechanisms} gives the results for each mechanism.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Design B results by drift mechanism}\label{tab:mechanisms}%
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Design B results by drift mechanism}\label{tab:mechanisms}%
 \begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
  & \multicolumn{4}{c}{ACS Income} & \multicolumn{4}{c}{ACS Employment} \\
@@ -304,7 +310,7 @@ Concept: income threshold & 4 & \textminus{}0.3 & 6 & 0.2 & -- & -- & -- & -- \\
 Noise: class-conditional & 21 & 2.8 & 23 & 3.1 & 35 & 7.7 & 33 & 8.0 \\
 \botrule
 \end{tabular}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{table}
 
 Corr. is the share of windows typed correctly (\%) and Drop is the mean true accuracy drop in points; a negative value means that accuracy rose. The income threshold mechanism exists only for ACS Income.
 
@@ -318,8 +324,8 @@ Results on ACS Employment and with GB point the same way. On design A the proced
 
 The diagnosis rests on the detectors and on the accuracy estimate, so we also check both on the benchmark. Table~\ref{tab:detectors} gives the alarm rate of each detector for each injected type, pooled over the four design A configurations.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Detector alarm rates on design A by injected type}\label{tab:detectors}%
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Detector alarm rates on design A by injected type}\label{tab:detectors}%
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
  & \multicolumn{5}{c}{Alarm rate (\%) by injected type} \\
@@ -334,12 +340,12 @@ BBSD & 2.5 [1.1, 5.7] & 100.0 & 100.0 & 2.5 & 2.5 \\
 Domain classifier & 6.0 [3.5, 10.2] & 100.0 & 72.0 & 6.0 & 6.0 \\
 \botrule
 \end{tabular}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{table}
 
 The no drift column is the false alarm rate with its 95\% confidence interval (CI). Over 200 control windows every interval contains $\alpha=0.05$ or lies below it. All detectors catch covariate shift and all except PSI also catch most prior shifts. In concept drift and label noise windows the inputs are the same as in the control window of their replicate, so no detector can see them. This is why the audit is needed. Table~\ref{tab:estimators} turns to the four accuracy estimates and compares them by their mean absolute error against the measured accuracy.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Mean absolute error of the label-free accuracy estimates (points)}\label{tab:estimators}%
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Mean absolute error of the label-free accuracy estimates (points)}\label{tab:estimators}%
 \begin{tabular}{@{}lrrrrrrrr@{}}
 \toprule
  & \multicolumn{4}{c}{Benchmark (design A)} & \multicolumn{4}{c}{Real windows} \\
@@ -353,7 +359,7 @@ DoC & \textbf{0.50} & 9.63 & 3.12 & 14.71 & 1.77 & 1.06 & 29.78 & 0.76 \\
 ATC & 0.63 & 10.31 & \textbf{2.43} & \textbf{14.66} & \textbf{1.15} & \textbf{1.02} & \textbf{26.95} & \textbf{0.62} \\
 \botrule
 \end{tabular}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{table}
 
 Cov. and Conc. stand for covariate shift and concept drift, Inc. and Emp. for the two ACS tasks. The smallest error in each column is in bold. On design A all four estimates stay within 0.83 points without drift and within 10.31 points under covariate shift. Under concept drift and label noise every error equals the whole loss, about 14.71 points, because the inputs do not change. Across these 8 comparisons ATC has the smallest error in 6 and CBPE in only 2. On the gas sensor data all four miss by 26.95 to 30.98 points on average. In batch 8 the mean confidence of the LR model falls from 0.973 to 0.595 and its accuracy to 0.330, yet CBPE estimates 0.618. The estimate is best read as an upper bound on accuracy.
 
@@ -361,17 +367,17 @@ Cov. and Conc. stand for covariate shift and concept drift, Inc. and Emp. for th
 
 On real data the type of drift is not known, but its causes are on record. Here we ask whether the verdicts agree with those causes and whether the control windows stay quiet. Fig.~\ref{fig:timelines} shows how accuracy changes over time in all four datasets.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=83.5mm,height=0.6\textheight,keepaspectratio]{Fig04.pdf}
-\captionof{figure}{Measured accuracy of both models and the label-free CBPE estimate on the temporal windows}\label{fig:timelines}
-\end{minipage}\par\vspace{0.7\intextsep}
+\caption{Measured accuracy of both models and the label-free CBPE estimate on the temporal windows}\label{fig:timelines}
+\end{figure}
 
 C marks the control window. The numbers mark years (ACS), batches (gas sensor) or buckets (CLEAR-10). The gap in the ACS lines is the missing 2020 release.
 
 ACS Income shows the clearest trend, so we start there. Its accuracy falls over time for both models, with LR going from 0.824 in 2015 to 0.749 in 2023, while the CBPE estimate falls far less. Table~\ref{tab:income} lists the details behind the ACS Income panel of Fig.~\ref{fig:timelines}.
 
-\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
-\captionof{table}{Detection and diagnosis on the ACS Income windows}\label{tab:income}%
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Detection and diagnosis on the ACS Income windows}\label{tab:income}%
 \begin{tabular}{@{}lrrrcccccll@{}}
 \toprule
  & \multicolumn{3}{c}{Accuracy} & \multicolumn{5}{c}{Alarms} &  &  \\
@@ -393,9 +399,9 @@ NY & \textminus{}2.2 & \textminus{}2.7 & +0.8 & \checkmark{} & \checkmark{} & \c
 FL & \textminus{}4.0 & \textminus{}4.3 & +2.2 & \checkmark{} & \checkmark{} & \checkmark{} & \checkmark{} & \checkmark{} & POBP,~RAC1P & Cov. \\
 WA & \textminus{}2.5 & \textminus{}2.5 & +0.9 & \checkmark{} & \checkmark{} & \checkmark{} & \checkmark{} & \checkmark{} & POBP,~RAC1P & Cov. \\
 \botrule
-\end{tabular}\par\vspace{3pt}
-{\footnotesize\noindent The alarms are those of the LR model: K is the KS test, M the MMD test, C the confidence test, B BBSD and D the domain classifier\par}
-\end{minipage}\par\vspace{0.7\intextsep}
+\end{tabular}
+\footnotetext{The alarms are those of the LR model: K is the KS test, M the MMD test, C the confidence test, B BBSD and D the domain classifier}
+\end{table}
 
 The years are the California windows and TX, NY, FL and WA the 2014 windows of the other states. $\Delta$ is the change in accuracy, in points, against each model's accuracy on the control window. Est. err. is the error of the CBPE estimate. A tick marks an alarm. Type is the verdict of the diagnosis, the same for LR and GB in every window (Cov. is covariate shift). Top shifts lists the two features with the largest effect size: occupation (OCCP), place of birth (POBP), relationship (RELP) and race (RAC1P).
 
