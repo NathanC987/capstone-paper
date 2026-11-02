@@ -27,8 +27,8 @@ WIDTH_CM, HEIGHT_CM, DPI = 20.0, 6.6, 600
 INK, NAVY, LIGHT = "#1b1f3b", "#2e3a8c", "#9fb3e8"
 
 METHODS = [("Ours (hierarchical tests)", "Ours"), ("Learned meta-classifier", "Meta-\nclassifier"),
-           ("Error-rate monitoring", "Error-rate\nmonitoring"), ("BBSE first", "BBSE\nfirst"),
-           ("Input monitoring", "Input\nmonitoring")]
+           ("Error-rate monitoring", "Error-rate\nmonitor"), ("BBSE first", "BBSE\nfirst"),
+           ("Input monitoring", "Input\nmonitor")]
 
 
 def method_means():
@@ -55,58 +55,53 @@ def main() -> None:
     fig.patch.set_alpha(0)
 
     # left: correct drift type per method, matched against held-out drift
-    ax = fig.add_axes([0.055, 0.21, 0.50, 0.62])
+    ax = fig.add_axes([0.045, 0.17, 0.50, 0.63])
     ax.patch.set_alpha(0)
     x = range(len(METHODS))
-    w = 0.38
+    w = 0.4
     a = [means[m]["A"] for m, _ in METHODS]
     b = [means[m]["B"] for m, _ in METHODS]
-    bars_a = ax.bar([i - w / 2 for i in x], a, w, color=NAVY, label="Matched drift (design A)")
-    bars_b = ax.bar([i + w / 2 for i in x], b, w, color=LIGHT, edgecolor=NAVY, linewidth=0.6,
-                    label="Held-out drift (design B)")
+    bars_a = ax.bar([i - w / 2 for i in x], a, w, color=NAVY, label="Matched drift")
+    bars_b = ax.bar([i + w / 2 for i in x], b, w, color=LIGHT, edgecolor=NAVY, linewidth=0.7,
+                    label="Held-out drift")
     for bars in (bars_a, bars_b):
         for bar in bars:
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1.5, f"{bar.get_height():.0f}",
-                    ha="center", va="bottom", fontsize=6.5, fontweight="bold")
-    ax.set_xticks(list(x), [short for _, short in METHODS], fontsize=6.8)
-    ax.set_ylim(0, 112)
-    ax.set_yticks([0, 25, 50, 75, 100])
-    ax.tick_params(axis="y", labelsize=6.5, length=2)
+                    ha="center", va="bottom", fontsize=9, fontweight="bold")
+    ax.set_xticks(list(x), [short for _, short in METHODS], fontsize=9)
+    ax.set_ylim(0, 118)
+    ax.set_yticks([0, 50, 100])
+    ax.tick_params(axis="y", labelsize=8.5, length=2)
     ax.tick_params(axis="x", length=0, pad=2)
-    ax.set_ylabel("Windows with correct type (%)", fontsize=6.8)
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     for side in ("left", "bottom"):
         ax.spines[side].set_color(INK)
-        ax.spines[side].set_linewidth(0.6)
+        ax.spines[side].set_linewidth(0.7)
     ax.grid(axis="y", color=INK, alpha=0.15, linewidth=0.5)
     ax.set_axisbelow(True)
-    ax.legend(loc="upper right", fontsize=6.3, frameon=False, ncol=1, handlelength=1.2, borderaxespad=0)
-    fig.text(0.055, 0.93, "Drift type diagnosis on the injection benchmark", fontsize=8.6, fontweight="bold")
-    fig.text(0.055, 0.03, f"Mean over 2 census tasks × 2 model families, {r['bench-nreps']} replicates each.",
-             fontsize=6)
+    ax.legend(loc="upper right", fontsize=9, frameon=False, ncol=2, handlelength=1.1, columnspacing=1.0,
+              borderaxespad=0, bbox_to_anchor=(1.0, 1.08))
+    fig.text(0.045, 0.9, "Correct drift type (%)", fontsize=12, fontweight="bold")
 
     # right: headline numbers
     tiles = [
-        (f"{r['bench-a-ours-min']}–{r['bench-a-ours-max']}%", "correct drift type on\nmatched drift"),
+        (f"{r['bench-a-ours-min']}–{r['bench-a-ours-max']}%", "correct type,\nmatched drift"),
         (f"{r['bench-b-ours-min']}–{r['bench-b-ours-max']}%",
-         f"on held-out drift, where the\nmeta-classifier falls to {r['bench-b-meta-min']}–{r['bench-b-meta-max']}%"),
-        (f"{ctrl_flagged}", "control windows flagged on\n4 real datasets with 2 models"),
-        (f"{r['rem-recent-correct']} / {r['rem-recent-n']}", "real settings where the\nretrain advice was right"),
+         f"held-out drift\n(meta-classifier:\n{r['bench-b-meta-min']}–{r['bench-b-meta-max']}%)"),
+        (f"{ctrl_flagged}", "false alarms on\nreal control data"),
+        (f"{r['rem-recent-correct']} / {r['rem-recent-n']}", "correct retrain\nadvice, real data"),
     ]
-    x0, y0, tw, th, gap = 0.605, 0.10, 0.185, 0.385, 0.012
+    x0, y0, tw, th, gap = 0.578, 0.04, 0.198, 0.39, 0.015
     for k, (big, small) in enumerate(tiles):
         col, row = k % 2, 1 - k // 2
         tx, ty = x0 + col * (tw + gap), y0 + row * (th + gap * 3)
         fig.patches.append(FancyBboxPatch((tx, ty), tw, th, boxstyle="round,pad=0,rounding_size=0.02",
-                                          transform=fig.transFigure, facecolor="white", alpha=0.72,
-                                          edgecolor=NAVY, linewidth=0.7))
-        fig.text(tx + tw / 2, ty + th * 0.66, big, ha="center", va="center", fontsize=12.5,
+                                          transform=fig.transFigure, facecolor="white", alpha=0.75,
+                                          edgecolor=NAVY, linewidth=0.8))
+        fig.text(tx + tw / 2, ty + th * 0.74, big, ha="center", va="center", fontsize=16,
                  fontweight="bold", color=NAVY)
-        fig.text(tx + tw / 2, ty + th * 0.27, small, ha="center", va="center", fontsize=6.3, linespacing=1.15)
-    fig.text(x0, 0.93, "Key results", fontsize=8.6, fontweight="bold")
-    fig.text(x0, 0.03, f"False verdicts on {r['det-ncontrols']} benchmark control windows: {r['diag-fa-pct']}% "
-             f"(bound 2α = 10%).", fontsize=6)
+        fig.text(tx + tw / 2, ty + th * 0.31, small, ha="center", va="center", fontsize=9, linespacing=1.1)
 
     fig.savefig(OUT, dpi=DPI, transparent=True)
     print(f"{OUT.relative_to(ROOT)}: {WIDTH_CM} x {HEIGHT_CM} cm at {DPI} dpi")
