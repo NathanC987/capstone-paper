@@ -41,8 +41,7 @@ reworded apart from what that structure needs:
 
 ## Still to fill
 
-The DOI of the code release archived on Zenodo is printed in red until it exists. The
-repository also needs the MIT `LICENSE` file that `pyproject.toml` already declares.
+The DOI of the code release archived on Zenodo is printed in red until it exists.
 
 ## Build
 
