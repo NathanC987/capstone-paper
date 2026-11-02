@@ -1,0 +1,225 @@
+\begin{thebibliography}{39}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+\providecommand{\eprint}[2][]{\url{#2}}
+ \bibcommenthead
+
+\bibitem[{Beckhusen(2020)}]{census2020occupation}
+Beckhusen JB (2020) Recent changes in the {Census} industry and occupation
+  classification systems. Tech. Rep. ACS-TP78, U.S. Census Bureau, Suitland,
+  MD, USA,
+  \urlprefix\url{https://www.census.gov/library/publications/2020/demo/acs-tp78.html},
+  accessed 21 October 2026
+
+\bibitem[{Cochran(1954)}]{cochran1954}
+Cochran WG (1954) Some methods for strengthening the common $\chi^2$ tests.
+  Biometrics 10(4):417--451. \doi{10.2307/3001616}
+
+\bibitem[{Cortes et~al.(2010)Cortes, Mansour, and Mohri}]{cortes2010weights}
+Cortes C, Mansour Y, Mohri M (2010) Learning bounds for importance weighting.
+  In: Advances in Neural Information Processing Systems 23, Vancouver, Canada,
+  pp 442--450
+
+\bibitem[{Ding et~al.(2021)Ding, Hardt, Miller, and Schmidt}]{ding2021retiring}
+Ding F, Hardt M, Miller J, et~al (2021) Retiring adult: New datasets for fair
+  machine learning. In: Advances in Neural Information Processing Systems 34,
+  Virtual, pp 6478--6490
+
+\bibitem[{Gama et~al.(2004)Gama, Medas, Castillo, and Rodrigues}]{gama2004ddm}
+Gama J, Medas P, Castillo G, et~al (2004) Learning with drift detection. In:
+  Advances in Artificial Intelligence -- SBIA 2004, S{\~a}o Lu{\'i}s, Brazil,
+  pp 286--295, \doi{10.1007/978-3-540-28645-5_29}
+
+\bibitem[{Garg et~al.(2022)Garg, Balakrishnan, Lipton, Neyshabur, and
+  Sedghi}]{garg2022atc}
+Garg S, Balakrishnan S, Lipton ZC, et~al (2022) Leveraging unlabeled data to
+  predict out-of-distribution performance. In: The Tenth International
+  Conference on Learning Representations, Virtual
+
+\bibitem[{Gretton et~al.(2012)Gretton, Borgwardt, Rasch, Sch{\"o}lkopf, and
+  Smola}]{gretton2012kernel}
+Gretton A, Borgwardt KM, Rasch MJ, et~al (2012) A kernel two-sample test.
+  Journal of Machine Learning Research 13:723--773
+
+\bibitem[{Guillory et~al.(2021)Guillory, Shankar, Ebrahimi, Darrell, and
+  Schmidt}]{guillory2021predicting}
+Guillory D, Shankar V, Ebrahimi S, et~al (2021) Predicting with confidence on
+  unseen distributions. In: 2021 IEEE/CVF International Conference on Computer
+  Vision, Montreal, QC, Canada, pp 1114--1124,
+  \doi{10.1109/ICCV48922.2021.00117}
+
+\bibitem[{He et~al.(2016)He, Zhang, Ren, and Sun}]{he2016deep}
+He K, Zhang X, Ren S, et~al (2016) Deep residual learning for image
+  recognition. In: 2016 IEEE Conference on Computer Vision and Pattern
+  Recognition, Las Vegas, NV, USA, pp 770--778, \doi{10.1109/CVPR.2016.90}
+
+\bibitem[{Hendrycks and Gimpel(2017)}]{hendrycks2017baseline}
+Hendrycks D, Gimpel K (2017) A baseline for detecting misclassified and
+  out-of-distribution examples in neural networks. In: 5th International
+  Conference on Learning Representations, Toulon, France
+
+\bibitem[{Holm(1979)}]{holm1979}
+Holm S (1979) A simple sequentially rejective multiple test procedure.
+  Scandinavian Journal of Statistics 6(2):65--70
+
+\bibitem[{Ke et~al.(2017)Ke, Meng, Finley, Wang, Chen, Ma, Ye, and
+  Liu}]{ke2017lightgbm}
+Ke G, Meng Q, Finley T, et~al (2017) {LightGBM:} a highly efficient gradient
+  boosting decision tree. In: Advances in Neural Information Processing Systems
+  30, Long Beach, CA, USA, pp 3146--3154
+
+\bibitem[{Kish(1965)}]{kish1965}
+Kish L (1965) Survey Sampling. Wiley, New York, NY, USA
+
+\bibitem[{Kivim{\"a}ki et~al.(2026)Kivim{\"a}ki, Bia{\l}ek, Kuberski, and
+  Nurminen}]{kivimaki2025performance}
+Kivim{\"a}ki J, Bia{\l}ek J, Kuberski W, et~al (2026) Performance estimation in
+  binary classification using calibrated confidence. Machine Learning
+  115(3):67. \doi{10.1007/s10994-025-06970-3}
+
+\bibitem[{Lin et~al.(2021)Lin, Shi, Pathak, and Ramanan}]{lin2021clear}
+Lin Z, Shi J, Pathak D, et~al (2021) The {CLEAR} benchmark: Continual
+  {LEArning} on real-world imagery. In: Proceedings of the Neural Information
+  Processing Systems Track on Datasets and Benchmarks 1, Virtual
+
+\bibitem[{Lipton et~al.(2018)Lipton, Wang, and Smola}]{lipton2018bbse}
+Lipton ZC, Wang YX, Smola AJ (2018) Detecting and correcting for label shift
+  with black box predictors. In: Proceedings of the 35th International
+  Conference on Machine Learning, Stockholm, Sweden, pp 3122--3130
+
+\bibitem[{Liu et~al.(2008)Liu, Ting, and Zhou}]{liu2008isolation}
+Liu FT, Ting KM, Zhou ZH (2008) Isolation forest. In: 2008 Eighth IEEE
+  International Conference on Data Mining, Pisa, Italy, pp 413--422,
+  \doi{10.1109/ICDM.2008.17}
+
+\bibitem[{Lopez-Paz and Oquab(2017)}]{lopezpaz2017c2st}
+Lopez-Paz D, Oquab M (2017) Revisiting classifier two-sample tests. In: 5th
+  International Conference on Learning Representations, Toulon, France
+
+\bibitem[{Lundberg and Lee(2017)}]{lundberg2017unified}
+Lundberg SM, Lee SI (2017) A unified approach to interpreting model
+  predictions. In: Advances in Neural Information Processing Systems 30, Long
+  Beach, CA, USA, pp 4765--4774
+
+\bibitem[{Maia~Polo et~al.(2023)Maia~Polo, Izbicki, Lacerda, Ibieta-Jimenez,
+  and Vicente}]{maiapolo2023detectshift}
+Maia~Polo F, Izbicki R, Lacerda EG, et~al (2023) A unified framework for
+  dataset shift diagnostics. Information Sciences 649:119612.
+  \doi{10.1016/j.ins.2023.119612}
+
+\bibitem[{Moreno-Torres et~al.(2012)Moreno-Torres, Raeder, Alaiz-Rodr{\'i}guez,
+  Chawla, and Herrera}]{moreno2012unifying}
+Moreno-Torres JG, Raeder T, Alaiz-Rodr{\'i}guez R, et~al (2012) A unifying view
+  on dataset shift in classification. Pattern Recognition 45(1):521--530.
+  \doi{10.1016/j.patcog.2011.06.019}
+
+\bibitem[{Ovadia et~al.(2019)Ovadia, Fertig, Ren, Nado, Sculley, Nowozin,
+  Dillon, Lakshminarayanan, and Snoek}]{ovadia2019trust}
+Ovadia Y, Fertig E, Ren J, et~al (2019) Can you trust your model's uncertainty?
+  evaluating predictive uncertainty under dataset shift. In: Advances in Neural
+  Information Processing Systems 32, Vancouver, Canada, pp 13991--14002
+
+\bibitem[{Pedregosa et~al.(2011)Pedregosa, Varoquaux, Gramfort, Michel,
+  Thirion, Grisel, Blondel, Prettenhofer, Weiss, Dubourg, Vanderplas, Passos,
+  Cournapeau, Brucher, Perrot, and Duchesnay}]{pedregosa2011scikit}
+Pedregosa F, Varoquaux G, Gramfort A, et~al (2011) Scikit-learn: Machine
+  learning in python. Journal of Machine Learning Research 12:2825--2830
+
+\bibitem[{Peduzzi et~al.(1996)Peduzzi, Concato, Kemper, Holford, and
+  Feinstein}]{peduzzi1996}
+Peduzzi P, Concato J, Kemper E, et~al (1996) A simulation study of the number
+  of events per variable in logistic regression analysis. Journal of Clinical
+  Epidemiology 49(12):1373--1379. \doi{10.1016/S0895-4356(96)00236-3}
+
+\bibitem[{Phipson and Smyth(2010)}]{phipson2010}
+Phipson B, Smyth GK (2010) Permutation p-values should never be zero:
+  Calculating exact p-values when permutations are randomly drawn. Statistical
+  Applications in Genetics and Molecular Biology 9(1):39.
+  \doi{10.2202/1544-6115.1585}
+
+\bibitem[{Rabanser et~al.(2019)Rabanser, G{\"u}nnemann, and
+  Lipton}]{rabanser2019failing}
+Rabanser S, G{\"u}nnemann S, Lipton ZC (2019) Failing loudly: An empirical
+  study of methods for detecting dataset shift. In: Advances in Neural
+  Information Processing Systems 32, Vancouver, Canada, pp 1394--1406
+
+\bibitem[{Rodriguez-Lujan et~al.(2014)Rodriguez-Lujan, Fonollosa, Vergara,
+  Homer, and Huerta}]{rodriguezlujan2014gas}
+Rodriguez-Lujan I, Fonollosa J, Vergara A, et~al (2014) On the calibration of
+  sensor arrays for pattern recognition using the minimal number of
+  experiments. Chemometrics and Intelligent Laboratory Systems 130:123--134.
+  \doi{10.1016/j.chemolab.2013.10.012}
+
+\bibitem[{Roschewitz et~al.(2025)Roschewitz, Mehta, Jones, and
+  Glocker}]{roschewitz2025shiftid}
+Roschewitz M, Mehta R, Jones C, et~al (2025) Automatic dataset shift
+  identification to support safe deployment of medical imaging {AI}. In:
+  Medical Image Computing and Computer Assisted Intervention -- MICCAI 2025,
+  Daejeon, South Korea, pp 67--76, \doi{10.1007/978-3-032-04981-0_7}
+
+\bibitem[{Shimodaira(2000)}]{shimodaira2000}
+Shimodaira H (2000) Improving predictive inference under covariate shift by
+  weighting the log-likelihood function. Journal of Statistical Planning and
+  Inference 90(2):227--244. \doi{10.1016/S0378-3758(00)00115-4}
+
+\bibitem[{Siddiqi(2006)}]{siddiqi2006}
+Siddiqi N (2006) Credit Risk Scorecards: Developing and Implementing
+  Intelligent Credit Scoring. Wiley, Hoboken, NJ, USA,
+  \doi{10.1002/9781119201731}
+
+\bibitem[{Sugiyama et~al.(2007)Sugiyama, Krauledat, and
+  M{\"u}ller}]{sugiyama2007}
+Sugiyama M, Krauledat M, M{\"u}ller KR (2007) Covariate shift adaptation by
+  importance weighted cross validation. Journal of Machine Learning Research
+  8:985--1005
+
+\bibitem[{{U.S. Census Bureau}(2020)}]{census2019pums}
+{U.S. Census Bureau} (2020) American community survey 2019 {PUMS} data
+  dictionary.
+  \urlprefix\url{https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2019.csv},
+  accessed 21 October 2026
+
+\bibitem[{{U.S. Census Bureau}(2021{\natexlab{a}})}]{census2021experimental}
+{U.S. Census Bureau} (2021{\natexlab{a}}) 2020 {ACS} 1-year experimental data
+  release.
+  \urlprefix\url{https://www.census.gov/programs-surveys/acs/data/experimental-data.html},
+  accessed 21 October 2026
+
+\bibitem[{{U.S. Census Bureau}(2021{\natexlab{b}})}]{census2021race}
+{U.S. Census Bureau} (2021{\natexlab{b}}) Improvements to the {Race} {Question}
+  {(ACS} {User} {Note} 2021-03).
+  \urlprefix\url{https://www.census.gov/programs-surveys/acs/technical-documentation/user-notes/2021-03.html},
+  accessed 21 October 2026
+
+\bibitem[{{U.S. Census Bureau}(2026)}]{census2026pums}
+{U.S. Census Bureau} (2026) American community survey public use microdata
+  sample {(PUMS)}.
+  \urlprefix\url{https://www.census.gov/programs-surveys/acs/microdata.html},
+  accessed 2 November 2026
+
+\bibitem[{Vergara(2012)}]{vergara2012gasdata}
+Vergara A (2012) Gas sensor array drift dataset. \doi{10.24432/C5RP6W},
+  \urlprefix\url{https://doi.org/10.24432/C5RP6W}, uCI Machine Learning
+  Repository
+
+\bibitem[{Vergara et~al.(2012)Vergara, Vembu, Ayhan, Ryan, Homer, and
+  Huerta}]{vergara2012gas}
+Vergara A, Vembu S, Ayhan T, et~al (2012) Chemical gas sensor drift
+  compensation using classifier ensembles. Sensors and Actuators B: Chemical
+  166--167:320--329. \doi{10.1016/j.snb.2012.01.074}
+
+\bibitem[{Wilson(1927)}]{wilson1927}
+Wilson EB (1927) Probable inference, the law of succession, and statistical
+  inference. Journal of the American Statistical Association 22(158):209--212.
+  \doi{10.1080/01621459.1927.10502953}
+
+\bibitem[{Zhou et~al.(2016)Zhou, Khosla, Lapedriza, Oliva, and
+  Torralba}]{zhou2016cam}
+Zhou B, Khosla A, Lapedriza A, et~al (2016) Learning deep features for
+  discriminative localization. In: 2016 IEEE Conference on Computer Vision and
+  Pattern Recognition, Las Vegas, NV, USA, pp 2921--2929,
+  \doi{10.1109/CVPR.2016.319}
+
+\end{thebibliography}

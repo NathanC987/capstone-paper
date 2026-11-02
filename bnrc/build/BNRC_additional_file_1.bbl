@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+\providecommand{\eprint}[2][]{\url{#2}}
+ \bibcommenthead
+
+\bibitem[{{U.S. Census Bureau}(2020)}]{census2019pums}
+{U.S. Census Bureau} (2020) American community survey 2019 {PUMS} data
+  dictionary.
+  \urlprefix\url{https://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMS_Data_Dictionary_2019.csv},
+  accessed 21 October 2026
+
+\end{thebibliography}

@@ -19,22 +19,30 @@ reworded apart from what that structure needs:
 - The supplement is cited as Additional file 1.
 - Two caption titles are split by a full stop to keep titles within 15 words.
 - The back matter has the Supplementary information entry, the List of abbreviations and
-  the Declarations in the journal's order.
+  the Declarations in the journal's order. Every declaration heading is required, with
+  "Not applicable" where it does not apply. Availability of data and materials follows the
+  journal's format for datasets and software (public repository link, MIT licence). The
+  authors' contributions are split evenly between the four students, by initials.
+- Numbers inside tables use a thin space, not a comma, for thousands, as the journal asks.
 
 `supplement.md` is the PPEECS supplement, published as Additional file 1.
+`datasets.bib` adds the data citations the journal requires: the UCI gas sensor dataset
+(DOI) and the Census Bureau's ACS microdata page.
 
 | File | Content |
 |---|---|
 | `paper.md`, `supplement.md` | source texts |
-| `build/BNRC_manuscript.tex` / `.pdf` | the manuscript (33 pages, double-spaced) |
+| `build/BNRC_manuscript.tex` / `.pdf` | the manuscript (34 pages, double-spaced) |
 | `build/BNRC_additional_file_1.tex` / `.pdf` | Additional file 1 (5 pages) |
-| `build/references.bib` | the PPEECS references; web pages carry "Accessed <date>" |
+| `build/references.bib` | the PPEECS references and the data citations; web pages carry "Accessed <date>" |
+| `build/BNRC_manuscript.bbl` | the formatted bibliography, so the source compiles even without bibtex |
 | `build/figures/` | the figures used by the LaTeX files |
 | `build/sn-jnl.cls`, `build/sn-basic.bst` | template files, copied so the folder compiles on its own |
 
 ## Still to fill
 
-The Authors' contributions statement is printed in red until the authors supply it.
+The DOI of the code release archived on Zenodo is printed in red until it exists. The
+repository also needs the MIT `LICENSE` file that `pyproject.toml` already declares.
 
 ## Build
 

@@ -264,7 +264,7 @@ This paper showed that hypothesis tests with a stated error rate can name the dr
 
 # List of abbreviations {-}
 
-AC: Average confidence; ACS: American Community Survey; ATC: Average thresholded confidence; AUROC: Area under the receiver operating characteristic curve; BBSD: Black-box shift detection; BBSE: Black-box shift estimation; CA: California; CAM: Class activation maps; CBPE: Confidence-based performance estimation; CI: Confidence interval; CLEAR: Continual LEArning on Real-World Imagery; DDM: Drift detection method; DoC: Difference of confidences; FL: Florida; GB: Histogram gradient boosting; KS: Kolmogorov–Smirnov; LR: Logistic regression; MMD: Maximum mean discrepancy; NY: New York; OCCP: Occupation (ACS variable); OOD: Out-of-distribution; POBP: Place of birth (ACS variable); PSI: Population stability index; RAC1P: Race (ACS variable); RELP: Relationship (ACS variable); SHAP: Shapley additive explanations; TX: Texas; UCI: University of California, Irvine; WA: Washington
+AC: Average confidence; ACS: American Community Survey; ATC: Average thresholded confidence; AUROC: Area under the receiver operating characteristic curve; BBSD: Black-box shift detection; BBSE: Black-box shift estimation; CA: California; CAM: Class activation maps; CBPE: Confidence-based performance estimation; CI: Confidence interval; CLEAR: Continual LEArning on Real-World Imagery; DDM: Drift detection method; DoC: Difference of confidences; FL: Florida; GB: Histogram gradient boosting; Grad-CAM: Gradient-weighted class activation mapping; KS: Kolmogorov–Smirnov; LR: Logistic regression; MMD: Maximum mean discrepancy; NY: New York; OCCP: Occupation (ACS variable); OOD: Out-of-distribution; POBP: Place of birth (ACS variable); PSI: Population stability index; RAC1P: Race (ACS variable); RELP: Relationship (ACS variable); SHAP: Shapley additive explanations; TX: Texas; UCI: University of California, Irvine; WA: Washington
 
 # Declarations {-}
 
@@ -278,7 +278,7 @@ Not applicable.
 
 ## Availability of data and materials {-}
 
-The datasets analyzed in this study are publicly available: the American Community Survey microdata through the Folktables package [@ding2021retiring], the gas sensor array drift dataset [@vergara2012gas; @rodriguezlujan2014gas] and the CLEAR-10 benchmark [@lin2021clear]. The code used for the experiments is available from the corresponding author on reasonable request.
+The datasets analyzed in this study are available in public repositories. The American Community Survey microdata are published by the U.S. Census Bureau [@census2026pums] and were obtained with the Folktables package [@ding2021retiring]. The gas sensor array drift dataset is available in the UCI Machine Learning Repository, <https://doi.org/10.24432/C5RP6W> [@vergara2012gasdata]. The CLEAR-10 benchmark is available from its project page, <https://clear-benchmark.github.io/> [@lin2021clear]. The code that supports the conclusions of this article is available as follows. Project name: Data Drift Autopsy. Project home page: <https://github.com/NathanC987/data-drift-autopsy>. Archived version: [[DOI of the release archived on Zenodo]]. Operating system: platform independent. Programming language: Python. Other requirements: Python 3.10 or higher with NumPy, pandas, SciPy and scikit-learn; SHAP, PyTorch, torchvision, OpenCLIP and Streamlit for the explanations, the image models and the dashboard. License: MIT. Restrictions to use by non-academics: none.
 
 ## Competing interests {-}
 
@@ -290,7 +290,7 @@ This research received no external funding.
 
 ## Authors' contributions {-}
 
-[[To be completed by the authors, with initials, for example: RG ..., NC ..., AlP ..., AkP ..., SM supervised the work.]] All authors read and approved the final manuscript.
+RG designed and implemented the reliability layer, which scores the risk of each prediction, implemented the label-free accuracy estimators with their baselines and ran the CLEAR-10 study. NC designed the hierarchical diagnosis with the delayed label audit, built the drift injection benchmark with its baselines and the meta-classifier and ran the gas sensor study. AkP implemented the feature localization tests and the root cause analysis, with SHAP attributions for the tabular models and gradient-weighted class activation maps (Grad-CAM) for the image model. AlP implemented the remediation triage, which compares importance weighting with retraining on recent or audit labels, the monitoring dashboard and the ACS studies, including the mapping of the relationship codes across the 2019 redesign. RG, NC, AkP and AlP drafted and revised the manuscript together. SM supervised the project and critically reviewed the manuscript. All authors read and approved the final manuscript.
 
 ## Acknowledgements {-}
 
