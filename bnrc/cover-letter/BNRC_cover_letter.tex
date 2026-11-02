@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+% Cover letter for the Bulletin of the National Research Centre submission.
+% Build: tectonic BNRC_cover_letter.tex
+\usepackage[margin=20mm]{geometry}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{parskip}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{flushright}
+Department of Computer Engineering\\
+Vivekanand Education Society's Institute of Technology\\
+Hashu Advani Memorial Complex, Collector's Colony\\
+Chembur, Mumbai 400074, India\\[6pt]
+3 November 2026
+\end{flushright}
+
+The Editor-in-Chief\\
+Bulletin of the National Research Centre
+
+Dear Editor,
+
+We are pleased to submit our manuscript ``Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models'' for consideration as a Research article in the Bulletin of the National Research Centre.
+
+Machine learning models are now part of routine work in many applied fields, from clinical decision support to industrial sensing. Once deployed, they lose accuracy when the data they receive drift away from the data they were trained on. Existing monitoring tools can raise an alarm when this happens, yet they rarely say what kind of drift has occurred. The right response depends on exactly that: covariate shift calls for reweighting, prior shift for recalibration, concept drift for new labels and label noise for a check of the labeling process.
+
+Our manuscript presents Data Drift Autopsy, an end-to-end monitoring pipeline that detects drift, estimates the lost accuracy without labels, locates the shifted features, names the drift type, scores the trust due to each prediction and advises whether a cheap retrain will help. Its diagnosis consists only of hypothesis tests held to one family-wise error rate. A new audit test uses a few hundred late labels to separate concept drift from label noise, which earlier label-free methods cannot do. On a benchmark with injected drift the diagnosis named the type in 85.7 to 94.3\% of windows. A learned meta-classifier fell to 31.1 to 51.2\% on drift mechanisms it had not seen, while our tests still reached 62.4 to 81.5\%. On four real datasets with documented changes the pipeline raised no false alarm on control windows and pointed to the known causes.
+
+We believe the work suits the journal's multidisciplinary scope in Engineering and Technology. Models of this kind are deployed across the fields the journal serves. One of our real datasets is a chemical gas sensor array whose sensors drift as they age. A diagnosis with a stated error rate gives practitioners in these fields a principled way to decide how to respond when a model degrades.
+
+On behalf of all authors, I confirm that:
+\begin{itemize}
+\item the content of this manuscript has not been published, nor submitted for publication elsewhere;
+\item all authors have read and approved the manuscript for submission;
+\item the authors have no competing interests to declare;
+\item this research received no external funding;
+\item the study uses only publicly available, de-identified data, so ethics approval and consent were not required;
+\item all datasets are public and the code is openly available under the MIT license at \url{https://github.com/NathanC987/data-drift-autopsy}.
+\end{itemize}
+
+We are not aware of any issues relating to journal policies. Thank you for considering our manuscript.
+
+Yours sincerely,
+
+Rahul Guhagarkar (corresponding author)\\
+On behalf of Nathan Cherian, Alok Pal, Akul Patre and Sanjay Mirchandani\\
+Department of Computer Engineering, Vivekanand Education Society's Institute of Technology, Mumbai, India\\
+\url{2023.rahul.guhagarkar@ves.ac.in}
+
+\end{document}
