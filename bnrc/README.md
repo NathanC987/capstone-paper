@@ -33,6 +33,7 @@ reworded apart from what that structure needs:
 |---|---|
 | `paper.md`, `supplement.md` | source texts |
 | `build/BNRC_manuscript.tex` / `.pdf` | the manuscript (34 pages, double-spaced) |
+| `BNRC_manuscript_latex.zip` | the manuscript upload: .tex, .bbl, .bib, class, style and figures, compiles on its own |
 | `build/BNRC_additional_file_1.tex` / `.pdf` | Additional file 1 (5 pages) |
 | `build/references.bib` | the PPEECS references and the data citations; web pages carry "Accessed <date>" |
 | `build/BNRC_manuscript.bbl` | the formatted bibliography, so the source compiles even without bibtex |
