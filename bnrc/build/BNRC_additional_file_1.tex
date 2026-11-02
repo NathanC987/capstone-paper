@@ -1,0 +1,144 @@
+\documentclass[pdflatex,sn-basic]{sn-jnl}
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+% figures and tables are set in the text flow, right after the paragraph that introduces them
+\makeatletter\providecommand\captionof[1]{\def\@captype{#1}\caption}\makeatother
+
+\graphicspath{{figures/}}
+\raggedbottom
+
+% breakurl works only with pdflatex; other engines set reference URLs with \url
+\usepackage{iftex}
+\ifPDFTeX\else\AtBeginDocument{\let\burl\url}\fi
+\hypersetup{pdftitle={Additional file 1. Supplementary material for ``Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models''}, pdfauthor={Rahul Guhagarkar, Nathan Cherian, Alok Pal, Akul Patre, Sanjay Mirchandani}}
+
+\begin{document}
+
+\title[Additional file 1. Supplementary material for ``Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models'']{Additional file 1. Supplementary material for ``Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models''}
+
+\author*[1]{\fnm{Rahul} \sur{Guhagarkar}}\email{2023.rahul.guhagarkar@ves.ac.in}
+\author[1]{\fnm{Nathan} \sur{Cherian}}
+\author[1]{\fnm{Alok} \sur{Pal}}
+\author[1]{\fnm{Akul} \sur{Patre}}
+\author[1]{\fnm{Sanjay} \sur{Mirchandani}}
+
+\affil*[1]{\orgdiv{Department of Computer Engineering}, \orgname{Vivekanand Education Society's Institute of Technology}, \orgaddress{\street{Hashu Advani Memorial Complex, Collector's Colony, Chembur}, \city{Mumbai}, \postcode{400074}, \country{India}}}
+
+
+
+\maketitle
+
+\noindent\emph{Section, figure, table and equation numbers without the prefix S refer to the main paper.}
+
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theequation}{S\arabic{equation}}
+
+Four topics that the main paper only touches on are expanded here. Section~\ref{sec:budget} asks how many delayed labels the audit needs before its diagnosis settles. Section~\ref{sec:remediation} breaks the remediation triage down by real setting, while Section~\ref{sec:relp} records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. The last section, Section~\ref{sec:dashboard}, presents the dashboard in which the pipeline displays its results.
+
+\section{Size of the delayed audit}\label{sec:budget}
+
+The audit stage of Section~2.1.3 needs late labels. Labels cost money, so it matters how many are enough. The paper uses 600 labels throughout. Fig.~\ref{fig:budget} shows how the share of correctly diagnosed windows changes with the size of the audit on ACS Income design A with logistic regression (LR).
+
+\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering
+\includegraphics[width=83.5mm,height=0.6\textheight,keepaspectratio]{FigS1.pdf}
+\captionof{figure}{Share of correctly diagnosed windows on ACS Income design A with LR against the number of audit labels. The shaded bands are 95\% Wilson intervals}\label{fig:budget}
+\end{minipage}\par\vspace{0.7\intextsep}
+
+With 200 labels, concept drift is identified in 80\% of windows and label noise in 79\%. With 600 labels the two rates reach 95\% and 87\%. Going on to 1,000 labels adds little (96\% and 82\%). The 600 labels of the paper therefore sit where more labels stop paying off. The control windows are diagnosed correctly in the same share of cases at every audit size.
+
+\clearpage
+
+\section{Remediation triage by setting}\label{sec:remediation}
+
+Section~3.5 of the paper summarizes how often the triage of Section~2.1.5 gives the right advice. Table~\ref{tab:remediation} breaks this summary down by real setting and model family, so that the source of each right or wrong verdict can be seen.
+
+\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
+\captionof{table}{Remediation triage on the real windows. n is the number of windows; Significant gains counts the windows in which a strategy significantly raised holdout accuracy, by importance weighting (IW), retraining on the most recent labeled window (Recent) or retraining on labels of the window itself (Labels); n/a marks settings without an earlier window}\label{tab:remediation}%
+\begin{tabular}{@{}llrrrrrrr@{}}
+\toprule
+ &  & \multicolumn{1}{c}{} & \multicolumn{3}{c}{Significant gains} & \multicolumn{3}{c}{Triage} \\
+\cmidrule(lr){4-6}
+\cmidrule(lr){7-9}
+Model & Settings & \multicolumn{1}{c}{$n$} & \multicolumn{1}{c}{IW} & \multicolumn{1}{c}{Recent} & \multicolumn{1}{c}{Labels} & \multicolumn{1}{c}{Escalated} & \multicolumn{1}{c}{Truly helps} & \multicolumn{1}{c}{Correct} \\
+\midrule
+LR & ACS Income, temporal & 8 & 4/8 & 7/7 & 5/8 & 7 & 7 & 8/8 \\
+ & ACS Income, states & 4 & 0/4 & n/a & 4/4 & 0 & 0 & 4/4 \\
+ & ACS Employment, temporal & 8 & 4/8 & 7/7 & 2/8 & 7 & 7 & 8/8 \\
+ & ACS Employment, states & 4 & 2/4 & n/a & 1/4 & 1 & 2 & 3/4 \\
+ & CLEAR-10 & 9 & 0/9 & 4/8 & 6/9 & 4 & 4 & 7/9 \\
+ & Gas sensor & 8 & 1/8 & 7/7 & 8/8 & 7 & 7 & 8/8 \\
+\midrule
+GB & ACS Income, temporal & 8 & 0/8 & 7/7 & 4/8 & 7 & 7 & 8/8 \\
+ & ACS Income, states & 4 & 0/4 & n/a & 3/4 & 0 & 0 & 4/4 \\
+ & ACS Employment, temporal & 8 & 0/8 & 7/7 & 0/8 & 6 & 7 & 7/8 \\
+ & ACS Employment, states & 4 & 0/4 & n/a & 0/4 & 0 & 0 & 4/4 \\
+ & CLEAR-10 & 9 & 0/9 & 8/8 & 9/9 & 8 & 8 & 9/9 \\
+ & Gas sensor & 8 & 1/8 & 5/7 & 8/8 & 7 & 6 & 7/8 \\
+\botrule
+\end{tabular}\par\vspace{3pt}
+{\footnotesize\noindent Escalated counts the windows in which the triage recommended a retrain, Truly helps those in which a cheap retrain did help and Correct the windows in which the advice was right\par}
+\end{minipage}\par\vspace{0.7\intextsep}
+
+Where an earlier labeled window exists, retraining on it helps in almost every temporal window. The triage escalates in those windows. The geographic windows of the census tasks have no earlier window. There, importance weighting rarely helps and the triage mostly advises against a retrain. Most of the remaining wrong verdicts come from CLEAR-10 with LR and from the geographic windows of ACS Employment.
+
+\section{Relationship codes across the 2019 redesign}\label{sec:relp}
+
+The ACS windows run from 2014 to 2023, but one of their features changed its coding halfway through. From 2019 the Census Bureau replaced the relationship variable RELP with RELSHIPP, whose codes split spouses and partners by sex~\citep{census2019pums}. To compare windows before and after 2019, we map the RELSHIPP codes back to RELP by matching the code labels of the 2018 and 2019 data dictionaries. Table~\ref{tab:relp} lists the mapping as the code applies it.
+
+\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering\tablebodyfont
+\captionof{table}{Mapping from RELSHIPP (2019 on) back to RELP (2014 to 2018)}\label{tab:relp}%
+\begin{tabular}{@{}rll@{}}
+\toprule
+RELP & Label (2018) & RELSHIPP codes (2019 on) \\
+\midrule
+0 & Reference person & 20 \\
+1 & Husband/wife & 21, 23 \\
+2 & Biological son or daughter & 25 \\
+3 & Adopted son or daughter & 26 \\
+4 & Stepson or stepdaughter & 27 \\
+5 & Brother or sister & 28 \\
+6 & Father or mother & 29 \\
+7 & Grandchild & 30 \\
+8 & Parent-in-law & 31 \\
+9 & Son-in-law or daughter-in-law & 32 \\
+10 & Other relative & 33 \\
+11 & Roomer or boarder & none \\
+12 & Housemate or roommate & 34 \\
+13 & Unmarried partner & 22, 24 \\
+14 & Foster child & 35 \\
+15 & Other nonrelative & 36 \\
+16 & Institutionalized group quarters population & 37 \\
+17 & Noninstitutionalized group quarters population & 38 \\
+\botrule
+\end{tabular}
+\end{minipage}\par\vspace{0.7\intextsep}
+
+RELP 11 (roomer or boarder) has no successor, so it never occurs from 2019 on. The loss of this category is itself a documented change that the localization can pick up.
+
+\clearpage
+
+\section{The monitoring dashboard}\label{sec:dashboard}
+
+A diagnosis is only useful if the team can read it. Every stage of the pipeline therefore writes its results to one file, which an interactive dashboard presents. Fig.~\ref{fig:dashboard} shows two of its views for ACS Income with LR.
+
+\par\vspace{0.7\intextsep}\noindent\begin{minipage}{\textwidth}\centering
+\includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{FigS2.png}
+\captionof{figure}{The dashboard of the pipeline for ACS Income with LR. (a) The overview: dataset, task and model selectors, the headline results and the five steps of the pipeline, each of which opens a detailed view. (b) The drift type step: for every window, the answer to each question of the decision path in Fig.~2 of the paper (filled circle yes, open circle no, small dot not reached) and the resulting verdict, followed by a summary sentence computed from the results}\label{fig:dashboard}
+\end{minipage}\par\vspace{0.7\intextsep}
+
+Panel (b) applies the decision path of Fig.~2 to the real California (CA) windows. CA 2015 passes every label-free test. The audit then finds no significant drop in accuracy, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels stay where they were. The feature tests still reject and the shift survives the prior correction, so these windows are covariate shift. All other windows answer yes to every label-free question and are covariate shift as well. Each view of the dashboard opens with the question it answers and closes with a summary sentence of this kind, so a team can follow the diagnosis without reading the code.
+
+\bibliography{references}
+
+\end{document}
