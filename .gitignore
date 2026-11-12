@@ -17,3 +17,6 @@ submission/
 !icmmdu/build/*.pdf
 !icmmdu/figures/*.pdf
 !black-book/*.pdf
+!figures/bnrc/gen_*.pdf
+!bnrc/figures/*.pdf
+!bnrc/build/figures/*.pdf

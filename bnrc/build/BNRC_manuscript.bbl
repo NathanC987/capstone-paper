@@ -157,7 +157,8 @@ Rodriguez-Lujan I, Fonollosa J, Vergara A, et~al (2014) On the calibration of
 Roschewitz M, Mehta R, Jones C, et~al (2025) Automatic dataset shift
   identification to support safe deployment of medical imaging {AI}. In:
   Medical Image Computing and Computer Assisted Intervention -- MICCAI 2025,
-  Daejeon, South Korea, pp 67--76, \doi{10.1007/978-3-032-04981-0_7}
+  Lecture Notes in Computer Science, vol 15966. Springer, Daejeon, South Korea,
+  pp 67--76, \doi{10.1007/978-3-032-04981-0_7}
 
 \bibitem[{Shimodaira(2000)}]{shimodaira2000}
 Shimodaira H (2000) Improving predictive inference under covariate shift by

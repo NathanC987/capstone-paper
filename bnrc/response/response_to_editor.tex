@@ -32,33 +32,33 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \reply Every reference with a DOI now gives it as a full \texttt{https://doi.org/} link. We checked the remaining entries in Crossref: the papers from NeurIPS, ICLR, ICML and JMLR, Holm (1979), Kish (1965) and the Census Bureau documents have no DOI, so they keep the publisher's web address with its access date.
 
 \point{Give an ORCID iD for each author.}
-\reply The author list now gives each author's ORCID iD as a link next to the name (page 1). \todo{ORCID iDs of all five authors}
+\reply The author list now gives each author's ORCID iD as a link next to the name (page 1, lines 13--16). \todo{ORCID iDs of all five authors}
 
 \point{Add a short statement on whether any generative AI tool was used.}
-\reply A paragraph ``Use of AI tools'' is now in Methods, Section 2.2 (\todo{page, lines}). It states that a generative AI assistant (Claude, Anthropic) helped with writing code for the pipeline and the experiments and with drafting and editing the text, and that the authors designed the study, checked the code, the results and the text and take full responsibility for the content.
+\reply A paragraph ``Use of AI tools'' is now in Methods, Section 2.2 (page 14, lines 607--612). It states that a generative AI assistant (Claude, Anthropic) helped with writing code for the pipeline and the experiments and with drafting and editing the text, and that the authors designed the study, checked the code, the results and the text and take full responsibility for the content.
 
 \point{Write numbers without commas as thousands separators.}
 \reply All numbers in the text, the tables and the figures are now written without separators (for example 13910, 3300 and \$50000). The build of the manuscript checks this and fails if a separator remains.
 
 \point{Add a Methods paragraph to the abstract.}
-\reply The abstract now has a Methods part (\todo{lines}) that names the tests, the two census tasks and two model families of the benchmark with its number of windows, the four real datasets with their number of windows and the 600-label audit. The abstract stays within 350 words.
+\reply The abstract now has a Methods part (page 1, lines 34--40) that names the tests, the two census tasks and two model families of the benchmark with its number of windows, the four real datasets with their number of windows and the 600-label audit. The abstract stays within 350 words.
 
 \point{Deposit the code and the exact scripts in a versioned archive that gives a DOI, and list the software versions.}
-\reply The code, the exact scripts and the configurations behind every result are archived on Zenodo, DOI \todo{Zenodo DOI}, and cited in ``Availability of data and materials''. The same section lists the versions used: Python 3.14.8, NumPy 2.4.2, pandas 2.3.3, SciPy 1.17.0, scikit-learn 1.8.0, SHAP 0.50.0, PyTorch 2.11.0, torchvision 0.26.0, OpenCLIP 3.3.0, Matplotlib 3.10.8 and Streamlit 1.54.0.
+\reply The code, the exact scripts and the configurations behind every result are archived on Zenodo, DOI \todo{Zenodo DOI}, and cited in ``Availability of data and materials'' (page 30, lines 1343--1353). The same section lists the versions used: Python 3.14.8, NumPy 2.4.2, pandas 2.3.3, SciPy 1.17.0, scikit-learn 1.8.0, SHAP 0.50.0, PyTorch 2.11.0, torchvision 0.26.0, OpenCLIP 3.3.0, Matplotlib 3.10.8 and Streamlit 1.54.0.
 
 \point{State in one sentence in the ethics section that only public de-identified data were used.}
-\reply Added: ``Only publicly available, de-identified data were used.''
+\reply Added (page 29, line 1320): ``Only publicly available, de-identified data were used.''
 
 \point{Add the optional heading Authors' information if you wish.}
 \reply We have chosen not to add this optional section.
 
 \point{Complete the references with volume and page details; correct the citation for the histogram gradient boosting model.}
-\reply Roschewitz et al.\ (2025) now gives the series and volume (Lecture Notes in Computer Science, vol.\ 15966, pp.\ 67--76). Kivimäki et al.\ (2026) appeared in Machine Learning 115(3), article 67; the journal numbers articles instead of pages, so the article number is the complete locator. The model is now cited as histogram gradient boosting as implemented in scikit-learn (Pedregosa et al.\ 2011), whose histogram-based splits follow LightGBM (Ke et al.\ 2017), in Section 2.2.1.
+\reply Roschewitz et al.\ (2025) now gives the series and volume (Lecture Notes in Computer Science, vol.\ 15966, pp.\ 67--76). Kivimäki et al.\ (2026) appeared in Machine Learning 115(3), article 67; the journal numbers articles instead of pages, so the article number is the complete locator. The model is now cited as histogram gradient boosting as implemented in scikit-learn (Pedregosa et al.\ 2011), whose histogram-based splits follow LightGBM (Ke et al.\ 2017), in Section 2.2.1 (page 14, lines 622--626).
 
 \section*{Statistical notes}
 
 \point{Report the mean and standard deviation across the 10 seeds for every table of accuracy, and give confidence intervals that treat the state as the cluster.}
-\reply New Tables S3 and S4 in Additional file 1 give every share of Tables 3 and 4 as the mean and standard deviation over the ten seeds, each seed pooling its five states, with a 95\% interval that treats the state as the cluster (a $t$ interval with four degrees of freedom over the five state shares). Section 3.1 and Section 3.2 point to them. With five clusters these intervals are wide, which the supplement states.
+\reply New Tables S3 and S4 in Additional file 1 give every share of Tables 3 and 4 as the mean and standard deviation over the ten seeds, each seed pooling its five states, with a 95\% interval that treats the state as the cluster (a $t$ interval with four degrees of freedom over the five state shares). Section 3.1 (page 19, line 854) and Section 3.2 (page 21, line 943) point to them. With five clusters these intervals are wide, which the supplement states.
 
 \point{Run at least two published methods on the same windows and one method for noisy labels.}
 \reply \todo{in progress}
@@ -67,24 +67,24 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \reply \todo{in progress}
 
 \point{State the false alarm rate of the whole procedure and explain the 2$\alpha$ guarantee; explain the rates above 5\%.}
-\reply Section 3.1 (\todo{lines}) now states the false alarm rate of the whole procedure over the 200 control windows of design A with its 95\% interval. It explains that the guarantee is $2\alpha = 10\%$, not $\alpha$, because a verdict passes two stages that are each tested at level $\alpha$, and it reports each stage separately: both stay within $\alpha$. The higher rate in one panel of Fig.~3 rests on only 50 control windows, and its Wilson interval contains 5\%.
+\reply Section 3.1 (page 20, lines 906--918) now states the false alarm rate of the whole procedure over the 200 control windows of design A with its 95\% interval. It explains that the guarantee is $2\alpha = 10\%$, not $\alpha$, because a verdict passes two stages that are each tested at level $\alpha$, and it reports each stage separately: both stay within $\alpha$. The higher rate in one panel of Fig.~3 rests on only 50 control windows, and its Wilson interval contains 5\%.
 
 \point{Add more control windows for each real data set and report how many raise an alarm.}
 \reply \todo{in progress}
 
 \point{Use more permutations (1000 or more) for the final tables, and explain which window counts as an error when the income threshold changes but accuracy does not.}
-\reply Every permutation test in the revised results uses 1000 permutations; all studies and the benchmark were run again with the same seeds and every number and table was regenerated (Section 2.2). Section 3.2 (\todo{lines}) now states that the income threshold windows reported as no drift count as errors in Tables 3 and 4, since their injected type is concept drift.
+\reply Every permutation test in the revised results uses 1000 permutations; all studies and the benchmark were run again with the same seeds and every number and table was regenerated (Section 2.2, page 14, line 599). Section 3.2 (page 22, lines 980--984) now states that the income threshold windows reported as no drift count as errors in Tables 3 and 4, since their injected type is concept drift.
 
 \point{Compare the retraining advice with the simple rule `retrain when a recent labeled window exists', and give an interval for each rate.}
-\reply Section 3.5 (\todo{lines}) and Table S1 now compare the triage with this rule, with Wilson intervals, on the real settings and on the benchmark. The rule does as well as the triage, and we now report the triage as a negative result (see point 23).
+\reply Section 3.5 (page 27, lines 1212--1220) and Table S1 now compare the triage with this rule, with Wilson intervals, on the real settings and on the benchmark. The rule does as well as the triage, and we now report the triage as a negative result (see point 23).
 
 \section*{General notes}
 
 \point{Rewrite the abstract and the Conclusions so that they match Table 4; say which held-out mechanisms the procedure handles and which it does not.}
-\reply Both now say that the procedure recognizes selection bias, a lower positive rate and oblique concept drift, calls a raised income threshold that costs almost no accuracy no drift and often takes class-conditional label noise for concept drift.
+\reply The abstract (page 1, lines 43--46) and the Conclusions (page 28, lines 1270--1275) now say that the procedure recognizes selection bias, a lower positive rate and oblique concept drift, calls a raised income threshold that costs almost no accuracy no drift and often takes class-conditional label noise for concept drift.
 
 \point{Explain why all real windows are typed covariate shift, and how a window with both covariate and concept change is reported.}
-\reply The Discussion (\todo{lines}) now explains that most documented causes act on the inputs, so covariate verdicts are expected, and that the audit runs only when the label-free stage finds nothing. A window with both changes is therefore reported as covariate shift and its concept change goes unnamed, as in ACS Income 2023.
+\reply The Discussion (pages 27--28, lines 1236--1248) now explains that most documented causes act on the inputs, so covariate verdicts are expected, and that the audit runs only when the label-free stage finds nothing. A window with both changes is therefore reported as covariate shift and its concept change goes unnamed, as in ACS Income 2023.
 
 \point{Explain how the work relates to the health, biological or environmental fields served by this journal.}
 \reply \todo{in progress}
@@ -93,13 +93,13 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \reply \todo{in progress}
 
 \point{Fix the difference between Table 7 and the supplement for CA 2015, and show the GB counts for the control row in Fig.~3.}
-\reply The two did not conflict but the supplement was unclear. The KS detector of Table 7 raises an alarm on CA 2015 because it corrects only over the numeric features, while the label-free stage of the diagnosis tests all features together with the prediction and MMD blocks in one weighted Holm family and does not reject. Additional file 1 now says so. The control row of Fig.~3 now gives the counts with LR and GB.
+\reply The two did not conflict but the supplement was unclear. The KS detector of Table 7 raises an alarm on CA 2015 because it corrects only over the numeric features, while the label-free stage of the diagnosis tests all features together with the prediction and MMD blocks in one weighted Holm family and does not reject. Additional file 1 now says so. The control row of Fig.~3 now gives the counts with LR and GB (page 20, lines 897--898).
 
 \point{Explain why CBPE is used although ATC has a smaller error in most columns of Table 6.}
 \reply \todo{in progress}
 
 \point{Remove or reframe the reliability and triage claims.}
-\reply Both are now reported as negative results in the abstract, the list of contributions, Section 3.5 and the Discussion. The fused risk score adds nothing to the model's confidence and the triage does no better than the simple rule of point 16. The two stages stay in the pipeline as tools that report their evidence, not as gains.
+\reply Both are now reported as negative results in the abstract, the list of contributions (page 4, lines 152--157), Section 3.5 (page 27, lines 1199 and 1219--1220) and the Discussion (page 28, line 1260). The fused risk score adds nothing to the model's confidence and the triage does no better than the simple rule of point 16. The two stages stay in the pipeline as tools that report their evidence, not as gains.
 
 \medskip
 We hope that the revised manuscript meets the journal's requirements and thank you again for your guidance.
