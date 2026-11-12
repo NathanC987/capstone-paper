@@ -10,7 +10,7 @@ corresponding: 2023.rahul.guhagarkar@ves.ac.in
 note: Section, figure, table and equation numbers without the prefix S refer to the main paper.
 ---
 
-Four topics that the main paper only touches on are expanded here. Section @sec:budget asks how many delayed labels the audit needs before its diagnosis settles. Section @sec:remediation breaks the remediation triage down by real setting, while Section @sec:relp records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. The last section, Section @sec:dashboard, presents the dashboard in which the pipeline displays its results.
+Five topics that the main paper only touches on are expanded here. Section @sec:budget asks how many delayed labels the audit needs before its diagnosis settles. Section @sec:remediation breaks the remediation triage down by real setting, while Section @sec:relp records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. Section @sec:dashboard presents the dashboard in which the pipeline displays its results. The last section, Section @sec:seeds, shows how the benchmark results vary over seeds and states.
 
 # Size of the delayed audit {#sec:budget}
 
@@ -18,7 +18,7 @@ The audit stage of Section @m:sec:diagnosis needs late labels. Labels cost money
 
 ![Share of correctly diagnosed windows on ACS Income design A with LR against the number of audit labels. The shaded bands are 95% Wilson intervals](FigS1.png){#fig:budget width=83.5}
 
-With 200 labels, concept drift is identified in \res{b-inc-a-lr-budget-concept-200}% of windows and label noise in \res{b-inc-a-lr-budget-labelnoise-200}%. With 600 labels the two rates reach \res{b-inc-a-lr-budget-concept-600}% and \res{b-inc-a-lr-budget-labelnoise-600}%. Going on to 1,000 labels adds little (\res{b-inc-a-lr-budget-concept-1000}% and \res{b-inc-a-lr-budget-labelnoise-1000}%). The 600 labels of the paper therefore sit where more labels stop paying off. The control windows are diagnosed correctly in the same share of cases at every audit size.
+With 200 labels, concept drift is identified in \res{b-inc-a-lr-budget-concept-200}% of windows and label noise in \res{b-inc-a-lr-budget-labelnoise-200}%. With 600 labels the two rates reach \res{b-inc-a-lr-budget-concept-600}% and \res{b-inc-a-lr-budget-labelnoise-600}%. Going on to 1000 labels adds little (\res{b-inc-a-lr-budget-concept-1000}% and \res{b-inc-a-lr-budget-labelnoise-1000}%). The 600 labels of the paper therefore sit where more labels stop paying off. The control windows are diagnosed correctly in the same share of cases at every audit size.
 
 \newpage
 
@@ -26,10 +26,10 @@ With 200 labels, concept drift is identified in \res{b-inc-a-lr-budget-concept-2
 
 Section @m:sec:res-reliability of the paper summarizes how often the triage of Section @m:sec:triage gives the right advice. Table @tab:remediation breaks this summary down by real setting and model family, so that the source of each right or wrong verdict can be seen.
 
-Table: Remediation triage on the real windows. n is the number of windows; Significant gains counts the windows in which a strategy significantly raised holdout accuracy, by importance weighting (IW), retraining on the most recent labeled window (Recent) or retraining on labels of the window itself (Labels); n/a marks settings without an earlier window. Escalated counts the windows in which the triage recommended a retrain, Truly helps those in which a cheap retrain did help and Correct the windows in which the advice was right {#tab:remediation}
+Table: Remediation triage on the real windows. n is the number of windows; Significant gains counts the windows in which a strategy significantly raised holdout accuracy, by importance weighting (IW), retraining on the most recent labeled window (Recent) or retraining on labels of the window itself (Labels); n/a marks settings without an earlier window. Escalated counts the windows in which the triage recommended a retrain, Truly helps those in which a cheap retrain did help and Correct the windows in which the advice was right. Rule counts the windows in which the simple rule of retraining exactly when an earlier labeled window exists was right {#tab:remediation}
 <<gen:tab_remediation>>
 
-Where an earlier labeled window exists, retraining on it helps in almost every temporal window. The triage escalates in those windows. The geographic windows of the census tasks have no earlier window. There, importance weighting rarely helps and the triage mostly advises against a retrain. Most of the remaining wrong verdicts come from CLEAR-10 with LR and from the geographic windows of ACS Employment.
+Where an earlier labeled window exists, retraining on it helps in almost every temporal window. The triage escalates in those windows. The geographic windows of the census tasks have no earlier window. There, importance weighting rarely helps and the triage mostly advises against a retrain. Most of the remaining wrong verdicts come from CLEAR-10 with LR and from the geographic windows of ACS Employment. The simple rule in the last column is right about as often as the triage, which is why the paper reports the triage as a negative result.
 
 # Relationship codes across the 2019 redesign {#sec:relp}
 
@@ -48,6 +48,16 @@ A diagnosis is only useful if the team can read it. Every stage of the pipeline 
 
 ![The dashboard of the pipeline for ACS Income with LR. (a) The overview: dataset, task and model selectors, the headline results and the five steps of the pipeline, each of which opens a detailed view. (b) The drift type step: for every window, the answer to each question of the decision path in Fig. 2 of the paper (filled circle yes, open circle no, small dot not reached) and the resulting verdict, followed by a summary sentence computed from the results](FigS2.png){#fig:dashboard width=148}
 
-Panel (b) applies the decision path of Fig. @m:fig:decision to the real California (CA) windows. CA 2015 passes every label-free test. The audit then finds no significant drop in accuracy, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels stay where they were. The feature tests still reject and the shift survives the prior correction, so these windows are covariate shift. All other windows answer yes to every label-free question and are covariate shift as well. Each view of the dashboard opens with the question it answers and closes with a summary sentence of this kind, so a team can follow the diagnosis without reading the code.
+Panel (b) applies the decision path of Fig. @m:fig:decision to the real California (CA) windows. CA 2015 passes every test of the label-free stage. The KS detector in Table @m:tab:income of the paper does raise an alarm on CA 2015, because it corrects only over the numeric features, while the label-free stage tests all features together with the other two blocks in one weighted Holm family (Section @m:sec:diagnosis). The audit then finds no significant drop in accuracy, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels stay where they were. The feature tests still reject and the shift survives the prior correction, so these windows are covariate shift. All other windows answer yes to every label-free question and are covariate shift as well. Each view of the dashboard opens with the question it answers and closes with a summary sentence of this kind, so a team can follow the diagnosis without reading the code.
+
+# Spread over seeds and states {#sec:seeds}
+
+The shares in Tables @m:tab:methods and @m:tab:mechanisms of the paper pool the windows of all five states and ten seeds. Table @tab:seedsmethods shows how much the share of correctly typed windows varies and Table @tab:seedsmechanisms does the same for the design B mechanisms. Each cell gives the mean and standard deviation of the share over the ten seeds, where each seed pools its five states. The interval in brackets treats the state as the cluster: it is a 95% t interval with four degrees of freedom over the five state shares, cut at 0 and 100%. Five clusters make these intervals wide.
+
+Table: Share of benchmark windows with the correct drift type over seeds and states (%). Inc. and Emp. stand for ACS Income and ACS Employment, A and B for the two designs {#tab:seedsmethods}
+<<gen:tab_seeds_methods>>
+
+Table: Correct diagnosis by design B mechanism over seeds and states (%) {#tab:seedsmechanisms}
+<<gen:tab_seeds_mechanisms>>
 
 # References {-}
