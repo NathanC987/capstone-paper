@@ -1,1 +1,6 @@
 __pycache__/
+# signed scans and the reports that embed them stay local (public repository)
+evidence/scans/
+figures/evidence_*.png
+39-AIDeepLearningDWHMining-Sanjay*.docx
+39-AIDeepLearningDWHMining-Sanjay*.pdf

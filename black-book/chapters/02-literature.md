@@ -1,16 +1,16 @@
 # Literature Survey {#ch:lit}
 
-Before designing the system we studied how others have approached drift: how the types of drift are defined, how drift is detected, how a change in the class balance is estimated, how accuracy can be estimated without labels and how the findings are explained. This chapter reports that survey, a search of granted and published patents, the conclusions we drew, a comparison of ResilientAI with the closest existing systems and an analysis of whether the project was feasible.
+This chapter reports the literature survey, a search of granted and published patents, the conclusions we drew, a comparison with the closest existing systems and the feasibility analysis.
 
 ## Brief Overview of the Literature Survey {#sec:lit-overview}
 
-The survey had one guiding question: which parts of drift monitoring are solved and which are not? We searched IEEE Xplore, the ACM Digital Library, SpringerLink, the proceedings of NeurIPS, ICML and ICLR, arXiv and Google Scholar with the keywords dataset shift, covariate shift, label shift, prior shift, concept drift, label noise, drift detection, two-sample test, performance estimation without labels, model monitoring and machine learning operations. Two surveys of concept drift [@gama2014survey; @lu2019learning], a formal characterization of the kinds of drift [@webb2016characterizing] and a book on dataset shift [@quionero2009dataset] served as starting points and we followed their references forward and backward.
+The survey asked which parts of drift monitoring are solved and which are not. We searched IEEE Xplore, the ACM Digital Library, SpringerLink, arXiv and Google Scholar for dataset shift, label shift, concept drift, label noise, drift detection and performance estimation without labels. Two surveys of concept drift [@gama2014survey; @lu2019learning], a formal characterization of the kinds of drift [@webb2016characterizing] and a book on dataset shift [@quionero2009dataset] served as starting points and we followed their references forward and backward.
 
-A paper was kept if it proposed or evaluated a method for detecting, estimating or explaining a change between training and production data, or if it supplied data with a documented shift. We preferred peer-reviewed work and recent papers, but kept older ones that remain the standard reference for a method. Documentation of monitoring software was read for context. Table @tab:papers summarizes the papers that shaped the design.
+A paper was kept if it proposed or evaluated a method for detecting, estimating or explaining a shift, or supplied data with a documented shift.
 
 ## Related Works / Research Papers Referred {#sec:related}
 
-The papers fall into five groups. Each group below is introduced briefly and Table @tab:papers lists the method, findings and limitations of each paper together with the inference we drew for this project.
+Table @tab:papers lists the method, findings and limitations of each paper that shaped the design, with the inference we drew for this project.
 
 Table: Research papers referred, with the inference drawn for this project {#tab:papers widths=1.7,2.3,2.6,3.0 size=9}
 | Paper | Method / approach | Key findings | Limitations / inference |
@@ -33,19 +33,11 @@ Table: Research papers referred, with the inference drawn for this project {#tab
 | Ding et al., 2021 [@ding2021retiring] | Folktables: prediction tasks from the American Community Survey | Real distribution shift across years and states | Our main source of real tabular drift |
 | Lin et al., 2021 [@lin2021clear] | CLEAR: a time-ordered image benchmark from Flickr | Natural drift of image content over a decade | Our source of real image drift |
 
-*Drift types.* The definitions of Moreno-Torres et al. [@moreno2012unifying] describe each type by the part of the joint distribution of inputs and labels that changes and Webb et al. [@webb2016characterizing] extend them to describe how drift unfolds in time. DetectShift [@maiapolo2023detectshift] is the only method we found that tests each part with error control, but it needs labels for the new data. These papers gave the project its vocabulary and its main requirement: a type diagnosis that works from unlabeled data plus a small audit.
-
-*Drift detection.* Detectors fall into two families. Error-rate detectors such as DDM [@gama2004ddm] and ADWIN [@bifet2007learning] need labels, while label-free detectors compare inputs or outputs with two-sample tests [@gretton2012kernel; @lopezpaz2017c2st]. Rabanser et al. [@rabanser2019failing] compared the label-free tests systematically and found black-box shift detection on the model outputs best overall. Every one of these tests reports that a shift happened, not its type, so we use them as building blocks.
-
-*Label shift.* Black-box shift estimation [@lipton2018bbse] recovers the new class prior under the assumption that each class keeps its own input distribution. Roschewitz et al. [@roschewitz2025shiftid] turned that assumption into a test, which is the idea behind our label shift consistency test.
-
-*Performance estimation without labels.* Average confidence [@hendrycks2017baseline], difference of confidences [@guillory2021predicting], average thresholded confidence [@garg2022atc] and confidence-based performance estimation [@kivimaki2025performance] all estimate accuracy from what the model outputs. Ovadia et al. [@ovadia2019trust] showed that models often stay confident while their accuracy falls, so the estimates can be too optimistic exactly when they matter most.
-
-*Explanation and data.* Shapley values [@lundberg2017unified] and class activation maps [@zhou2016cam] explain what a model relies on and out-of-distribution scores such as the Isolation Forest [@liu2008isolation] flag unusual inputs. Folktables [@ding2021retiring] and CLEAR [@lin2021clear] provide real shifts whose causes can be traced, although nobody knows their exact type. Benchmarks of real distribution shift [@koh2021wilds; @gardner2023tableshift; @liu2023whyshift] show how often models fail under such shifts.
+The definitions of Moreno-Torres et al. gave the project its vocabulary and DetectShift its main requirement: a type diagnosis that works from unlabeled data plus a small audit instead of labeled production data. Every detector in the table reports that a shift happened, not its type, so the detectors serve as building blocks. The accuracy estimates all read the model's confidence, which can stay high while accuracy falls [@ovadia2019trust], so they can be too optimistic exactly when they matter most.
 
 ## Patent Search {#sec:patents}
 
-To check whether the idea of the project is already protected, we searched Google Patents and Espacenet on 30 October 2026 with the search terms "data drift" and "concept drift" combined with "machine learning model", "monitoring", "covariate shift", "label shift" and "root cause". We read the claims and descriptions of the most relevant results and recorded their legal status as shown by Google Patents, which presents status as an assumption rather than a legal conclusion. Table @tab:patents lists the six patents closest to this project: four from the United States and two from the European Patent Office.
+We searched Google Patents and Espacenet on 30 October 2026 for "data drift" and "concept drift" combined with "machine learning model", "monitoring", "label shift" and "root cause" and read the claims of the most relevant results. Table @tab:patents lists the six patents closest to this project, with their status as shown by Google Patents.
 
 Table: Patents closest to the project, as checked on 30 October 2026 {#tab:patents widths=1.7,2.4,1.6,1.4,3.2 size=9}
 | Number and office | Title | Assignee | Status and date | What it claims and how it differs |
@@ -67,11 +59,11 @@ First, detection is a solved part of the problem and diagnosis is not. Good labe
 
 Second, the gap that matters most is between concept drift and label noise. Both leave the inputs untouched, so no label-free test can see them and both raise the error rate, so an error-rate monitor confuses them. Some labels are therefore unavoidable. The question the project had to answer was how few labels would do and how to use them so that the two types come apart. The answer we developed, described in Chapter @ch:impl, is to ask whether the change in errors depends on an input feature beyond what the model's own confidence explains.
 
-Third, a diagnosis must be judged fairly. A method tuned on its own benchmark can look good by construction. This led to a benchmark with two designs: one whose drift partly matches how the tests work and one with mechanisms held out from the design of the procedure. It also led to the decision to control the error rate of every decision, so that the false alarm rate is known before any data are seen.
+Third, a diagnosis must be judged fairly, since a method tuned on its own benchmark looks good by construction. This led to a benchmark with drift mechanisms held out from the design and to a stated error rate for every decision.
 
 ## Comparison with Existing Systems {#sec:comparison}
 
-Table @tab:compare compares ResilientAI with the existing systems closest to it and Table @tab:positioning summarizes their capabilities side by side.
+Table @tab:compare compares ResilientAI with the existing systems closest to it.
 
 Table: Comparison of ResilientAI with existing systems {#tab:compare widths=1.6,2.2,2.0,2.0,2.4 size=9}
 | System / paper | Features / method | Strengths | Limitations | Difference in proposed work |
@@ -84,25 +76,15 @@ Table: Comparison of ResilientAI with existing systems {#tab:compare widths=1.6,
 | Roschewitz et al. [@roschewitz2025shiftid] | Prevalence-adjusted re-testing of features | Separates prior from covariate shift without labels | Two types only | Same idea inside a four-type, error-controlled procedure |
 | Drift patents [@fly2020realtime; @kolar2025anomaly; @gosala2025drift] | Distribution comparison, thresholds, correlation with accuracy | Deployed in industry | Thresholds without error control; no type diagnosis | Hypothesis tests with a stated error rate; four types |
 
-Table: Capabilities of the closest methods and of ResilientAI. A tick marks a capability the method provides {#tab:positioning widths=2.2,1,1,1,1.1,1,1 size=9.5}
-| Method | Error rate stated | Accuracy estimate | Localizes features | Types named | Concept vs noise | Held-out drift |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|
-| BBSD [@rabanser2019failing] | ✓ | – | limited | – | – | – |
-| BBSE [@lipton2018bbse] | ✓ | – | – | prior | – | – |
-| CBPE [@kivimaki2025performance] | – | ✓ | – | – | – | – |
-| DetectShift [@maiapolo2023detectshift] | ✓ | – | – | needs labels | – | – |
-| Roschewitz et al. [@roschewitz2025shiftid] | ✓ | – | – | prior, covariate | – | – |
-| ResilientAI | ✓ | ✓ | ✓ | four | ✓ | ✓ |
-
-Each existing method covers one or two of the columns. Roschewitz et al. come closest, separating prior from covariate shift without labels, while DetectShift names types only when the production data are labeled. ResilientAI is the only one that covers every column and in particular the only one that separates concept drift from label noise and is tested on held-out drift.
+Roschewitz et al. come closest, separating prior from covariate shift without labels, while DetectShift names types only when the production data are labeled. ResilientAI is the only one of these systems that separates concept drift from label noise and is tested on held-out drift.
 
 ## Feasibility Analysis {#sec:feasibility}
 
-Before committing to the project we checked whether it could be built and run with the resources available to a student team and whether it raised any legal or ethical concern. The analysis below covers each dimension the department asks for.
+Before committing to the project we checked whether it could be built with the resources of a student team and whether it raised any legal or ethical concern.
 
 ### Technical Feasibility
 
-Every building block of the system is a well-understood statistical test or machine learning model with a mature open-source implementation: scikit-learn [@pedregosa2011scikit] for the models, SciPy and NumPy [@virtanen2020scipy; @harris2020array] for the tests, SHAP [@lundberg2017unified] for explanations and PyTorch for the image network. The data are public. The heaviest computation, the injection benchmark, took \res{bench-total-hours} hours on a desktop processor with \res{const-cpu-cores} cores and no production window took longer than \res{bb-time-max} seconds to analyze (Section @sec:cost). The project was therefore technically feasible on the team's own hardware.
+Every building block is a well-understood test or model with a mature open-source implementation, such as scikit-learn [@pedregosa2011scikit] and SciPy [@virtanen2020scipy]; the data are public. The heaviest computation, the injection benchmark, took \res{bench-total-hours} hours on a desktop processor with \res{const-cpu-cores} cores and no production window took longer than \res{bb-time-max} seconds to analyze (Section @sec:cost). The project was therefore technically feasible on the team's own hardware.
 
 ### Economic and Financial Feasibility
 
@@ -120,11 +102,11 @@ Table: Proposed and actual budget of the project {#tab:budget widths=2.6,3.4,1.4
 
 ### Cost-effectiveness Analysis
 
-For a team that deploys models, the alternative to a monitor like ResilientAI is to label production data regularly and measure accuracy directly. Labeling every window of several thousand rows is far more expensive than labeling an audit of \res{acs-audit-n} rows and Section @sec:graphs shows that more audit labels add little beyond that number. The triage further avoids the cost of retraining when retraining would not help. The monitor itself runs on ordinary hardware within seconds to minutes per window, so its running cost is small next to the cost of either labeling or a model failure that goes unnoticed.
+The alternative to a monitor like ResilientAI is to label production data regularly. Labeling every window of several thousand rows costs far more than an audit of \res{acs-audit-n} rows and the monitor itself runs on ordinary hardware in seconds to minutes per window, so its running cost is small next to that of labeling or of a model failure that goes unnoticed.
 
 ### Operational Feasibility and Risk Analysis
 
-The system runs as a set of Python scripts that write one report per study and a dashboard that reads those reports, so it fits into an existing batch workflow without new infrastructure. Table @tab:risk lists the main risks we identified and how each was mitigated.
+The system runs as Python scripts and a dashboard, so it fits into an existing batch workflow without new infrastructure. Table @tab:risk lists the main risks we identified and how each was mitigated.
 
 Table: Risks and their mitigation {#tab:risk widths=2.4,1,3.6 size=9.5}
 | Risk | Likelihood | Mitigation |
@@ -142,17 +124,8 @@ The project uses no special hardware and no cloud resources. The experiments con
 
 ### Legal, Ethical and Privacy Feasibility
 
-All datasets are public and licensed for research. The American Community Survey microdata are released by the United States Census Bureau under its terms of use and contain no names or addresses; the Folktables code that downloads them is under the MIT licence. The UCI gas sensor dataset and the CLEAR benchmark are released under the Creative Commons Attribution 4.0 licence. No personal data were collected from anyone, no human subjects took part and everything runs locally, so no data leave the machine. The census tasks involve sensitive attributes such as sex and race, which appear as model inputs only because they are part of the standard Folktables tasks; the project does not make decisions about individuals.
+All datasets are public and licensed for research. The American Community Survey microdata are released by the United States Census Bureau under its terms of use and contain no names or addresses; the Folktables code that downloads them is under the MIT licence. The UCI gas sensor dataset and the CLEAR benchmark are released under the Creative Commons Attribution 4.0 licence. No personal data were collected from anyone, no human subjects took part and everything runs locally, so no data leave the machine. Sex and race appear as model inputs only because they are part of the standard Folktables tasks; the project makes no decisions about individuals.
 
 ## Expected Outcomes / Deliverables {#sec:deliverables}
 
-The project set out to deliver the following.
-
-1. A Python package that implements detection, accuracy estimation, localization, drift type diagnosis, root cause analysis, reliability scoring and remediation triage.
-2. An interactive dashboard that walks through these steps for real and injected drift.
-3. An injection benchmark with known drift types, including drift mechanisms held out from the design.
-4. An evaluation on four real datasets with documented changes, with every reported number generated from the study outputs.
-5. A research paper describing the method and its evaluation.
-6. This report.
-
-All six were delivered. Chapter @ch:results presents the evidence and Appendix I records the status of the research paper.
+The project set out to deliver a Python package covering every stage of the pipeline, an interactive dashboard, an injection benchmark with held-out drift mechanisms, an evaluation on four real datasets with documented changes, a research paper and this report. All six were delivered (Chapter @ch:results and Appendix I).

@@ -6,8 +6,9 @@ GroupNo-DomainName-MentorName:
 
 | File | Content |
 |---|---|
-| `39-AIDeepLearningDWHMining-Sanjay.docx` | the report, on the department template (submit this) |
-| `39-AIDeepLearningDWHMining-Sanjay.pdf` | PDF made with LibreOffice, for checking the layout |
+| `39-AIDeepLearningDWHMining-Sanjay.docx` / `.pdf` | the report with all four names on the certificate |
+| `39-AIDeepLearningDWHMining-Sanjay-<Name>.docx` / `.pdf` | the same report with one student's certificate (Rahul, Nathan, Alok, Akul) |
+| `evidence/scans/` | acceptance mail and signed review sheets, made into `figures/evidence_*.png` for the appendix |
 | `Modified Capstone_Project_II_..._2026-27.docx` | the department template (styles, header, footer, logo, front-page wording) |
 | `chapters/*.md` | the text: front matter and Chapters 1 to 8, references, appendix |
 | `figures/` | diagrams, Gantt chart, dashboard screenshots and the paper's result figures |
@@ -22,7 +23,8 @@ From the repository root:
 
 ```
 python paper/black-book/make_figures.py            # diagrams, Gantt chart, paper figures
-python paper/black-book/make_figures.py --screens  # screenshots; needs the dashboard on 127.0.0.1:8599
+python paper/black-book/make_figures.py --screens  # dashboard plots; needs the dashboard on 127.0.0.1:8599
+python paper/black-book/make_figures.py --evidence # appendix scans from evidence/scans/*.pdf
 python paper/black-book/build_blackbook.py         # .docx and .pdf
 ```
 
@@ -42,3 +44,9 @@ after editing.
 
 Placeholders still to fill are listed at the end of every build (roll numbers, mentor
 designation, review dates, publication status, scans for the appendix).
+
+The scans carry signatures and e-mail addresses and the reports embed them, so the scans, the
+images made from them and the built reports are kept out of this public repository
+(`.gitignore`); build them locally. The report is about 80 pages, as the department asks:
+body text is set to 1.5 line spacing on every paragraph as well as in the style, so the
+spacing survives an import into Google Docs, and the contents list two heading levels.

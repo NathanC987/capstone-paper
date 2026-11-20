@@ -1,12 +1,12 @@
 # Testing of the Proposed System {#ch:testing}
 
-A monitoring system makes claims about error rates, so testing it means more than checking that the code runs. This chapter states what the testing had to establish, describes the kinds of test used, lists the test cases with their results and draws conclusions from them.
+A monitoring system makes claims about error rates, so testing it means more than checking that the code runs. This chapter states the objectives of the testing, the kinds of test used and the test cases with their results.
 
 ## Introduction to Testing {#sec:test-intro}
 
-The testing had three objectives. The first was functional: every module must do what its requirement in Section @sec:fr says. The second was statistical: every test must hold its stated error rate and the diagnosis must name the drift type correctly when the truth is known. The third concerned the system as a whole: the full pipeline must behave sensibly on real data and the dashboard must present every study without failing.
+The testing had three objectives: every module must meet its requirement of Section @sec:fr, every test must hold its stated error rate and the full pipeline must behave sensibly on real data.
 
-The scope covers the Python package, the study scripts, the benchmark and the dashboard. All tests ran on the workstation of Section @sec:tools under Python 3.14 with pytest 9.0. The strategy was layered: unit tests for each routine, simulations of error rates for the statistical procedures, the injection benchmark for the diagnosis, real-data studies with control windows for the whole system and integration tests for the dashboard. The automated suite was run again on 30 October 2026 for this report; its output is kept in the project folder.
+The scope covers the Python package, the study scripts, the benchmark and the dashboard. All tests ran on the workstation of Section @sec:tools under Python 3.14 with pytest 9.0.
 
 ## Types of Tests Considered {#sec:test-types}
 
@@ -18,8 +18,7 @@ Each kind of test below was chosen because it checks a different claim the syste
 - **Statistical validation** checks error rates by simulation: the MMD permutation test and the weighted Holm procedure must not reject a true null more often than α and the family-wise error of the label-free decisions was simulated with \res{bb-fwer-reps} replicates.
 - **Model validation** grades the diagnosis on the injection benchmark, where the true type is known, against rule baselines, a learned meta-classifier and ablations of the procedure (Section @sec:graphs).
 - **System tests on real data** run the whole pipeline on the four real datasets, where the control windows must stay quiet and the verdicts must agree with the documented causes.
-- **Performance tests** record the time each stage takes on every window.
-- **Reproducibility tests** check that seeded components (permutation tests, SHAP, gradient boosting, strategies) give identical results when run twice and that the GPU and CPU versions of the permutation tests agree.
+- **Performance and reproducibility tests** record the time of each stage and check that seeded components give identical results when run twice.
 
 Security and load tests were not considered relevant: the system runs locally on public data, serves no external users and processes batches rather than requests.
 
@@ -57,6 +56,6 @@ Table: Test case scenarios and their results {#tab:testcases widths=0.75,1.05,2.
 
 All \res{bb-tests-total} automated tests pass and every test case in Table @tab:testcases met its expected result. The statistical tests matter most, because they back the error rates the system promises. The family-wise error of the label-free decisions came out at \res{fwer-wholm-pct}% against a target of \res{fwer-alpha-pct}%. The rule used before the correction, which tested the blocks first and then the features at the level the block was rejected at, came out at \res{fwer-gate-pct}%: it spent α twice. On the benchmark control windows the full diagnosis raised a false verdict on \res{diag-fa-pct}% of windows, below its bound of \res{diag-fa-bound-pct}%.
 
-Testing also found defects. The simulation above exposed the error in the label-free stage and a code review found that the audit counted the categories of nominal features on all rows instead of the audit rows only. Both were fixed, a regression test was added for each (TC-08 and TC-11) and every result was produced again, which changed the verdict in \res{fix-nchanged} of the \res{fix-nwindows} benchmark windows. Earlier fixes are guarded in the same way: tests now check that SHAP explains the positive-class probability of the full model pipeline, that the MMD test standardizes its inputs, that CBPE stays finite when a confidence bin of the reference is empty and that permutation p values are seeded.
+Testing also found defects. The simulation above exposed the error in the label-free stage and a code review found that the audit counted the categories of nominal features on all rows instead of the audit rows only. Both were fixed, a regression test was added for each (TC-08 and TC-11) and every result was produced again, which changed the verdict in \res{fix-nchanged} of the \res{fix-nwindows} benchmark windows.
 
-Two limits remain. The automated suite checks behavior on small and synthetic data and does not replace the benchmark and real-data studies, which take hours rather than seconds. And usability was checked by the team and the mentor reviews, not by a study with outside users, so the usability requirement is met only in the sense of NFR-08.
+The automated suite checks behavior on small and synthetic data and does not replace the benchmark and real-data studies. Usability was checked by the team and the mentor reviews, not by a study with outside users.

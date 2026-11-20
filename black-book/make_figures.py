@@ -11,6 +11,10 @@ PNG. Dashboard screenshots need the dashboard running on 127.0.0.1:8599:
 Run from anywhere:
 
     python paper/black-book/make_figures.py            # diagrams, Gantt chart, paper figures
+    python paper/black-book/make_figures.py --evidence # appendix scans from evidence/scans/*.pdf
+
+The scans (acceptance mail, review sheets) carry signatures and e-mail addresses, so they and
+the images made from them stay out of the public repository (see .gitignore).
 """
 
 from __future__ import annotations
@@ -248,10 +252,11 @@ def gantt() -> None:
         ("Statistical redesign, baselines, design B,\ngas sensor data, second model", date(2026, 9, 14), date(2026, 10, 15), "Capstone II"),
         ("Error-control correction, full rerun", date(2026, 10, 14), date(2026, 10, 16), "Capstone II"),
         ("Journal and conference papers", date(2026, 10, 15), date(2026, 10, 26), "Capstone II"),
-        ("Black book and final review", date(2026, 10, 27), date(2026, 11, 6), "Capstone II"),
+        ("Black book and final review", date(2026, 10, 27), date(2026, 11, 20), "Capstone II"),
     ]
-    milestones = [(date(2026, 2, 20), "first commit"), (date(2026, 9, 8), "benchmark"), (date(2026, 10, 16), "results frozen"),
-                  (date(2026, 10, 25), "ICMMDU deadline")]
+    # review dates from the signed review sheets, acceptance from the ICMMDU mail
+    milestones = [(date(2026, 2, 20), "first commit"), (date(2026, 9, 3), "review 1"), (date(2026, 10, 16), "results frozen"),
+                  (date(2026, 10, 27), "paper accepted"), (date(2026, 11, 4), "review 2")]
     plt.rcParams.update({"font.family": "Liberation Serif", "font.size": 9})
     fig, ax = plt.subplots(figsize=(6.5, 3.9))
     colors = {"Capstone I": "#8fa9cf", "Capstone II": "#2f5b9a"}
@@ -259,13 +264,15 @@ def gantt() -> None:
         ax.barh(i, (b - a).days + 1, left=mdates.date2num(a), height=0.55, color=colors[part], edgecolor="#1f2a3a", lw=0.5)
     ax.set_yticks(range(len(phases)), [p[0] for p in phases])
     ax.set_ylim(len(phases) - 0.4, -2.2)
+    rows = [2, 2, 0, 1, 2]                 # label rows above the bars, so that neighbouring labels do not overlap
     for k, (d, label) in enumerate(milestones):
         x = mdates.date2num(d)
-        ax.axvline(x, color="#b04a2f", lw=0.7, ls="--")
-        ax.text(x, -0.75 - 0.55 * (k % 3), f"{label} ", ha="right", va="center", fontsize=7, color="#b04a2f")
+        ax.axvline(x, color="#b04a2f", lw=0.7, ls="--", zorder=1)
+        ax.text(x, -0.75 - 0.55 * rows[k], f"{label} ", ha="right", va="center", fontsize=7, color="#b04a2f", zorder=3,
+                bbox=dict(fc="white", ec="none", pad=0.6))
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
-    ax.set_xlim(mdates.date2num(date(2026, 1, 1)), mdates.date2num(date(2026, 11, 15)))
+    ax.set_xlim(mdates.date2num(date(2026, 1, 1)), mdates.date2num(date(2026, 11, 30)))
     ax.axvspan(mdates.date2num(date(2026, 4, 15)), mdates.date2num(date(2026, 7, 31)), color="#eeeeee", zorder=0)
     ax.text(mdates.date2num(date(2026, 6, 7)), len(phases) - 0.6, "semester break,\nexaminations", ha="center",
             fontsize=7, color="#555555")
@@ -336,8 +343,36 @@ def paper_figures() -> None:
         subprocess.run(["pdftoppm", "-r", "400", "-png", "-singlefile", str(pdf), str(OUT / name)], check=True)
 
 
+def evidence() -> None:
+    """Appendix scans: the top of the ICMMDU acceptance mail and both review sheets, landscape."""
+    from PIL import Image, ImageChops
+    scans = BB / "evidence" / "scans"
+    tmp = OUT / "_scan"
+
+    def page(pdf: Path, dpi: int = 200) -> Image.Image:
+        subprocess.run(["pdftoppm", "-r", str(dpi), "-png", "-singlefile", "-f", "1", "-l", "1", str(pdf), str(tmp)],
+                       check=True)
+        im = Image.open(f"{tmp}.png").convert("RGB")
+        Path(f"{tmp}.png").unlink()
+        return im
+
+    def trim(im: Image.Image, pad: int = 20) -> Image.Image:
+        box = ImageChops.difference(im, Image.new("RGB", im.size, "white")).getbbox()
+        return im.crop((max(box[0] - pad, 0), max(box[1] - pad, 0), min(box[2] + pad, im.width),
+                        min(box[3] + pad, im.height))) if box else im
+
+    mail = page(scans / "icmmdu-acceptance.pdf")
+    # down to the sentence on publication by Springer Nature (y = 350 pt of 792); bank details are left out
+    trim(mail.crop((0, 0, mail.width, int(mail.height * 350 / 792)))).save(OUT / "evidence_acceptance.png")
+    trim(page(scans / "review-1.pdf")).save(OUT / "evidence_review1.png")
+    trim(page(scans / "review-2.pdf").rotate(90, expand=True)).save(OUT / "evidence_review2.png")
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
+    if "--evidence" in sys.argv:
+        evidence()
+        return
     if "--screens" in sys.argv:
         import capture_screens
         capture_screens.main()

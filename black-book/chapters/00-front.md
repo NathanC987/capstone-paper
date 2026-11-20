@@ -1,10 +1,10 @@
 ---
 title: ResilientAI: Drift Detection and Diagnosis System
-student: Rahul Guhagarkar; [[Class / Roll No.]]
-student: Nathan Cherian; [[Class / Roll No.]]
-student: Alok Pal; [[Class / Roll No.]]
-student: Akul Patre; [[Class / Roll No.]]
-mentor: [[Prof./Dr.]] Sanjay Mirchandani
+student: Rahul Guhagarkar; D17C / 16
+student: Nathan Cherian; D17C / 11
+student: Alok Pal; D17C / 36
+student: Akul Patre; D17C / 44
+mentor: Mr. Sanjay Mirchandani
 mentor-designation: [[Designation]]
 group: 39
 year: 2026–27
@@ -18,7 +18,7 @@ year: 2026–27
 
 We are thankful to our college, Vivekanand Education Society's Institute of Technology, for considering our project and extending help at all stages needed during our work of collecting information regarding the project.
 
-It gives us immense pleasure to express our deep and sincere gratitude to our project mentor, [[Prof./Dr.]] Sanjay Mirchandani, for the kind help and valuable advice during the development of the project synopsis and for the guidance and suggestions that shaped this work at every review.
+It gives us immense pleasure to express our deep and sincere gratitude to our project mentor, Mr. Sanjay Mirchandani, for the kind help and valuable advice during the development of the project synopsis and for the guidance and suggestions that shaped this work at every review.
 
 We are deeply indebted to our Principal Dr. (Mrs.) J. M. Nair and the Head of the Computer Department Dr. (Mrs.) Nupur Giri for giving us this valuable opportunity to do this project.
 

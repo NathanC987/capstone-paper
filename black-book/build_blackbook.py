@@ -50,6 +50,7 @@ NAME = "39-AIDeepLearningDWHMining-Sanjay"
 OUT = BB / f"{NAME}.docx"
 
 TEXT_W = 9360                      # twips: Letter page, 1 inch margins (template)
+MAX_FIG_H = 190                    # mm: a figure with its caption fits on one page
 MAIN_CT = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 REL_IMAGE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
 REL_LINK = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"
@@ -73,7 +74,15 @@ def run(text: str, rpr: str = "") -> str:
     return f"<w:r>{props}{body}</w:r>"
 
 
+BODY_SPACING = {"Normal": '<w:spacing w:before="0" w:after="120" w:line="360" w:lineRule="auto"/>',
+                "ListItem": '<w:spacing w:before="0" w:after="60" w:line="360" w:lineRule="auto"/>'}
+
+
 def para(style: str, body: str, ppr: str = "") -> str:
+    # body text carries its 1.5 line spacing directly as well as through its style, since Google Docs
+    # drops the style's spacing on import
+    if style in BODY_SPACING and "<w:spacing" not in ppr:
+        ppr = BODY_SPACING[style] + ppr
     return f'<w:p><w:pPr><w:pStyle w:val="{style}"/>{ppr}</w:pPr>{body}</w:p>'
 
 
@@ -397,6 +406,7 @@ class Book:
     res: Dict[str, str]
     bib: Dict[str, Dict[str, str]]
     pages: Dict[str, str] = field(default_factory=dict)       # entry key -> printed page number
+    certificate_for: Optional[int] = None                       # one student's certificate, or all when None
 
     def __post_init__(self) -> None:
         self.math_cache = __import__("json").loads(MATH_CACHE.read_text())
@@ -426,7 +436,7 @@ class Book:
                         for j in range(b.level, 4):
                             sec[j] = 0
                         b.number = ".".join(str(n) for n in sec[:b.level])
-                elif b.kind in ("fig", "table", "eq", "alg"):
+                elif b.kind in ("fig", "table", "eq", "alg") and b.attrs.get("caption") != "none":
                     kind = "tab" if b.kind == "table" else b.kind
                     counts[kind] += 1
                     b.number = f"{ch}.{counts[kind]}" if ch else f"A.{counts[kind]}"
@@ -555,6 +565,10 @@ class Book:
         if not path.exists():
             raise FileNotFoundError(path)
         width = float(b.attrs.get("width", 150))
+        w_px, h_px = png_size(path)
+        width = min(width, MAX_FIG_H * w_px / h_px)
+        if b.attrs.get("caption") == "none":         # a scanned document: no number, no caption
+            return para("FigureBody", self.image(path, width, b.text), '<w:keepNext w:val="0"/>')
         return para("FigureBody", self.image(path, width, f"Figure {b.number}")) + self.caption("fig", b, "FigureCaption")
 
     def table(self, b: Block) -> str:
@@ -749,13 +763,17 @@ class Book:
         out = []
         # certificate
         out.append(self.institute_block() + self.logo(24) + para("FrontTitle", run("Certificate")))   # the section break starts the page
+        if self.certificate_for is None:
+            cert_names, verb, their = name_list, "have", "their "
+        else:
+            cert_names, verb, their = names[self.certificate_for], "has", "the "
         out.append(para("Normal", self.inline(
-            f"This is to certify that **{name_list}** of Fourth Year Computer Engineering studying in Vivekanand "
-            "Education Society\u2019s Institute of Technology, affiliated to University of Mumbai have satisfactorily "
-            f"completed the project on **\u201c{title}\u201d** as a part of their coursework of Capstone Project - II for "
-            f"Semester-VII under the guidance of their mentor **{self.mentor()}** in the year {f['year'][0]}.")))
+            f"This is to certify that **{cert_names}** of Fourth Year Computer Engineering studying in Vivekanand "
+            f"Education Society\u2019s Institute of Technology, affiliated to University of Mumbai {verb} satisfactorily "
+            f"completed the project on **\u201c{title}\u201d** as a part of {their}coursework of Capstone Project - II for "
+            f"Semester-VII under the guidance of {their}mentor **{self.mentor()}** in the year {f['year'][0]}.")))
         out.append(para("Normal", self.inline(
-            f"This project report entitled \u201c{title}\u201d by {name_list} is approved for the degree of Bachelor of "
+            f"This project report entitled \u201c{title}\u201d by {cert_names} is approved for the degree of Bachelor of "
             "Engineering (B.E.) in Computer Engineering.")))
         po = Table(["l", "c"], [], 1)
         from build_ppeecs import Cell, Row
@@ -847,7 +865,7 @@ class Book:
     def contents(self) -> str:
         """Contents, list of figures and list of tables as Word fields, filled with known page numbers."""
         out = []
-        groups = [("TABLE OF CONTENTS", 'TOC \\o "1-3" \\h \\z \\u', ("toc1", "toc2", "toc3")),
+        groups = [("TABLE OF CONTENTS", 'TOC \\o "1-2" \\h \\z \\u', ("toc1", "toc2")),
                   ("LIST OF FIGURES", 'TOC \\h \\z \\t "Figure Caption,1"', ("fig",)),
                   ("LIST OF TABLES", 'TOC \\h \\z \\t "Table Caption,1"', ("tab",))]
         for title, instr, kinds in groups:
@@ -1054,6 +1072,13 @@ def main() -> None:
           f"{sum(e.kind == 'tab' for e in entries)} tables, {len(book.used_res)} result keys")
     if book.placeholders:
         print(f"{len(book.placeholders)} placeholders to fill: " + "; ".join(sorted(set(book.placeholders))))
+    # one copy per student: only the certificate differs, so the page numbers carry over
+    for i, (name, _) in enumerate(book.students()):
+        book.certificate_for = i
+        out = OUT.with_name(f"{NAME}-{name.split()[0]}.docx")
+        write(book, entries, out)
+        print(f"{out.name}: {len(pdf_pages(to_pdf(out)))} pages")
+    book.certificate_for = None
     for p in problems:
         print("FAIL", p)
     sys.exit(1 if problems else 0)

@@ -1,16 +1,16 @@
 # Requirement Gathering for the Proposed System {#ch:req}
 
-A monitoring system is useful only if it answers the questions its users actually ask and does so within limits they can accept. This chapter describes how the requirements of ResilientAI were gathered, lists the functional and non-functional requirements that the rest of the report traces and records the hardware, software and constraints of the project.
+This chapter describes how the requirements of ResilientAI were gathered, lists the functional and non-functional requirements and records the hardware, software and constraints of the project.
 
 ## Introduction to Requirement Gathering {#sec:req-intro}
 
-The requirements came from four sources. The literature survey of Chapter @ch:lit showed what existing tools already do and where they stop. The documentation of monitoring libraries and the patents of Section @sec:patents showed what industry monitors report. The mentor reviews of the project, held at each stage, turned a broad idea into testable targets and pushed us to state an error rate for every decision. Finally, building early prototypes and showing them as a dashboard exposed what a person needs to see before acting on an alarm.
+The requirements came from the literature survey and the patents of Chapter @ch:lit, from early prototypes shown as a dashboard and from the mentor reviews, which turned a broad idea into testable targets.
 
-Three groups of stakeholders shape the requirements. Machine learning engineers register a model with its reference data, run the monitor and export its reports. Monitoring teams read the results: they want to know whether the model is still accurate, what changed and what to do about it. Labeling teams supply the small audit of late labels when it is requested. The people affected by the model's decisions are indirect stakeholders whose interest is that a failing model is caught early. Fig. @fig:usecase shows the main use cases of the three direct groups.
+Three groups of stakeholders shape the requirements: machine learning engineers, monitoring teams and labeling teams. The people affected by the model's decisions are indirect stakeholders. Fig. @fig:usecase shows the main use cases of the three direct groups.
 
-![Use cases of ResilientAI for its three groups of direct users](usecase.png){#fig:usecase width=95}
+![Use case diagram](usecase.png){#fig:usecase width=85}
 
-The machine learning engineer sets the system up and runs it. The monitoring team reads alarms, accuracy estimates and shifted features, reads the drift type with the reason the system gives for it, checks doubtful predictions and decides on retraining. The labeling team only provides audit labels. The scope of the requirements follows from the problem definition of Section @sec:problem: tabular and image classifiers, batch windows of production data and a label budget of a few hundred rows per window.
+The machine learning engineer sets the system up and runs it. The monitoring team reads the alarms, accuracy estimates, shifted features and drift type, checks doubtful predictions and decides on retraining. The labeling team only provides audit labels. The scope of the requirements follows from the problem definition of Section @sec:problem: tabular and image classifiers, batch windows of production data and a label budget of a few hundred rows per window.
 
 ## Functional Requirements {#sec:fr}
 
@@ -76,7 +76,5 @@ The project worked within the following constraints and assumptions.
 
 - **Labels.** Production labels are assumed to arrive late and to be expensive, so they may be used only in a small audit. The audit is assumed to be a random sample of the window.
 - **Data.** Only public datasets could be used. Their drift types are not known exactly, which is why an injection benchmark was needed. The 2020 release of the American Community Survey has no standard version, so 2020 is missing from the timelines.
-- **Models.** The system watches the model from outside: it needs predictions and class probabilities, not the internals of the model, except for the explanations.
 - **Compute and time.** All work had to run on one workstation within the semester. Long benchmark runs were scheduled one at a time with capped parallel workers.
-- **Batch setting.** Windows are batches of hundreds to thousands of rows. The tests are not designed for streams that need a verdict every few seconds.
 - **Ethics and privacy.** No personal data could be collected and the sensitive attributes in the census tasks are used only as model inputs of standard public tasks.

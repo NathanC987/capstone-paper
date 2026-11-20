@@ -1,50 +1,26 @@
 # Implementation of the Proposed System {#ch:impl}
 
-This chapter describes how the design of Chapter @ch:design was built. It explains the development method first, then gives the algorithms of each module with their formulas, flowcharts and pseudocode and ends with the datasets: where they come from, how they were prepared and how they were used.
+This chapter describes how the design was built: the development method, the algorithms of each module and the datasets.
 
 ## Methodology Employed for Development {#sec:method}
 
-The system was developed incrementally over the two semesters, one stage of the pipeline at a time. Each stage was first built as a working prototype, shown in the dashboard and discussed at a mentor review, then hardened with tests and rerun on all datasets. This order meant that a complete, if rough, system existed early and every later improvement could be judged on real outputs.
+The system was developed incrementally, one stage of the pipeline at a time. Each stage was first built as a prototype, shown in the dashboard and discussed at a mentor review, then hardened with tests and rerun on all datasets.
 
-Four practices ran through the whole development.
-
-- **A fixed protocol.** Every setting of an experiment, from the significance level to the audit size, was fixed before the evaluation that uses it. The diagnosis was frozen before the held-out benchmark design was run for the first time, so that design could not be tuned to it.
-- **Generated results.** Every study writes a JSON report and a build script turns the reports into named result values, tables and figures. Documents cite results only through these names, so a number cannot be mistyped or left stale.
-- **Seeded randomness.** Every random choice (data splits, permutations, injections, samples for explanations) takes a seed, so every result can be repeated exactly.
-- **Tests and review.** Statistical routines were checked against reference implementations and by simulation of their error rates. A code review late in the project found two errors in the diagnosis; both were fixed without looking at the results and every result was produced again.
-
-The code is written in Python 3.14 and organized as the package of Section @sec:modules, with two Git repositories: one for the code and one for the paper and this report. Long runs, such as the benchmark, were scheduled one at a time with a capped number of parallel workers.
+Every setting of an experiment was fixed before the evaluation that uses it and the diagnosis was frozen before the held-out benchmark design was first run, so that design could not be tuned to it. Every random choice takes a seed and every reported number is generated from the stored study reports, so results can be repeated exactly and cannot go stale. The code is written in Python 3.14 and kept in two Git repositories, one for the code and one for the paper and this report.
 
 A key implementation choice concerns the reference data. They are split into three disjoint parts, stratified by class: \res{acs-split-pct-train}% for training, \res{acs-split-pct-calibration}% for calibration and \res{acs-split-pct-test}% for testing. The model is fitted on the training part alone. The calibration part is the reference window for every detector and fits the accuracy estimator and the test part gives the reference accuracy and doubles as a control window on which no alarm should fire. Two model families are monitored, both untuned: logistic regression (LR) with $L_2$ regularization ($C=1$) on standardized numeric and one-hot encoded nominal features and histogram gradient boosting (GB) [@ke2017lightgbm] from scikit-learn [@pedregosa2011scikit] with default settings and native splits on nominal codes.
 
 ## Algorithms and Flowcharts for Modules Developed {#sec:algorithms}
 
-The algorithms follow the stages of the block diagram. Algorithm @alg:window gives the overall processing of one production window and the subsections below describe each step.
-
-```Processing of one production window {#alg:window}
-Input:  model M, calibration part R, production window W, optional audit (X_a, y_a)
-Output: report for W
-1  validate the schema and feature types of W against R
-2  predict labels and class probabilities of M on W
-3  run the detectors (KS, PSI, MMD, confidence test) of W against R
-4  estimate the accuracy of M on W from its confidences (CBPE)
-5  localize: test every feature, record effect sizes and unseen categories
-6  verdict ← label-free diagnosis (Algorithm @alg:labelfree)
-7  if verdict = no shift and an audit is available then
-8      verdict ← audit diagnosis (Algorithm @alg:audit)
-9  explain the change: SHAP for tabular models, CAM for image models
-10 score the risk of error of every prediction
-11 triage: would a cheap retrain help? (Algorithm @alg:triage)
-12 write all results, with the time of each stage, to the report
-```
+The algorithms follow the stages of the block diagram. For every production window the system validates the data, runs the detectors and the accuracy estimate, localizes the shift, runs the label-free diagnosis and, when nothing is found and an audit is available, the audit diagnosis. It then explains the change, scores every prediction, runs the triage and writes all results to the report.
 
 ### Detection and Localization {#sec:alg-detection}
 
 Detection decides whether a window differs from the calibration part and localization says where the difference sits. Fig. @fig:flow-detection shows the flow.
 
-![Flowchart of detection, accuracy estimation and localization for one window](flow_detection.png){#fig:flow-detection width=78}
+![Detection flowchart](flow_detection.png){#fig:flow-detection width=70}
 
-The window is validated and scored by the model, the detectors and the accuracy estimate are run and if any test is significant after correction the features are localized. The results pass to the diagnosis in either case. Four detectors are used by the diagnosis and two more act as baselines.
+The flowchart covers detection, accuracy estimation and localization for one window. The window is validated and scored by the model, the detectors and the accuracy estimate are run and if any test is significant after correction the features are localized. The results pass to the diagnosis in either case. Four detectors are used by the diagnosis and two more act as baselines.
 
 The **Kolmogorov–Smirnov (KS) test** compares each numeric feature. With $F_P$ and $F_Q$ the empirical distribution functions of the feature in the calibration part and in the window, its statistic is given by
 
@@ -82,11 +58,11 @@ $$\hat A = \frac{1}{n}\sum_{i=1}^{n} a(c_i)$$. {#eq:cbpe}
 
 The diagnosis turns an alarm into one of the four drift types and thereby into a response. Fig. @fig:decision shows its decision path.
 
-![Decision path that names the drift type. Questions are shown in white boxes and verdicts in gray boxes; the upper row needs no labels and the lower row uses the audit](decision_path.png){#fig:decision width=125}
+![Decision path of the diagnosis](decision_path.png){#fig:decision width=125}
 
-The questions in the upper row use no labels and separate covariate shift from prior shift. The lower row separates concept drift from label noise and runs only when no label-free test rejects and an audit is available. Each stage is tested at level α, so a window without drift receives a drift verdict with probability at most 2α.
+Questions are shown in white boxes and verdicts in gray boxes. The questions in the upper row use no labels and separate covariate shift from prior shift. The lower row separates concept drift from label noise and runs only when no label-free test rejects and an audit is available. Each stage is tested at level α, so a window without drift receives a drift verdict with probability at most 2α.
 
-**Label-free stage.** The first question is whether anything has moved at all. Three blocks of tests answer it: the feature tests, a chi-square test on the predicted labels and the MMD test. They form one family tested at level α with a weighted Holm procedure. The weight starts out split evenly, one third per block and inside the feature block it is divided again among the individual features. A test that rejects hands its weight on to the tests still waiting, which is how the family-wise error rate survives every label-free decision. Pooling in this way matters because a permutation test cannot return a p value below $1/(B+1)$; without pooling, the MMD test would have little chance against dozens of feature tests.
+**Label-free stage.** The first question is whether anything has moved at all. Three blocks of tests answer it: the feature tests, a chi-square test on the predicted labels and the MMD test. They form one family tested at level α with a weighted Holm procedure. The weight starts out split evenly, one third per block and inside the feature block it is divided again among the individual features. A test that rejects hands its weight on to the tests still waiting, which is how the family-wise error rate survives every label-free decision.
 
 A rejection raises the next question: could a change in the class balance alone produce what we see? Black-box shift estimation (BBSE) [@lipton2018bbse] first estimates the new class prior. Let $C_{jk}=P(\hat y=j,y=k)$ on the calibration part and let $\mu_j$ be the share of window predictions that fall in class $j$. The class weights $w_k=Q(Y=k)/P(Y=k)$ are given by the solution of
 
@@ -138,66 +114,36 @@ Output: verdict in {no drift, concept, label noise}
 
 The drift type suggests what kind of fix to consider but not where the trouble started. Root cause analysis asks which inputs the model now leans on more or less than before. For tabular models we compute Shapley additive explanations (SHAP) [@lundberg2017unified] of the deployed model with its preprocessing on \res{acs-shap-n} rows per side against \res{acs-shap-bg} background rows and compare the mean absolute attribution of every feature on reference and window rows. Each change gets a percentile bootstrap interval, Bonferroni adjusted over the features, so that only clear changes are reported. For image models, class activation maps (CAM) [@zhou2016cam] highlight the image regions behind the prediction of the linear head on the frozen network. Fig. @fig:cam shows examples from the CLEAR-10 stream.
 
-![Class activation maps for the \res{cam-k} images of CLEAR-10 bucket \res{cam-bucket} with the highest out-of-distribution scores. The top row gives each image with its predicted and true class, the bottom row the map of evidence for the predicted class (red is most evidence)](gen_cam.png){#fig:cam width=150}
+![Class activation maps on CLEAR-10](gen_cam.png){#fig:cam width=150}
 
-The images were chosen as the most unusual of the bucket, because unusual images are where a change in content shows first. The model predicts all four correctly and the maps show which regions carry the evidence for each prediction; for the laptop it is the keyboard. Root cause analysis narrows the search for a cause without proving one, which is why its findings are always shown next to the localization and the drift type.
+The top row gives each image with its predicted and true class and the bottom row the map of evidence for the predicted class, where red is most evidence. The \res{cam-k} images are those of bucket \res{cam-bucket} with the highest out-of-distribution scores, because unusual images are where a change in content shows first. The model predicts all four correctly and the maps show which regions carry the evidence for each prediction; for the laptop it is the keyboard.
 
 ### Reliability Scoring and Remediation Triage {#sec:alg-triage}
 
-The last two stages act on single predictions and on the decision to retrain. Fig. @fig:flow-triage shows both.
+The last two stages act on single predictions and on the decision to retrain. Fig. @fig:flow-triage shows (a) the reliability score of each prediction and (b) the remediation triage.
 
-![Flowcharts of (a) the reliability score of each prediction and (b) the remediation triage](flow_triage.png){#fig:flow-triage width=150}
+![Reliability and triage flowcharts](flow_triage.png){#fig:flow-triage width=150}
 
 For single predictions three signals are combined, each scaled between 0 and 1: the confidence risk $1-c$, the instability of the prediction under small perturbations of the input and an out-of-distribution (OOD) score that blends an Isolation Forest [@liu2008isolation] with a standardized distance. A logistic regression on the calibration part maps the three signals to a probability of error. It is fitted only if the calibration part holds at least ten wrong predictions per signal [@peduzzi1996]; with fewer, the risk falls back to $1-c$.
 
-The triage has to judge, without production labels, whether retraining is worth the trouble. It uses two probes, given in Algorithm @alg:triage. The first relies on density ratio weights from a classifier trained to tell reference rows from window rows; the weights are fitted on separate folds and capped at \res{const-weight-clip} times their mean [@cortes2010weights]. A model retrained with them is compared with an unweighted model on a held-out \res{const-triage-valfrac}% of the reference, weighted in the same way [@shimodaira2000; @sugiyama2007]. The second probe needs late labels from an earlier window. Where they exist, it retrains on them and checks the result on a held-out part of that window.
-
-```Remediation triage {#alg:triage}
-Input:  reference data R, window W (unlabeled), optional earlier labeled window E, level alpha
-Output: recommend or hold, predicted gains
-1  d ← classifier separating R from W, fitted on separate folds
-2  w ← density ratio weights from d, capped at \res{const-weight-clip} times their mean
-3  hold out \res{const-triage-valfrac}% of R as validation data
-4  gain_1 ← weighted accuracy of the weighted retrain minus the deployed model
-5  if E exists then
-6      gain_2 ← accuracy on held-out E of a retrain on E minus the deployed model
-7  p ← bootstrap p values of the gains
-8  if some gain is significant after Holm over the probes then recommend
-9  else hold
-```
+The triage judges without production labels whether retraining is worth it, with two probes. The first relies on density ratio weights from a classifier trained to tell reference rows from window rows; the weights are fitted on separate folds and capped at \res{const-weight-clip} times their mean [@cortes2010weights]. A model retrained with them is compared with an unweighted model on a held-out \res{const-triage-valfrac}% of the reference, weighted in the same way [@shimodaira2000]. The second probe needs late labels from an earlier window. Where they exist, it retrains on them and checks the result on a held-out part of that window. Each gain gets a bootstrap p value and the triage recommends a retrain when one is significant after Holm correction over the probes.
 
 ## Dataset Sources and Utilization {#sec:datasets}
 
-The real datasets were chosen because the cause of their drift is documented, which lets the verdicts be checked against known events. Table @tab:datasets lists all four and the paragraphs that follow give their source, licence, size, features, preparation and use.
+The real datasets were chosen because the cause of their drift is documented. Table @tab:datasets lists all four.
 
 Table: Datasets, drift windows and reference accuracy {#tab:datasets size=9}
 <<gen:tab_datasets>>
 
 Rows gives the smallest and the largest window, Inputs the number of features or embedding dimensions and the last two columns the reference test accuracy of LR and GB.
 
-*ACS Income and ACS Employment.* Both tasks come from the American Community Survey (ACS) of the United States Census Bureau, as packaged by Folktables [@ding2021retiring] (code under the MIT licence; data under the Census Bureau's terms of use; accessed through the Folktables package). ACS Income predicts from \res{inc-nfeatures} features whether a person earns more than \$50,000 and ACS Employment predicts from \res{emp-nfeatures} features whether a person aged 16 to 90 is employed. Table @tab:features lists the features of ACS Income. California (CA) 2014 is the reference, with \res{inc-train-n} training rows for ACS Income. The temporal windows are CA 2015 to 2019 and 2021 to 2023, as no standard 2020 release exists [@census2021experimental] and the geographic windows are Texas (TX), New York (NY), Florida (FL) and Washington (WA) in 2014. Missing values are coded as $-1$. In 2019 the relationship variable RELP was replaced by RELSHIPP [@census2019pums], which we map back to RELP with the code labels of the 2018 and 2019 data dictionaries. Five documented changes fall in these years: new occupation codes in 2018 [@census2020occupation], a redesigned relationship question in 2019, a new coding of race answers from 2020 [@census2021race], the pandemic and wage growth against the fixed income threshold.
+*ACS Income and ACS Employment.* Both tasks come from the American Community Survey (ACS) of the United States Census Bureau, as packaged by Folktables [@ding2021retiring] (code under the MIT licence; data under the Census Bureau's terms of use; accessed through the Folktables package). ACS Income predicts from \res{inc-nfeatures} features whether a person earns more than \$50,000 and ACS Employment predicts from \res{emp-nfeatures} features whether a person aged 16 to 90 is employed. The features of ACS Income are age (AGEP), class of worker (COW), educational attainment (SCHL, 24 ordered levels treated as numeric), marital status (MAR), occupation (OCCP), place of birth (POBP), relationship (RELP), usual hours worked per week (WKHP), sex (SEX) and race (RAC1P). California (CA) 2014 is the reference, with \res{inc-train-n} training rows for ACS Income. The temporal windows are CA 2015 to 2019 and 2021 to 2023, as no standard 2020 release exists [@census2021experimental] and the geographic windows are Texas (TX), New York (NY), Florida (FL) and Washington (WA) in 2014. In 2019 the relationship variable RELP was replaced by RELSHIPP [@census2019pums], which we map back to RELP with the code labels of the 2018 and 2019 data dictionaries. Five documented changes fall in these years: new occupation codes in 2018 [@census2020occupation], a redesigned relationship question in 2019, a new coding of race answers from 2020 [@census2021race], the pandemic and wage growth against the fixed income threshold.
 
-Table: Input features of ACS Income {#tab:features widths=1.2,3.2,1.5 size=10}
-| Code | Description | Type |
-|---|---|---|
-| AGEP | Age | Numeric |
-| COW | Class of worker | Nominal |
-| SCHL | Educational attainment (24 ordered levels) | Ordinal, treated as numeric |
-| MAR | Marital status | Nominal |
-| OCCP | Occupation | Nominal |
-| POBP | Place of birth | Nominal |
-| RELP | Relationship to the reference person | Nominal |
-| WKHP | Usual hours worked per week | Numeric |
-| SEX | Sex | Nominal |
-| RAC1P | Race | Nominal |
+*Gas sensor array drift.* This dataset from the machine learning repository of the University of California, Irvine (UCI) holds 13,910 measurements of six gases by 16 metal oxide sensors, taken over 36 months in ten batches [@vergara2012gas; @rodriguezlujan2014gas], with eight features per sensor (licence CC BY 4.0). As the sensors age, their response to the same gas drifts while the labels stay exact, a documented change in $P(X\mid Y)$. Batches 1 and 2 form the reference and batches 3 to 10 the windows. Small batches get an audit of $\min(600,\lfloor n/2\rfloor)$ labels for $n$ rows.
 
-Nominal codes such as occupation are one-hot encoded for LR, split natively by GB and tested with count-based statistics by the detectors, because their numeric order means nothing.
+*CLEAR-10.* This image stream from Flickr has ten object classes and a background class, spread over ten time-ordered buckets of about 3,300 images each [@lin2021clear] (licence CC BY 4.0). Bucket 1 is the reference. Images are mapped to \res{clear-dim}-dimensional embeddings by a frozen ResNet-18 trained on ImageNet [@he2016deep], on which both models are fitted.
 
-*Gas sensor array drift.* This dataset from the machine learning repository of the University of California, Irvine (UCI) holds 13,910 measurements of six gases by 16 metal oxide sensors, taken over 36 months in ten batches [@vergara2012gas; @rodriguezlujan2014gas], with eight features per sensor (licence CC BY 4.0). As the sensors age, their response to the same gas drifts while the labels stay exact, a documented change in $P(X\mid Y)$. Batches 1 and 2 form the reference and batches 3 to 10 the windows. Some batches are small, so the number of audit labels for a window of $n$ rows is given by $\min(600,\lfloor n/2\rfloor)$.
-
-*CLEAR-10.* This image stream from Flickr has ten object classes and a background class, spread over ten time-ordered buckets of about 3,300 images each [@lin2021clear] (licence CC BY 4.0). Bucket 1 is the reference. Images are mapped to the \res{clear-dim}-dimensional output of the global average pooling layer of a frozen residual network with 18 layers (ResNet-18) trained on ImageNet [@he2016deep] and both models are fitted on these embeddings.
-
-**Injection benchmark.** The type of a real drift is never known for certain, so the diagnosis is graded on drift that we inject ourselves into real census data. The benchmark uses the 2014 data of \res{bench-nstates} states (\res{bench-states}) for both ACS tasks. For each of \res{bench-nseeds} seeds the split, the window and the injection are drawn again, which gives \res{bench-nreps} replicates per configuration. A replicate draws a window of \res{bench-prodsize} rows and a grading holdout of \res{bench-holdsize} rows from the test part and each mechanism is injected into both at three intensities. Table @tab:mechanisms lists the mechanisms of the two designs.
+**Injection benchmark.** The type of a real drift is never known for certain, so the diagnosis is graded on drift injected into real census data. The benchmark uses the 2014 data of \res{bench-nstates} states (\res{bench-states}) for both ACS tasks. For each of \res{bench-nseeds} seeds the split, the window and the injection are drawn again, which gives \res{bench-nreps} replicates per configuration. A replicate draws a window of \res{bench-prodsize} rows and a grading holdout of \res{bench-holdsize} rows from the test part and each mechanism is injected into both at three intensities. Table @tab:mechanisms lists the mechanisms of the two designs.
 
 Table: Drift mechanisms of the injection benchmark {#tab:mechanisms widths=1.4,3.4,3.4 size=9.5}
 | Type | Design A (partly matches the tests) | Design B (held out from the design) |
@@ -208,4 +154,4 @@ Table: Drift mechanisms of the injection benchmark {#tab:mechanisms widths=1.4,3
 | Label noise | Flip a random \res{bench-noise-steps}% of the labels | Flip positive labels to negative at rates of \res{bench-b-noise-steps}% |
 | Control | A window without drift in every replicate | None |
 
-In design B the rows of the selection-bias windows stay real and $P(Y\mid X)$ is exactly unchanged, so the mechanism is a pure covariate shift that moves many features a little rather than two features a lot. None of the design B mechanisms shaped any part of the procedure, which is what makes it a fair test of whether the diagnosis carries over to new drift.
+None of the design B mechanisms shaped any part of the procedure, which makes it a fair test of whether the diagnosis carries over to new drift.
