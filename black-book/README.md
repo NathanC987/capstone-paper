@@ -45,8 +45,8 @@ after editing.
 Placeholders still to fill are listed at the end of every build (roll numbers, mentor
 designation, review dates, publication status, scans for the appendix).
 
-The scans carry signatures and e-mail addresses and the reports embed them, so the scans, the
-images made from them and the built reports are kept out of this public repository
-(`.gitignore`); build them locally. The report is about 80 pages, as the department asks:
+The scans carry signatures and e-mail addresses, so the scans and the images made from them
+are kept out of this public repository (`.gitignore`). The five built .docx reports, which
+embed them, are committed at the team's request (2026-11-20); the PDFs are built locally. The report is about 80 pages, as the department asks:
 body text is set to 1.5 line spacing on every paragraph as well as in the style, so the
 spacing survives an import into Google Docs, and the contents list two heading levels.
