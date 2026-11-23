@@ -60,6 +60,14 @@ Table: Share of benchmark windows with the correct drift type over seeds and sta
 Table: Correct diagnosis by design B mechanism over seeds and states (%) {#tab:seedsmechanisms}
 <<gen:tab_seeds_mechanisms>>
 
+Table @tab:seedspublished gives the same statistics for the published methods of Table @m:tab:published of the paper and Table @tab:seedsnoise for the label noise mechanisms of Table @m:tab:noise. In Table @tab:seedsnoise each seed pools its five states and the four task and model configurations.
+
+Table: Share of benchmark windows with the correct drift type for the published methods over seeds and states (%). Label-free + CL is our label-free stage followed by confident learning {#tab:seedspublished}
+<<gen:tab_seeds_published>>
+
+Table: Share of label noise windows named label noise over seeds and states (%) {#tab:seedsnoise}
+<<gen:tab_seeds_noise>>
+
 # Published methods by drift type {#sec:pubtypes}
 
 Table @tab:publishedtypes gives, for each method of Table @m:tab:published of the paper, the share of windows of each injected type that it typed correctly. The shares pool the four configurations of each design. Design B has no control windows.

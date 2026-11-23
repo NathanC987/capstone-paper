@@ -216,6 +216,52 @@ Noise: class-conditional & 21.3 $\pm$ 8.2 & 22.7 $\pm$ 7.2 & 34.7 $\pm$ 11.7 & 3
 \end{tabular}
 \end{table}
 
+Table~\ref{tab:seedspublished} gives the same statistics for the published methods of Table~5 of the paper and Table~\ref{tab:seedsnoise} for the label noise mechanisms of Table~6. In Table~\ref{tab:seedsnoise} each seed pools its five states and the four task and model configurations.
+
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Share of benchmark windows with the correct drift type for the published methods over seeds and states (\%)}\label{tab:seedspublished}%
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Model & Method & \multicolumn{1}{c}{Inc. A} & \multicolumn{1}{c}{Inc. B} & \multicolumn{1}{c}{Emp. A} & \multicolumn{1}{c}{Emp. B} \\
+\midrule
+LR & Ours & 94.3 $\pm$ 7.6 & 62.4 $\pm$ 3.5 & 85.7 $\pm$ 5.6 & 80.5 $\pm$ 4.9 \\
+ &  & [88, 100] & [59, 66] & [79, 92] & [77, 84] \\
+ & Roschewitz et al. & 52.9 $\pm$ 1.3 & 38.8 $\pm$ 1.3 & 52.8 $\pm$ 1.5 & 48.7 $\pm$ 1.1 \\
+ &  & [52, 54] & [38, 39] & [51, 54] & [47, 50] \\
+ & DetectShift & 57.2 $\pm$ 3.8 & 55.3 $\pm$ 2.5 & 55.2 $\pm$ 2.1 & 61.5 $\pm$ 3.0 \\
+ &  & [54, 61] & [52, 59] & [52, 59] & [58, 65] \\
+ & Label-free + CL & 74.0 $\pm$ 5.2 & 53.2 $\pm$ 2.9 & 72.3 $\pm$ 3.8 & 71.8 $\pm$ 3.5 \\
+ &  & [70, 78] & [50, 56] & [70, 75] & [70, 74] \\
+\midrule
+GB & Ours & 94.2 $\pm$ 8.0 & 63.2 $\pm$ 3.6 & 90.5 $\pm$ 3.5 & 81.5 $\pm$ 3.5 \\
+ &  & [88, 100] & [60, 66] & [84, 97] & [78, 85] \\
+ & Roschewitz et al. & 52.8 $\pm$ 1.0 & 38.1 $\pm$ 2.0 & 51.8 $\pm$ 2.5 & 48.3 $\pm$ 1.1 \\
+ &  & [52, 54] & [37, 39] & [50, 54] & [47, 49] \\
+ & DetectShift & 57.2 $\pm$ 3.8 & 55.3 $\pm$ 2.5 & 55.2 $\pm$ 2.1 & 61.5 $\pm$ 3.0 \\
+ &  & [54, 61] & [52, 59] & [52, 59] & [58, 65] \\
+ & Label-free + CL & 73.5 $\pm$ 5.6 & 54.7 $\pm$ 3.0 & 73.7 $\pm$ 1.8 & 72.0 $\pm$ 2.7 \\
+ &  & [70, 77] & [52, 57] & [72, 76] & [70, 74] \\
+\botrule
+\end{tabular}
+\footnotetext{Label-free + CL is our label-free stage followed by confident learning}
+\end{table}
+
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Share of label noise windows named label noise over seeds and states (\%)}\label{tab:seedsnoise}%
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Noise mechanism & \multicolumn{1}{c}{Ours} & \multicolumn{1}{c}{Meta-classifier} & \multicolumn{1}{c}{DetectShift} & \multicolumn{1}{c}{Label-free + CL} \\
+\midrule
+Uniform (design A) & 72.3 $\pm$ 8.6 & 98.7 $\pm$ 1.5 & 0.0 $\pm$ 0.0 & 94.8 $\pm$ 10.7 \\
+ & [58, 87] & [97, 100] & [0, 0] & [90, 99] \\
+Class-conditional & 63.7 $\pm$ 9.0 & 96.3 $\pm$ 4.3 & 0.0 $\pm$ 0.0 & 93.3 $\pm$ 11.1 \\
+ & [56, 71] & [94, 99] & [0, 0] & [90, 96] \\
+Instance-dependent & 77.8 $\pm$ 10.2 & 96.8 $\pm$ 2.8 & 0.0 $\pm$ 0.0 & 90.2 $\pm$ 9.9 \\
+ & [71, 84] & [95, 99] & [0, 0] & [84, 96] \\
+\botrule
+\end{tabular}
+\end{table}
+
 \section{Published methods by drift type}\label{sec:pubtypes}
 
 Table~\ref{tab:publishedtypes} gives, for each method of Table~5 of the paper, the share of windows of each injected type that it typed correctly. The shares pool the four configurations of each design. Design B has no control windows.

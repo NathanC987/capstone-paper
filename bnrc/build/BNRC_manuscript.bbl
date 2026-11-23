@@ -1,4 +1,4 @@
-\begin{thebibliography}{51}
+\begin{thebibliography}{52}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{{#1}}
 \providecommand{\urlprefix}{URL }
@@ -32,6 +32,12 @@ Cochran WG (1954) Some methods for strengthening the common $\chi^2$ tests.
 Cortes C, Mansour Y, Mohri M (2010) Learning bounds for importance weighting.
   In: Advances in Neural Information Processing Systems 23, Vancouver, Canada,
   pp 442--450
+
+\bibitem[{Csaba et~al.(2024)Csaba, Zhang, M{\"u}ller, Lim, Elhoseiny, Torr, and
+  Bibi}]{csaba2024labeldelay}
+Csaba B, Zhang W, M{\"u}ller M, et~al (2024) Label delay in online continual
+  learning. In: Advances in Neural Information Processing Systems 37,
+  Vancouver, Canada, pp 119976--120012, \doi{10.52202/079017-3813}
 
 \bibitem[{Ding et~al.(2021)Ding, Hardt, Miller, and Schmidt}]{ding2021retiring}
 Ding F, Hardt M, Miller J, et~al (2021) Retiring adult: New datasets for fair
