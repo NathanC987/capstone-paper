@@ -32,7 +32,7 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \reply Every reference with a DOI now gives it as a full \texttt{https://doi.org/} link. We checked the remaining entries in Crossref: the papers from NeurIPS, ICLR, ICML and JMLR, Holm (1979), Kish (1965) and the Census Bureau documents have no DOI, so they keep the publisher's web address with its access date.
 
 \point{Give an ORCID iD for each author.}
-\reply The author list now gives each author's ORCID iD as a link next to the name (page 1, lines 13--16). \todo{ORCID iDs of all five authors}
+\reply The author list now gives each author's ORCID iD as a link next to the name (page 1, lines 13--14).
 
 \point{Add a short statement on whether any generative AI tool was used.}
 \reply A paragraph ``Use of AI tools'' is now in Methods, Section 2.2 (page 15, lines 653--658). It states that a generative AI assistant (Claude, Anthropic) helped with writing code for the pipeline and the experiments and with drafting and editing the text, and that the authors designed the study, checked the code, the results and the text and take full responsibility for the content.
@@ -41,7 +41,7 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \reply All numbers in the text, the tables and the figures are now written without separators (for example 13910, 3300 and \$50000). The build of the manuscript checks this and fails if a separator remains.
 
 \point{Add a Methods paragraph to the abstract.}
-\reply The abstract now has a Methods part (page 1, lines 33--40) that names the tests, the two census tasks and two model families of the benchmark with its number of windows, the four real datasets with their number of windows and the 600-label audit. The abstract stays within 350 words.
+\reply The abstract now has a Methods part (page 1, lines 32--38) that names the tests, the two census tasks and two model families of the benchmark with its number of windows, the four real datasets with their number of windows and the 600-label audit. The abstract stays within 350 words.
 
 \point{Deposit the code and the exact scripts in a versioned archive that gives a DOI, and list the software versions.}
 \reply The code, the exact scripts and the configurations behind every result are archived on Zenodo (\url{https://doi.org/10.5281/zenodo.24468639}) and cited in ``Availability of data and materials'' (pages 35--36, lines 1608--1623). The same section lists the versions used: Python 3.14.8, NumPy 2.4.2, pandas 2.3.3, SciPy 1.17.0, scikit-learn 1.8.0, SHAP 0.50.0, PyTorch 2.11.0, torchvision 0.26.0, OpenCLIP 3.3.0, Matplotlib 3.10.8, Streamlit 1.54.0, CatBoost 1.2.10, cleanlab 2.9.0 and DetectShift 1.0.1.
@@ -70,7 +70,7 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \reply Section 3.1 (page 22, lines 1000--1010) now states the false alarm rate of the whole procedure over the 200 control windows of design A with its 95\% interval. It explains that the guarantee is $2\alpha = 10\%$, not $\alpha$, because a verdict passes two stages that are each tested at level $\alpha$, and it reports each stage separately: both stay within $\alpha$. The higher rate in one panel of Fig.~3 rests on only 50 control windows, and its Wilson interval contains 5\%.
 
 \point{Add more control windows for each real data set and report how many raise an alarm.}
-\reply Each real dataset and model now has 20 more control windows. The reference data are split again with new seeds, the model is refitted on the new training part and the new test part is the control window (Section 2.2.2, page 17, lines 752--757). Section 3.6 (page 31, lines 1396--1406) and the new Table S9 give the alarms of every detector, of our procedure and of the published methods on these 160 windows. Our procedure raised a false alarm on 15 of them (9.4\%, 95\% CI 5.8 to 14.9\%), within its bound of $2\alpha = 10\%$. The label-free stage raised 4 and the audit 11. No detector exceeded 6.2\%. The abstract (page 1, lines 46--48) and the Discussion now give this rate in place of the earlier statement that no control window was flagged.
+\reply Each real dataset and model now has 20 more control windows. The reference data are split again with new seeds, the model is refitted on the new training part and the new test part is the control window (Section 2.2.2, page 17, lines 752--757). Section 3.6 (page 31, lines 1396--1406) and the new Table S9 give the alarms of every detector, of our procedure and of the published methods on these 160 windows. Our procedure raised a false alarm on 15 of them (9.4\%, 95\% CI 5.8 to 14.9\%), within its bound of $2\alpha = 10\%$. The label-free stage raised 4 and the audit 11. No detector exceeded 6.2\%. The abstract (pages 1--2, lines 45--47) and the Discussion now give this rate in place of the earlier statement that no control window was flagged.
 
 \point{Use more permutations (1000 or more) for the final tables, and explain which window counts as an error when the income threshold changes but accuracy does not.}
 \reply Every permutation test in the revised results uses 1000 permutations; all studies and the benchmark were run again with the same seeds and every number and table was regenerated (Section 2.2, page 15, line 645). Section 3.2 (page 24, lines 1072--1076) now states that the income threshold windows reported as no drift count as errors in Tables 3 and 4, since their injected type is concept drift.
@@ -81,7 +81,7 @@ Thank you for the careful assessment of our manuscript and the clear list of rev
 \section*{General notes}
 
 \point{Rewrite the abstract and the Conclusions so that they match Table 4; say which held-out mechanisms the procedure handles and which it does not.}
-\reply The abstract (page 1, lines 43--46) and the Conclusions (page 34, lines 1533--1538) now say that the procedure recognizes selection bias, a lower positive rate and oblique concept drift, calls a raised income threshold that costs almost no accuracy no drift and often takes class-conditional label noise for concept drift.
+\reply The abstract (page 1, lines 42--45) and the Conclusions (page 34, lines 1533--1538) now say that the procedure recognizes selection bias, a lower positive rate and oblique concept drift, calls a raised income threshold that costs almost no accuracy no drift and often takes class-conditional label noise for concept drift.
 
 \point{Explain why all real windows are typed covariate shift, and how a window with both covariate and concept change is reported.}
 \reply The Discussion (page 33, lines 1500--1510) now explains that most documented causes act on the inputs, so covariate verdicts are expected, and that the audit runs only when the label-free stage finds nothing. A window with both changes is therefore reported as covariate shift and its concept change goes unnamed, as in ACS Income 2023.

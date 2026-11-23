@@ -1,10 +1,10 @@
 ---
 title: Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models
-author: Rahul Guhagarkar; 1*; [[ORCID]]
-author: Nathan Cherian; 1; [[ORCID]]
-author: Alok Pal; 1; [[ORCID]]
-author: Akul Patre; 1; [[ORCID]]
-author: Sanjay Mirchandani; 1; [[ORCID]]
+author: Rahul Guhagarkar; 1*; 0009-0002-5740-2708
+author: Nathan Cherian; 1; 0009-0005-9943-9287
+author: Alok Pal; 1; 0009-0001-3970-5492
+author: Akul Patre; 1; 0009-0009-5952-0338
+author: Sanjay Mirchandani; 1; 0000-0003-3400-1215
 affiliation: 1; Department of Computer Engineering, Vivekanand Education Society's Institute of Technology, Hashu Advani Memorial Complex, Collector's Colony, Chembur, Mumbai 400074, India
 corresponding: 2023.rahul.guhagarkar@ves.ac.in
 keywords: concept drift, label shift, model monitoring, drift diagnosis, hypothesis testing
