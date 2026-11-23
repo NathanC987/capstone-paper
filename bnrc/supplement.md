@@ -68,6 +68,8 @@ Table: Share of benchmark windows with the correct drift type for the published 
 Table: Share of label noise windows named label noise over seeds and states (%) {#tab:seedsnoise}
 <<gen:tab_seeds_noise>>
 
+\floatbarrier
+
 # Published methods by drift type {#sec:pubtypes}
 
 An overall share does not say which drift types a method gets right. Table @tab:publishedtypes therefore splits the shares of Table @m:tab:published of the paper by injected type. For each method it gives the share of windows of each type that were typed correctly, pooled over the four configurations of each design. Design B has no control windows, so its first column is missing.
@@ -86,6 +88,8 @@ Table: The audit and the published methods on the real windows. A dash means no 
 
 The four datasets behave quite differently. On ACS Employment, whose accuracy hardly moved, the audit finds no drop in any window. On the gas sensor array it finds one in every batch and mostly names concept drift. On ACS Income it finds a drop in most windows from 2018 on. There it names concept drift or label noise, as the change of the labels against the fixed income threshold suggests. On CLEAR-10 it finds a drop only in bucket 10. The final verdict of our procedure stays covariate shift in all these windows, because the label-free stage rejects first (Section @m:sec:discussion). DetectShift names concept drift in \res{realpub-detectshift-concept} windows and covariate shift in \res{realpub-detectshift-covariate}. The method of Roschewitz et al. names covariate shift in \res{realpub-roschewitz-covariate} windows and prior shift in \res{realpub-roschewitz-prior}, both of them ACS Income 2017. CL follows our label-free stage and adds label noise in \res{realpub-confidentlearning-labelnoise} window, CLEAR-10 bucket 3 with LR.
 
+\floatbarrier
+
 # More control windows on real data {#sec:controls}
 
 A control window holds no drift, so every alarm on it is false. Each real dataset has only one such window in the paper, which is too few to judge the false alarm rate. Table @tab:controls adds \res{ctrl-per} control windows for each dataset and model. For each of them the reference data are split again with a new seed. The model is refitted on the new training part and the new test part is the control window. Every column counts the windows with an alarm or with a verdict other than no drift.
@@ -93,6 +97,8 @@ A control window holds no drift, so every alarm on it is false. Each real datase
 Table: Alarms on the added control windows of the real datasets, \res{ctrl-per} for each dataset and model. Conf. is the confidence test, DC the domain classifier, Ros. the method of Roschewitz et al., DS DetectShift and CL our label-free stage followed by confident learning {#tab:controls}
 <<gen:tab_controls>>
 
-Our procedure raised a false alarm on \res{ctrl-ours-k} of the \res{ctrl-n} windows (\res{ctrl-ours-pct}%, 95% CI \res{ctrl-ours-ci}). The bound for the whole procedure is $2\alpha$, since a verdict passes two stages that are each tested at level $\alpha$. The label-free stage raised \res{ctrl-ours-labelfree-k} of the false alarms (\res{ctrl-ours-labelfree-pct}%, 95% CI \res{ctrl-ours-labelfree-ci}) and the audit \res{ctrl-ours-audit-k} (\res{ctrl-ours-audit-pct}%, 95% CI \res{ctrl-ours-audit-ci}). Both intervals contain $\alpha=5$%. The detectors are tested one at a time at level $\alpha$, so their rates are compared with $\alpha$. Our label-free stage followed by CL raised \res{ctrl-confidentlearning-k} false alarms (\res{ctrl-confidentlearning-pct}%, 95% CI \res{ctrl-confidentlearning-ci}).
+Our procedure raised a false alarm on \res{ctrl-ours-k} of the \res{ctrl-n} windows (\res{ctrl-ours-pct}%, 95% CI \res{ctrl-ours-ci}). The bound for the whole procedure is $2\alpha$, since a verdict passes two stages that are each tested at level $\alpha$. The label-free stage raised \res{ctrl-ours-labelfree-k} of the false alarms (\res{ctrl-ours-labelfree-pct}%, 95% CI \res{ctrl-ours-labelfree-ci}) and the audit \res{ctrl-ours-audit-k} (\res{ctrl-ours-audit-pct}%, 95% CI \res{ctrl-ours-audit-ci}). Both intervals contain $\alpha=5$%, the level at which each detector is tested on its own. Our label-free stage followed by CL raised \res{ctrl-confidentlearning-k} false alarms (\res{ctrl-confidentlearning-pct}%, 95% CI \res{ctrl-confidentlearning-ci}).
+
+\floatbarrier
 
 # References {-}
