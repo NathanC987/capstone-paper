@@ -1,4 +1,4 @@
-\begin{thebibliography}{39}
+\begin{thebibliography}{51}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{{#1}}
 \providecommand{\urlprefix}{URL }
@@ -6,12 +6,23 @@
 \providecommand{\eprint}[2][]{\url{#2}}
  \bibcommenthead
 
+\bibitem[{Aguiar and Cano(2024)}]{aguiar2024locality}
+Aguiar GJ, Cano A (2024) A comprehensive analysis of concept drift locality in
+  data streams. Knowledge-Based Systems 289:111535.
+  \doi{10.1016/j.knosys.2024.111535}
+
 \bibitem[{Beckhusen(2020)}]{census2020occupation}
 Beckhusen JB (2020) Recent changes in the {Census} industry and occupation
   classification systems. Tech. Rep. ACS-TP78, U.S. Census Bureau, Suitland,
   MD, USA,
   \urlprefix\url{https://www.census.gov/library/publications/2020/demo/acs-tp78.html},
   accessed 21 October 2026
+
+\bibitem[{Chen et~al.(2021)Chen, Ye, Chen, Zhao, and Heng}]{chen2021instance}
+Chen P, Ye J, Chen G, et~al (2021) Beyond class-conditional assumption: A
+  primary attempt to combat instance-dependent label noise. In: Proceedings of
+  the AAAI Conference on Artificial Intelligence, pp 11442--11450,
+  \doi{10.1609/aaai.v35i13.17363}
 
 \bibitem[{Cochran(1954)}]{cochran1954}
 Cochran WG (1954) Some methods for strengthening the common $\chi^2$ tests.
@@ -60,6 +71,20 @@ Hendrycks D, Gimpel K (2017) A baseline for detecting misclassified and
   out-of-distribution examples in neural networks. In: 5th International
   Conference on Learning Representations, Toulon, France
 
+\bibitem[{Hinder et~al.(2024{\natexlab{a}})Hinder, Vaquet, and
+  Hammer}]{hinder2024parta}
+Hinder F, Vaquet V, Hammer B (2024{\natexlab{a}}) One or two things we know
+  about concept drift---a survey on monitoring in evolving environments. {P}art
+  {A}: Detecting concept drift. Frontiers in Artificial Intelligence 7:1330257.
+  \doi{10.3389/frai.2024.1330257}
+
+\bibitem[{Hinder et~al.(2024{\natexlab{b}})Hinder, Vaquet, and
+  Hammer}]{hinder2024partb}
+Hinder F, Vaquet V, Hammer B (2024{\natexlab{b}}) One or two things we know
+  about concept drift---a survey on monitoring in evolving environments. {P}art
+  {B}: Locating and explaining concept drift. Frontiers in Artificial
+  Intelligence 7:1330258. \doi{10.3389/frai.2024.1330258}
+
 \bibitem[{Holm(1979)}]{holm1979}
 Holm S (1979) A simple sequentially rejective multiple test procedure.
   Scandinavian Journal of Statistics 6(2):65--70
@@ -73,11 +98,29 @@ Ke G, Meng Q, Finley T, et~al (2017) {LightGBM:} a highly efficient gradient
 \bibitem[{Kish(1965)}]{kish1965}
 Kish L (1965) Survey Sampling. Wiley, New York, NY, USA
 
+\bibitem[{Kivim{\"a}ki et~al.(2025)Kivim{\"a}ki, Nurminen, Bia{\l}ek, and
+  Kuberski}]{kivimaki2025confidence}
+Kivim{\"a}ki J, Nurminen JK, Bia{\l}ek J, et~al (2025) Confidence-based
+  estimators for predictive performance in model monitoring. Journal of
+  Artificial Intelligence Research 82:209--240. \doi{10.1613/jair.1.16709}
+
 \bibitem[{Kivim{\"a}ki et~al.(2026)Kivim{\"a}ki, Bia{\l}ek, Kuberski, and
   Nurminen}]{kivimaki2025performance}
 Kivim{\"a}ki J, Bia{\l}ek J, Kuberski W, et~al (2026) Performance estimation in
   binary classification using calibrated confidence. Machine Learning
   115(3):67. \doi{10.1007/s10994-025-06970-3}
+
+\bibitem[{Koch et~al.(2024)Koch, Baumgartner, and Berens}]{koch2024postmarket}
+Koch LM, Baumgartner CF, Berens P (2024) Distribution shift detection for the
+  postmarket surveillance of medical {{AI}} algorithms: A retrospective
+  simulation study. npj Digital Medicine 7:120.
+  \doi{10.1038/s41746-024-01085-w}
+
+\bibitem[{Kore et~al.(2024)Kore, Abbasi~Bavil, Subasri, Abdalla, Fine,
+  Dolatabadi, and Abdalla}]{kore2024medical}
+Kore A, Abbasi~Bavil E, Subasri V, et~al (2024) Empirical data drift detection
+  experiments on real-world medical imaging data. Nature Communications
+  15:1887. \doi{10.1038/s41467-024-46142-w}
 
 \bibitem[{Lin et~al.(2021)Lin, Shi, Pathak, and Ramanan}]{lin2021clear}
 Lin Z, Shi J, Pathak D, et~al (2021) The {CLEAR} benchmark: Continual
@@ -115,6 +158,17 @@ Moreno-Torres JG, Raeder T, Alaiz-Rodr{\'i}guez R, et~al (2012) A unifying view
   on dataset shift in classification. Pattern Recognition 45(1):521--530.
   \doi{10.1016/j.patcog.2011.06.019}
 
+\bibitem[{Natarajan et~al.(2013)Natarajan, Dhillon, Ravikumar, and
+  Tewari}]{natarajan2013noisy}
+Natarajan N, Dhillon IS, Ravikumar PK, et~al (2013) Learning with noisy labels.
+  In: Advances in Neural Information Processing Systems 26, Lake Tahoe, NV, USA
+
+\bibitem[{Northcutt et~al.(2021)Northcutt, Jiang, and
+  Chuang}]{northcutt2021confident}
+Northcutt C, Jiang L, Chuang I (2021) Confident learning: Estimating
+  uncertainty in dataset labels. Journal of Artificial Intelligence Research
+  70:1373--1411. \doi{10.1613/jair.1.12125}
+
 \bibitem[{Ovadia et~al.(2019)Ovadia, Fertig, Ren, Nado, Sculley, Nowozin,
   Dillon, Lakshminarayanan, and Snoek}]{ovadia2019trust}
 Ovadia Y, Fertig E, Ren J, et~al (2019) Can you trust your model's uncertainty?
@@ -138,6 +192,12 @@ Phipson B, Smyth GK (2010) Permutation p-values should never be zero:
   Calculating exact p-values when permutations are randomly drawn. Statistical
   Applications in Genetics and Molecular Biology 9(1):39.
   \doi{10.2202/1544-6115.1585}
+
+\bibitem[{Prokhorenkova et~al.(2018)Prokhorenkova, Gusev, Vorobev, Dorogush,
+  and Gulin}]{prokhorenkova2018catboost}
+Prokhorenkova L, Gusev G, Vorobev A, et~al (2018) {{CatBoost}}: Unbiased
+  boosting with categorical features. In: Advances in Neural Information
+  Processing Systems 31, Montr{\'e}al, Canada
 
 \bibitem[{Rabanser et~al.(2019)Rabanser, G{\"u}nnemann, and
   Lipton}]{rabanser2019failing}
@@ -164,6 +224,11 @@ Roschewitz M, Mehta R, Jones C, et~al (2025) Automatic dataset shift
 Shimodaira H (2000) Improving predictive inference under covariate shift by
   weighting the log-likelihood function. Journal of Statistical Planning and
   Inference 90(2):227--244. \doi{10.1016/S0378-3758(00)00115-4}
+
+\bibitem[{Shin et~al.(2024)Shin, Won, Lee, and Lee}]{shin2024labelcleaning}
+Shin J, Won J, Lee HS, et~al (2024) A review on label cleaning techniques for
+  learning with noisy labels. ICT Express 10(6):1315--1330.
+  \doi{10.1016/j.icte.2024.09.007}
 
 \bibitem[{Siddiqi(2006)}]{siddiqi2006}
 Siddiqi N (2006) Credit Risk Scorecards: Developing and Implementing
@@ -210,6 +275,11 @@ Vergara A (2012) Gas sensor array drift dataset. \doi{10.24432/C5RP6W},
 Vergara A, Vembu S, Ayhan T, et~al (2012) Chemical gas sensor drift
   compensation using classifier ensembles. Sensors and Actuators B: Chemical
   166--167:320--329. \doi{10.1016/j.snb.2012.01.074}
+
+\bibitem[{Wen et~al.(2024)Wen, Betken, and Hang}]{wen2024cpmcn}
+Wen H, Betken A, Hang H (2024) Class probability matching with calibrated
+  networks for label shift adaption. In: The Twelfth International Conference
+  on Learning Representations, Vienna, Austria
 
 \bibitem[{Wilson(1927)}]{wilson1927}
 Wilson EB (1927) Probable inference, the law of succession, and statistical

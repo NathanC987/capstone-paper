@@ -50,7 +50,7 @@
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\theequation}{S\arabic{equation}}
 
-Five topics that the main paper only touches on are expanded here. Section~\ref{sec:budget} asks how many delayed labels the audit needs before its diagnosis settles. Section~\ref{sec:remediation} breaks the remediation triage down by real setting, while Section~\ref{sec:relp} records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. Section~\ref{sec:dashboard} presents the dashboard in which the pipeline displays its results. The last section, Section~\ref{sec:seeds}, shows how the benchmark results vary over seeds and states.
+Eight topics that the main paper only touches on are expanded here. Section~\ref{sec:budget} asks how many delayed labels the audit needs before its diagnosis settles. Section~\ref{sec:remediation} breaks the remediation triage down by real setting, while Section~\ref{sec:relp} records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. Section~\ref{sec:dashboard} presents the dashboard in which the pipeline displays its results. Section~\ref{sec:seeds} shows how the benchmark results vary over seeds and states. The last three sections break the published methods down by drift type (Section~\ref{sec:pubtypes}), give the audit and the published methods on every real window (Section~\ref{sec:realaudits}) and count the alarms on the added real control windows (Section~\ref{sec:controls}).
 
 \section{Size of the delayed audit}\label{sec:budget}
 
@@ -66,7 +66,7 @@ With 200 labels, concept drift is identified in 80\% of windows and label noise 
 
 \section{Remediation triage by setting}\label{sec:remediation}
 
-Section~3.5 of the paper summarizes how often the triage of Section~2.1.5 gives the right advice. Table~\ref{tab:remediation} breaks this summary down by real setting and model family, so that the source of each right or wrong verdict can be seen.
+Section~3.7 of the paper summarizes how often the triage of Section~2.1.5 gives the right advice. Table~\ref{tab:remediation} breaks this summary down by real setting and model family, so that the source of each right or wrong verdict can be seen.
 
 \begin{table}[!htbp]\centering\tablebodyfont
 \caption{Remediation triage on the real windows. n is the number of windows; Significant gains counts the windows in which a strategy significantly raised holdout accuracy, by importance weighting (IW), retraining on the most recent labeled window (Recent) or retraining on labels of the window itself (Labels); n/a marks settings without an earlier window}\label{tab:remediation}%
@@ -143,7 +143,7 @@ A diagnosis is only useful if the team can read it. Every stage of the pipeline 
 \caption{The dashboard of the pipeline for ACS Income with LR. (a) The overview: dataset, task and model selectors, the headline results and the five steps of the pipeline, each of which opens a detailed view. (b) The drift type step: for every window, the answer to each question of the decision path in Fig.~2 of the paper (filled circle yes, open circle no, small dot not reached) and the resulting verdict, followed by a summary sentence computed from the results}\label{fig:dashboard}
 \end{figure}
 
-Panel (b) applies the decision path of Fig.~2 to the real California (CA) windows. CA 2015 passes every test of the label-free stage. The KS detector in Table~7 of the paper does raise an alarm on CA 2015, because it corrects only over the numeric features, while the label-free stage tests all features together with the other two blocks in one weighted Holm family (Section~2.1.3). The audit then finds no significant drop in accuracy, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels stay where they were. The feature tests still reject and the shift survives the prior correction, so these windows are covariate shift. All other windows answer yes to every label-free question and are covariate shift as well. Each view of the dashboard opens with the question it answers and closes with a summary sentence of this kind, so a team can follow the diagnosis without reading the code.
+Panel (b) applies the decision path of Fig.~2 to the real California (CA) windows. CA 2015 passes every test of the label-free stage. The KS detector in Table~9 of the paper does raise an alarm on CA 2015, because it corrects only over the numeric features, while the label-free stage tests all features together with the other two blocks in one weighted Holm family (Section~2.1.3). The audit then finds no significant drop in accuracy, so the verdict is no drift. In CA 2016, CA 2018 and CA 2019 the predicted labels stay where they were. The feature tests still reject and the shift survives the prior correction, so these windows are covariate shift. All other windows answer yes to every label-free question and are covariate shift as well. Each view of the dashboard opens with the question it answers and closes with a summary sentence of this kind, so a team can follow the diagnosis without reading the code.
 
 \section{Spread over seeds and states}\label{sec:seeds}
 
@@ -215,6 +215,132 @@ Noise: class-conditional & 21.3 $\pm$ 8.2 & 22.7 $\pm$ 7.2 & 34.7 $\pm$ 11.7 & 3
 \botrule
 \end{tabular}
 \end{table}
+
+\section{Published methods by drift type}\label{sec:pubtypes}
+
+Table~\ref{tab:publishedtypes} gives, for each method of Table~5 of the paper, the share of windows of each injected type that it typed correctly. The shares pool the four configurations of each design. Design B has no control windows.
+
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Correct drift type by injected type for the published methods, pooled over task and model (\%)}\label{tab:publishedtypes}%
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}Xrrrrrrrrr@{}}
+\toprule
+ & \multicolumn{5}{c}{Design A} & \multicolumn{4}{c}{Design B} \\
+\cmidrule(lr){2-6}
+\cmidrule(lr){7-10}
+Method & \multicolumn{1}{c}{None} & \multicolumn{1}{c}{Cov.} & \multicolumn{1}{c}{Prior} & \multicolumn{1}{c}{Conc.} & \multicolumn{1}{c}{Noise} & \multicolumn{1}{c}{Cov.} & \multicolumn{1}{c}{Prior} & \multicolumn{1}{c}{Conc.} & \multicolumn{1}{c}{Noise} \\
+\midrule
+Ours (hierarchical tests) & 94 & 100 & 95 & 96 & 72 & 100 & 94 & 65 & 28 \\
+Roschewitz et al. & 97 & 100 & 96 & 0 & 0 & 98 & 95 & 0 & 0 \\
+DetectShift & 93 & 19 & 96 & 98 & 0 & 74 & 85 & 68 & 0 \\
+Label-free stage + confident learning & 84 & 100 & 95 & 0 & 95 & 100 & 94 & 0 & 84 \\
+\botrule
+\end{tabularx}
+\footnotetext{Cov. is covariate shift, Conc. concept drift and Noise label noise}
+\end{table}
+
+The method of Roschewitz et al. has no type for concept drift or label noise and DetectShift has none for label noise, so their zeros in these columns follow from their design. DetectShift reads most design A covariate windows as concept drift, because design A moves feature values while the labels stay, which changes $P(Y\mid X)$ as well (Section~3.3).
+
+\section{The audit and the published methods on the real windows}\label{sec:realaudits}
+
+In the paper the audit runs only when the label-free stage finds nothing. Table~\ref{tab:realaudits} shows what it would say on every one of the 90 real windows of both models, next to the final verdict of our procedure and the verdicts of the three published methods. Each window uses the audit sample of the paper. In the table $\Delta$ is the audit accuracy minus the model's accuracy on the control window (points), Audit is the verdict of the audit alone and Ours the final verdict of the procedure. Ros. is the method of Roschewitz et al. and CL our label-free stage followed by confident learning. DS is DetectShift, which does not use the model and so gives one verdict. Cov. stands for covariate shift, Conc. for concept drift and Noise for label noise. The audit names no drift in 58 windows, concept drift in 21 and label noise in 11.
+
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{The audit and the published methods on the real windows}\label{tab:realaudits}%
+\begin{tabular}{@{}lrrlllll@{}}
+\toprule
+ & \multicolumn{2}{c}{$\Delta$} &  &  &  &  &  \\
+\cmidrule(lr){2-3}
+Window & \multicolumn{1}{c}{LR} & \multicolumn{1}{c}{GB} & Audit & Ours & Ros. & DS & CL \\
+\midrule
+\multicolumn{8}{c}{ACS Income} \\
+control & +0.2 & +0.4 & -- & -- & -- & -- & -- \\
+CA 2015 & +2.4 & +2.7 & -- & -- & -- & -- & -- \\
+CA 2016 & \textminus{}1.8 & \textminus{}1.3 & -- & Cov. & --/Cov. & -- & Cov. \\
+CA 2017 & +1.1 & 0.0 & -- & Cov. & Prior & Conc. & Cov. \\
+CA 2018 & \textminus{}2.6 & \textminus{}3.0 & Noise/Conc. & Cov. & Cov. & Conc. & Cov. \\
+CA 2019 & \textminus{}4.4 & \textminus{}4.1 & Conc./Noise & Cov. & Cov. & Conc. & Cov. \\
+CA 2021 & \textminus{}4.8 & \textminus{}2.1 & Noise/-- & Cov. & Cov. & Conc. & Cov. \\
+CA 2022 & \textminus{}5.9 & \textminus{}5.1 & Conc./Noise & Cov. & Cov. & Conc. & Cov. \\
+CA 2023 & \textminus{}10.4 & \textminus{}9.1 & Noise & Cov. & Cov. & Conc. & Cov. \\
+TX 2014 & \textminus{}1.3 & \textminus{}4.1 & --/Noise & Cov. & Cov. & Conc. & Cov. \\
+NY 2014 & \textminus{}1.9 & \textminus{}3.8 & --/Noise & Cov. & Cov. & Cov. & Cov. \\
+FL 2014 & \textminus{}3.4 & \textminus{}3.8 & Conc. & Cov. & Cov. & Conc. & Cov. \\
+WA 2014 & \textminus{}3.3 & \textminus{}1.5 & Noise/-- & Cov. & Cov. & Cov. & Cov. \\
+\midrule
+\multicolumn{8}{c}{ACS Employment} \\
+control & +0.9 & +0.5 & -- & -- & -- & -- & -- \\
+CA 2015 & +2.4 & +1.3 & -- & Cov. & -- & -- & Cov. \\
+CA 2016 & +0.3 & 0.0 & -- & Cov. & -- & Cov. & Cov. \\
+CA 2017 & +3.4 & +3.0 & -- & Cov. & Cov. & -- & Cov. \\
+CA 2018 & +3.4 & +2.3 & -- & Cov. & Cov. & -- & Cov. \\
+CA 2019 & +1.9 & +3.2 & -- & Cov. & Cov. & Cov. & Cov. \\
+CA 2021 & +0.4 & +2.0 & -- & Cov. & Cov. & Cov. & Cov. \\
+CA 2022 & \textminus{}0.6 & \textminus{}1.5 & -- & Cov. & Cov. & Cov. & Cov. \\
+CA 2023 & \textminus{}2.7 & \textminus{}1.8 & -- & Cov. & Cov. & Cov. & Cov. \\
+TX 2014 & +1.4 & +0.7 & -- & Cov. & Cov. & Cov. & Cov. \\
+NY 2014 & \textminus{}0.4 & \textminus{}0.8 & -- & Cov. & Cov. & Cov. & Cov. \\
+FL 2014 & +1.3 & +1.8 & -- & Cov. & Cov. & Cov. & Cov. \\
+WA 2014 & +1.3 & \textminus{}1.3 & -- & Cov. & Cov. & Cov. & Cov. \\
+\midrule
+\multicolumn{8}{c}{Gas sensor} \\
+control & 0.0 & +0.3 & -- & -- & -- & -- & -- \\
+b3 & \textminus{}18.2 & \textminus{}4.9 & Noise/Conc. & Cov. & Cov. & Conc. & Cov. \\
+b4 & \textminus{}40.7 & \textminus{}28.5 & Conc. & Cov. & Cov. & Conc. & Cov. \\
+b5 & \textminus{}13.5 & \textminus{}12.8 & Conc. & Cov. & Cov. & Cov. & Cov. \\
+b6 & \textminus{}35.6 & \textminus{}64.7 & Conc. & Cov. & Cov. & Conc. & Cov. \\
+b7 & \textminus{}37.2 & \textminus{}60.4 & Noise/Conc. & Cov. & Cov. & Conc. & Cov. \\
+b8 & \textminus{}65.6 & \textminus{}82.2 & Conc. & Cov. & Cov. & Conc. & Cov. \\
+b9 & \textminus{}35.7 & \textminus{}60.2 & Conc. & Cov. & Cov. & Conc. & Cov. \\
+b10 & \textminus{}52.2 & \textminus{}56.5 & Conc. & Cov. & Cov. & Conc. & Cov. \\
+\midrule
+\multicolumn{8}{c}{CLEAR-10} \\
+control & +0.1 & \textminus{}0.4 & -- & -- & -- & -- & -- \\
+b2 & 0.0 & +1.0 & -- & -- & -- & -- & -- \\
+b3 & \textminus{}2.9 & \textminus{}0.4 & -- & -- & -- & -- & Noise/-- \\
+b4 & \textminus{}1.4 & 0.0 & -- & Cov. & -- & Conc. & Cov. \\
+b5 & \textminus{}0.4 & +0.8 & -- & Cov. & -- & -- & Cov. \\
+b6 & \textminus{}1.4 & +1.5 & -- & Cov. & Cov. & Cov. & Cov. \\
+b7 & +0.5 & +0.5 & -- & Cov. & Cov. & Cov. & Cov. \\
+b8 & +1.0 & \textminus{}0.5 & -- & Cov. & Cov. & Cov. & Cov. \\
+b9 & \textminus{}0.5 & +1.6 & -- & Cov. & Cov. & -- & Cov. \\
+b10 & \textminus{}5.0 & \textminus{}3.7 & Conc. & Cov. & Cov. & Cov. & Cov. \\
+\botrule
+\end{tabular}
+\footnotetext{A dash means no drift. Where the two models differ, a cell gives the LR and the GB verdict}
+\end{table}
+
+On ACS Employment, whose accuracy hardly moved, the audit finds no drop in any window. On the gas sensor array it finds one in every batch and mostly names concept drift. On ACS Income it finds a drop in most windows from 2018 on and names concept drift or label noise, as the change of the labels against the fixed income threshold suggests. On CLEAR-10 it finds a drop only in bucket 10. The final verdict of our procedure stays covariate shift in all these windows, because the label-free stage rejects first (Section~4). DetectShift names concept drift in 32 windows and covariate shift in 32. The method of Roschewitz et al. names covariate shift in 65 windows and prior shift in 2, both of them ACS Income 2017. CL follows our label-free stage and adds label noise in 1 window, CLEAR-10 bucket 3 with LR.
+
+\section{More control windows on real data}\label{sec:controls}
+
+Each real dataset has one control window in the paper. Table~\ref{tab:controls} adds 20 control windows for each dataset and model. For each, the reference data are split again with a new seed, the model is refitted on the new training part and the new test part is the control window. Every column counts the windows with an alarm or with a verdict other than no drift.
+
+\begin{table}[!htbp]\centering\tablebodyfont
+\caption{Alarms on the added control windows of the real datasets, 20 for each dataset and model}\label{tab:controls}%
+\begin{tabular}{@{}lrrrrrrrrrr@{}}
+\toprule
+ & \multicolumn{6}{c}{Detectors} & \multicolumn{4}{c}{Diagnosis} \\
+\cmidrule(lr){2-7}
+\cmidrule(lr){8-11}
+Data, model & \multicolumn{1}{c}{KS} & \multicolumn{1}{c}{PSI} & \multicolumn{1}{c}{MMD} & \multicolumn{1}{c}{Conf.} & \multicolumn{1}{c}{BBSD} & \multicolumn{1}{c}{DC} & \multicolumn{1}{c}{Ours} & \multicolumn{1}{c}{Ros.} & \multicolumn{1}{c}{DS} & \multicolumn{1}{c}{CL} \\
+\midrule
+ACS Income, LR & 1 & 0 & 1 & 1 & 1 & 1 & 3 & 1 & 0 & 4 \\
+ACS Income, GB & 1 & 0 & 1 & 0 & 0 & 1 & 2 & 1 & 0 & 4 \\
+ACS Employment, LR & 1 & 0 & 1 & 2 & 1 & 2 & 1 & 0 & 0 & 3 \\
+ACS Employment, GB & 1 & 0 & 1 & 1 & 0 & 2 & 0 & 0 & 0 & 1 \\
+Gas sensor, LR & 0 & 0 & 1 & 2 & 0 & 1 & 3 & 0 & 2 & 2 \\
+Gas sensor, GB & 0 & 0 & 1 & 0 & 0 & 1 & 2 & 0 & 2 & 1 \\
+CLEAR-10, LR & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 2 \\
+CLEAR-10, GB & 0 & 0 & 0 & 1 & 0 & 1 & 3 & 0 & 0 & 1 \\
+\midrule
+All windows & 4 & 0 & 6 & 7 & 3 & 10 & 15 & 3 & 4 & 18 \\
+\botrule
+\end{tabular}
+\footnotetext{Conf. is the confidence test, DC the domain classifier, Ros. the method of Roschewitz et al., DS DetectShift and CL our label-free stage followed by confident learning}
+\end{table}
+
+Our procedure raised a false alarm on 15 of the 160 windows (9.4\%, 95\% CI [5.8, 14.9]). The bound for the whole procedure is $2\alpha$, because a verdict passes two stages that are each tested at level $\alpha$. The label-free stage raised 4 of the false alarms (2.5\%, 95\% CI [1.0, 6.3]) and the audit 11 (6.9\%, 95\% CI [3.9, 11.9]). Both intervals contain $\alpha=5$\%. Each detector is tested at level $\alpha$ on its own, so its rate is compared with $\alpha$. Our label-free stage followed by CL raised 18 false alarms (11.2\%, 95\% CI [7.2, 17.1]).
 
 \bibliography{references}
 

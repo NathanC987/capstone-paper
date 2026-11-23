@@ -10,7 +10,7 @@ corresponding: 2023.rahul.guhagarkar@ves.ac.in
 note: Section, figure, table and equation numbers without the prefix S refer to the main paper.
 ---
 
-Five topics that the main paper only touches on are expanded here. Section @sec:budget asks how many delayed labels the audit needs before its diagnosis settles. Section @sec:remediation breaks the remediation triage down by real setting, while Section @sec:relp records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. Section @sec:dashboard presents the dashboard in which the pipeline displays its results. The last section, Section @sec:seeds, shows how the benchmark results vary over seeds and states.
+Eight topics that the main paper only touches on are expanded here. Section @sec:budget asks how many delayed labels the audit needs before its diagnosis settles. Section @sec:remediation breaks the remediation triage down by real setting, while Section @sec:relp records how the relationship codes of the American Community Survey (ACS) were matched across their 2019 redesign. Section @sec:dashboard presents the dashboard in which the pipeline displays its results. Section @sec:seeds shows how the benchmark results vary over seeds and states. The last three sections break the published methods down by drift type (Section @sec:pubtypes), give the audit and the published methods on every real window (Section @sec:realaudits) and count the alarms on the added real control windows (Section @sec:controls).
 
 # Size of the delayed audit {#sec:budget}
 
@@ -59,5 +59,32 @@ Table: Share of benchmark windows with the correct drift type over seeds and sta
 
 Table: Correct diagnosis by design B mechanism over seeds and states (%) {#tab:seedsmechanisms}
 <<gen:tab_seeds_mechanisms>>
+
+# Published methods by drift type {#sec:pubtypes}
+
+Table @tab:publishedtypes gives, for each method of Table @m:tab:published of the paper, the share of windows of each injected type that it typed correctly. The shares pool the four configurations of each design. Design B has no control windows.
+
+Table: Correct drift type by injected type for the published methods, pooled over task and model (%). Cov. is covariate shift, Conc. concept drift and Noise label noise {#tab:publishedtypes}
+<<gen:tab_published_types>>
+
+The method of Roschewitz et al. has no type for concept drift or label noise and DetectShift has none for label noise, so their zeros in these columns follow from their design. DetectShift reads most design A covariate windows as concept drift, because design A moves feature values while the labels stay, which changes $P(Y\mid X)$ as well (Section @m:sec:res-published).
+
+# The audit and the published methods on the real windows {#sec:realaudits}
+
+In the paper the audit runs only when the label-free stage finds nothing. Table @tab:realaudits shows what it would say on every one of the \res{realaud-n} real windows of both models, next to the final verdict of our procedure and the verdicts of the three published methods. Each window uses the audit sample of the paper. In the table $\Delta$ is the audit accuracy minus the model's accuracy on the control window (points), Audit is the verdict of the audit alone and Ours the final verdict of the procedure. Ros. is the method of Roschewitz et al. and CL our label-free stage followed by confident learning. DS is DetectShift, which does not use the model and so gives one verdict. Cov. stands for covariate shift, Conc. for concept drift and Noise for label noise. The audit names no drift in \res{realaud-audit-none} windows, concept drift in \res{realaud-audit-concept} and label noise in \res{realaud-audit-labelnoise}.
+
+Table: The audit and the published methods on the real windows. A dash means no drift. Where the two models differ, a cell gives the LR and the GB verdict {#tab:realaudits}
+<<gen:tab_real_audits>>
+
+On ACS Employment, whose accuracy hardly moved, the audit finds no drop in any window. On the gas sensor array it finds one in every batch and mostly names concept drift. On ACS Income it finds a drop in most windows from 2018 on and names concept drift or label noise, as the change of the labels against the fixed income threshold suggests. On CLEAR-10 it finds a drop only in bucket 10. The final verdict of our procedure stays covariate shift in all these windows, because the label-free stage rejects first (Section @m:sec:discussion). DetectShift names concept drift in \res{realpub-detectshift-concept} windows and covariate shift in \res{realpub-detectshift-covariate}. The method of Roschewitz et al. names covariate shift in \res{realpub-roschewitz-covariate} windows and prior shift in \res{realpub-roschewitz-prior}, both of them ACS Income 2017. CL follows our label-free stage and adds label noise in \res{realpub-confidentlearning-labelnoise} window, CLEAR-10 bucket 3 with LR.
+
+# More control windows on real data {#sec:controls}
+
+Each real dataset has one control window in the paper. Table @tab:controls adds \res{ctrl-per} control windows for each dataset and model. For each, the reference data are split again with a new seed, the model is refitted on the new training part and the new test part is the control window. Every column counts the windows with an alarm or with a verdict other than no drift.
+
+Table: Alarms on the added control windows of the real datasets, \res{ctrl-per} for each dataset and model. Conf. is the confidence test, DC the domain classifier, Ros. the method of Roschewitz et al., DS DetectShift and CL our label-free stage followed by confident learning {#tab:controls}
+<<gen:tab_controls>>
+
+Our procedure raised a false alarm on \res{ctrl-ours-k} of the \res{ctrl-n} windows (\res{ctrl-ours-pct}%, 95% CI \res{ctrl-ours-ci}). The bound for the whole procedure is $2\alpha$, because a verdict passes two stages that are each tested at level $\alpha$. The label-free stage raised \res{ctrl-ours-labelfree-k} of the false alarms (\res{ctrl-ours-labelfree-pct}%, 95% CI \res{ctrl-ours-labelfree-ci}) and the audit \res{ctrl-ours-audit-k} (\res{ctrl-ours-audit-pct}%, 95% CI \res{ctrl-ours-audit-ci}). Both intervals contain $\alpha=5$%. Each detector is tested at level $\alpha$ on its own, so its rate is compared with $\alpha$. Our label-free stage followed by CL raised \res{ctrl-confidentlearning-k} false alarms (\res{ctrl-confidentlearning-pct}%, 95% CI \res{ctrl-confidentlearning-ci}).
 
 # References {-}
