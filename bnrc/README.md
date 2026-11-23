@@ -32,8 +32,8 @@ S4 (spread over seeds and states) added in the revision.
 
 The editor's pre-review mail listed 23 requests. All are done; the response letter is
 `response/response_to_editor.tex` (build with `tectonic`), where red `[[...]]` marks what
-is still open: the ORCID iDs. The code release v1.0-bnrc is archived on Zenodo,
-https://doi.org/10.5281/zenodo.24468639. The BNRC version reads its own result set, run with 1000 permutations in every
+is still open: the ORCID iDs. The code release v1.1-bnrc is archived on Zenodo,
+https://doi.org/10.5281/zenodo.24470787. The BNRC version reads its own result set, run with 1000 permutations in every
 permutation test: `outputs/bnrc/` in the code repository, generated into
 `../generated/bnrc/` and `../figures/bnrc/`. The other versions keep `../generated/`.
 Against the 200-permutation set, no diagnosis verdict changed; the MMD false alarm rate
