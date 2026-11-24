@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+% Cover letter for the revised manuscript (Bulletin of the National Research Centre).
+% Build: tectonic BNRC_cover_letter_revision.tex
+\usepackage[margin=20mm]{geometry}
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{parskip}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{flushright}
+Department of Computer Engineering\\
+Vivekanand Education Society's Institute of Technology\\
+Hashu Advani Memorial Complex, Collector's Colony\\
+Chembur, Mumbai 400074, India\\[6pt]
+24 November 2026
+\end{flushright}
+
+The Editor-in-Chief\\
+Bulletin of the National Research Centre
+
+Dear Editor,
+
+Re: Submission 4a6f3725-5736-467b-b711-9f7f0388a9be, ``Drift Detection, Diagnosis and Reliability Analysis for Deployed Machine Learning Models''
+
+Thank you for your detailed requests on our manuscript. We have revised it to address all 23 points. The attached point-by-point response quotes each request and gives the change made, with the page and line where it appears in the revised manuscript.
+
+The main changes are these:
+\begin{itemize}
+\item We compared the diagnosis with three published methods, the shift identification of Roschewitz et al., DetectShift and confident learning, on the same 5300 benchmark windows.
+\item We added class-conditional and instance-dependent label noise to the benchmark and ran the 600-label audit on every real window.
+\item We added 20 control windows for each real dataset and model, 160 in all. The false alarm rate on them is 9.4\%, within the stated bound of the two-stage procedure.
+\item All permutation tests now use 1000 permutations. The supplement reports the spread over seeds with intervals that treat the state as a cluster.
+\item The reliability and retraining stages are now reported as negative results, since they did no better than model confidence and a simple rule.
+\item We discuss the relevance of the work to the journal's fields, added recent literature from 2024 to 2026 and compared the two accuracy estimators CBPE and ATC.
+\item The code is archived on Zenodo (\url{https://doi.org/10.5281/zenodo.24470787}) with the software versions listed. All authors' ORCID iDs and the declarations the journal requires are included.
+\end{itemize}
+
+The revised manuscript is uploaded as LaTeX source and Additional file 1 as a PDF. The content of the revised manuscript has not been published, nor submitted for publication elsewhere. All authors have read and approved the revision. The authors have no competing interests to declare.
+
+Yours sincerely,
+
+Rahul Guhagarkar (corresponding author)\\
+On behalf of Nathan Cherian, Alok Pal, Akul Patre and Sanjay Mirchandani\\
+Department of Computer Engineering, Vivekanand Education Society's Institute of Technology, Mumbai, India\\
+\url{2023.rahul.guhagarkar@ves.ac.in}
+
+\end{document}
